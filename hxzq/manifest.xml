@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Manifest>
+  <BusinessComponet name="hxzq_cd" dispname="hxzq_cd">
+    <public>
+      <src name="src/public"/>
+    </public>
+    <client>
+      <src name="src/client"/>
+    </client>
+    <private>
+      <src name="src/private"/>
+    </private>
+    <test>
+      <src name="src/test"/>
+    </test>
+    <resource>
+      <src name="resources"/>
+    </resource>
+    <funnodes>
+      <funnode name="发票信息" code="20110040" funnode="hxzq_cd/ace/client/20110040.fnf" service="hxzq_cd/ace/service/20110040.smf"/>
+      <funnode name="发票信息" code="201100FP" funnode="hxzq_cd/ace/client/201100FP.fnf" service="hxzq_cd/ace/service/201100FP.smf"/>
+    </funnodes>
+  </BusinessComponet>
+</Manifest>

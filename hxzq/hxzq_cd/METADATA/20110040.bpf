@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="gbk"?>
+<component conRouterType="手动" createIndustry="0" createTime="2011-11-11 15:44:21" creator="" description="" displayName="hxzqInvoice_infoBVO" fromSourceBmf="true" gencodestyle="NC传统样式" help="" id="46eb73d3-7a92-4eb8-8e56-413b69d7fac5" industry="0" industryChanged="false" industryIncrease="false" industryName="基础行业" isSource="false" isbizmodel="true" mainEntity="" modifier="" modifyIndustry="0" modifyTime="2012-06-26 20:43:55" name="hxzqInvoice_infoBVO" namespace="hxzq" ownModule="erm" preLoad="false" resModuleName="hxzqInvoice_infoBVO" resid="" version="54" versionType="0">
+    <celllist>
+        <opinterface componentID="46eb73d3-7a92-4eb8-8e56-413b69d7fac5" createIndustry="0" createTime="2011-11-11 15:44:24" creator="" description="" displayName="操作接口" fullClassName="nc.itf.erm.hxzq_invoice_info.IHxzq_invoice_infoMaintain" height="155" help="" id="47199e2a-8d1c-42aa-b261-780c8da0174f" implClsName="nc.impl.erm.hxzq_invoice_info.Hxzq_invoice_infoMaintainImpl" industryChanged="false" isAuthorization="true" isBusiActivity="false" isBusiOperation="false" isSource="false" modifier="" modifyIndustry="0" modifyTime="2012-06-26 20:43:55" name="OpInterface" remote="true" resid="" singleton="true" transprop="NONE" version="" versionType="0" visibility="public" width="136" x="68" y="52">
+            <operationlist>
+                   <operation dataTypeStyle="SINGLE" defclassname="" displayName="删除" forBusinessEntity="N" help="" id="9641bef1-69e2-47c8-b16f-07ec6114fe04" isAggVOReturn="false" isBusiActivity="false" methodException="nc.vo.pub.BusinessException" name="delete" opItfID="47199e2a-8d1c-42aa-b261-780c8da0174f" ownerElementID="47199e2a-8d1c-42aa-b261-780c8da0174f" transKind="REQUIRED" versionType="0" visibility="public">
+                    <paramlist>
+                        <parameter dataType="98b8732d-5fbb-4cc7-ab6d-cd5ba532c0d5" dataTypeStyle="ARRAY" dbtype="" description="" displayName="vo" isAggVO="true" name="vo" operationID="9641bef1-69e2-47c8-b16f-07ec6114fe04" paramTypeForLog="7" paramdefclassname="" sequence="0" typeDisplayName="发票信息表体" typeName="hxzqInvoice_infoBVO" versionType="0"/>
+                    </paramlist>
+                </operation>
+                <operation dataType="98b8732d-5fbb-4cc7-ab6d-cd5ba532c0d5" dataTypeStyle="ARRAY" dbtype="" defclassname="" displayName="增加" forBusinessEntity="N" help="" id="0cb8be47-bee1-4540-b897-6a7f6e8e1909" isAggVOReturn="true" isBusiActivity="false" methodException="nc.vo.pub.BusinessException" name="insert" opItfID="47199e2a-8d1c-42aa-b261-780c8da0174f" ownerElementID="47199e2a-8d1c-42aa-b261-780c8da0174f" transKind="REQUIRED" typeDisplayName="发票信息表体" typeName="hxzqInvoice_infoBVO" versionType="0" visibility="public">
+                    <paramlist>
+                        <parameter dataType="98b8732d-5fbb-4cc7-ab6d-cd5ba532c0d5" dataTypeStyle="ARRAY" dbtype="" description="" displayName="vo" isAggVO="true" name="vo" operationID="0cb8be47-bee1-4540-b897-6a7f6e8e1909" paramTypeForLog="7" paramdefclassname="" sequence="0" typeDisplayName="发票信息表体" typeName="hxzqInvoice_infoBVO" versionType="0"/>
+                    </paramlist>
+                </operation>
+                <operation dataType="98b8732d-5fbb-4cc7-ab6d-cd5ba532c0d5" dataTypeStyle="ARRAY" dbtype="" defclassname="" displayName="修改" forBusinessEntity="N" help="" id="76087ee7-69a1-405f-84dd-d055ca85f022" isAggVOReturn="true" isBusiActivity="false" methodException="nc.vo.pub.BusinessException" name="update" opItfID="47199e2a-8d1c-42aa-b261-780c8da0174f" ownerElementID="47199e2a-8d1c-42aa-b261-780c8da0174f" transKind="REQUIRED" typeDisplayName="发票信息表体" typeName="hxzqInvoice_infoBVO" versionType="0" visibility="public">
+                    <paramlist>
+                        <parameter dataType="98b8732d-5fbb-4cc7-ab6d-cd5ba532c0d5" dataTypeStyle="ARRAY" dbtype="" description="" displayName="vo" isAggVO="true" name="vo" operationID="76087ee7-69a1-405f-84dd-d055ca85f022" paramTypeForLog="7" paramdefclassname="" sequence="0" typeDisplayName="发票信息表体" typeName="hxzqInvoice_infoBVO" versionType="0"/>
+                    </paramlist>
+                </operation>
+                   <operation dataType="BS000010000100001001" dataTypeStyle="ARRAY" dbtype="varchar" defclassname="" displayName="查询所有PK" forBusinessEntity="N" help="" id="141a5e72-1323-46e0-8ae4-aad2b7bb2bc5" isAggVOReturn="false" isBusiActivity="false" methodException="nc.vo.pub.BusinessException" name="queryPK" opItfID="47199e2a-8d1c-42aa-b261-780c8da0174f" ownerElementID="47199e2a-8d1c-42aa-b261-780c8da0174f" transKind="REQUIRED" typeDisplayName="String" typeName="String" versionType="0" visibility="public">
+                    <paramlist>
+                        <parameter dataType="BS000010000100001056" dataTypeStyle="SINGLE" dbtype="varchar" description="" displayName="queryScheme" isAggVO="false" name="queryScheme" operationID="141a5e72-1323-46e0-8ae4-aad2b7bb2bc5" paramTypeForLog="7" paramdefclassname="nc.ui.querytemplate.querytree.IQueryScheme" sequence="0" typeDisplayName="自定义项" typeName="CUSTOM" versionType="0"/>
+                    </paramlist>
+                </operation>
+                <operation dataType="98b8732d-5fbb-4cc7-ab6d-cd5ba532c0d5" dataTypeStyle="ARRAY" dbtype="" defclassname="" displayName="根据PK查单据" forBusinessEntity="N" help="" id="ee15e29c-9998-4902-9ca2-1d33fdf3d0ec" isAggVOReturn="true" isBusiActivity="false" methodException="nc.vo.pub.BusinessException" name="querybill" opItfID="47199e2a-8d1c-42aa-b261-780c8da0174f" ownerElementID="47199e2a-8d1c-42aa-b261-780c8da0174f" transKind="REQUIRED" typeDisplayName="发票信息表体" typeName="hxzqInvoice_infoBVO" versionType="0" visibility="public">
+                    <paramlist>
+                        <parameter dataType="BS000010000100001056" dataTypeStyle="SINGLE" dbtype="varchar" description="" displayName="pks" isAggVO="false" name="pks" operationID="ee15e29c-9998-4902-9ca2-1d33fdf3d0ec" paramTypeForLog="7" paramdefclassname="String[]" sequence="0" typeDisplayName="自定义项" typeName="CUSTOM" versionType="0"/>
+                    </paramlist>
+                </operation>
+            </operationlist>
+            <opImpllist>
+                <opItfImpl createTime="2011-11-19 11:27:58" creator="" description="" displayName="实现类" fullClassName="nc.impl.erm.hxzq_invoice_info.Hxzq_invoice_infoMaintainImpl" id="c273e779-a230-46d4-bb5f-b7e0c8ed23d6" name="Maintain" ownerElementID="47199e2a-8d1c-42aa-b261-780c8da0174f" tag="" type="" versionType="0"/>
+            </opImpllist>
+        </opinterface>
+    </celllist>
+    <connectlist/>
+    <refdepends/>
+    <refdependLoseIDs/>
+    <cellRemoveLog/>
+    <rulers>
+        <ruler isHorizontal="true" unit="0">
+            <guideList/>
+        </ruler>
+        <ruler isHorizontal="false" unit="0">
+            <guideList/>
+        </ruler>
+    </rulers>
+</component>

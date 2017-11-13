@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="gbk"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<bean id="funcregister" class="nc.pubapp.pade.funcmodel.vo.FuncRegister"><property name="bmf_path" value="hxzq_cd\METADATA\invoice_info.bmf"/>
+<property name="cfunid" value="0001ZZ1000000000L7W1"/>
+<property name="class_name" value="nc.ui.pubapp.uif2app.ToftPanelAdaptorEx"/>
+<property name="dr" value="0"/>
+<property name="fun_name" value="发票信息"/>
+<property name="fun_property" value="0"/>
+<property name="funcRegisterButtonList">
+<list></list>
+</property>
+<property name="funcRegisterParamList">
+<list><bean class="nc.pubapp.pade.funcmodel.vo.FuncRegisterParam"><property name="dr" value="0"/>
+<property name="paramname" value="BeanConfigFilePath"/>
+<property name="paramvalue" value="nc/ui/erm/hxzq_invoice_info/ace/view/Hxzq_invoice_info_config.xml"/>
+<property name="parentid" value="0001ZZ1000000000L7W1"/>
+<property name="pk_param" value="0001ZZ1000000000L7W2"/>
+<property name="ts" value="2016-09-06 15:10:52"/>
+</bean>
+</list>
+</property>
+<property name="funcode" value="20110040"/>
+<property name="funnode_path" value="hxzq_cd\ace\client\20110040.fnf"/>
+<property name="funtype" value="0"/>
+<property name="isbuttonpower" value="false"/>
+<property name="isenable" value="true"/>
+<property name="isfunctype" value="false"/>
+<property name="menuModelFilePath" value="hxzq_cd/funcmodel/hxzq_invoice_info/menuitemregis/20110040.menu"/>
+<property name="metaDataID" value="98b8732d-5fbb-4cc7-ab6d-cd5ba532c0d5"/>
+<property name="moduleName" value="erm"/>
+<property name="orgtypecode" value="GLOBLE00000000000000"/>
+<property name="own_module" value="2011"/>
+<property name="parent_id" value="1001Z3100000000015O1"/>
+<property name="pk_group" value="~"/>
+<property name="ts" value="2016-09-06 15:10:52"/>
+<property name="uif2model_path" value="hxzq_cd\ace\uif2model\20110040.umf"/>
+</bean>
+
+</beans>
