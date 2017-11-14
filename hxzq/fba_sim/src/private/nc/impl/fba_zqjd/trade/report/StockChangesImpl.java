@@ -7,7 +7,7 @@ import java.util.Set;
 
 import nc.bs.dao.BaseDAO;
 import nc.bs.logging.Logger;
-import nc.itf.fba_zqjd.trade.report.IStockChange;
+import nc.itf.fba_zqjd.trade.report.IStockChanges;
 import nc.jdbc.framework.processor.BeanListProcessor;
 import nc.pub.freereport.ReportDataUtil;
 import nc.pub.smart.context.SmartContext;
@@ -24,7 +24,6 @@ import nc.vo.pub.lang.UFDateTime;
 import nc.vo.pub.lang.UFDouble;
 import nc.vo.pubapp.report.ReportQueryResult;
 
-
 import com.ufida.dataset.IContext;
 
 /**
@@ -34,7 +33,7 @@ import com.ufida.dataset.IContext;
  * 
  */
 
-public class StockChangesImpl implements IStockChange {
+public class StockChangesImpl implements IStockChanges {
 
 	// 证券交易库存变动表
 	public static final String[] STOCKCHANGE_S_FIELD = { "pk_group", "pk_org",
@@ -374,9 +373,12 @@ public class StockChangesImpl implements IStockChange {
 	@SuppressWarnings("unchecked")
 	private void getNowBowNum(String beginDateStr, String endDateStr) {
 		try {
-			String sql_bow_now = StockChangeReportTool.getNowSql(
-					SystemConst.PK_BILLTYPECODE_HV7A_01, beginDateStr,
-					endDateStr);
+			String sql_bow_now = "select * from sim_zqjd a"
+					+ " where a.state >= 2" + " and nvl(a.dr,0) = 0"
+					+ " and a.pk_assetsprop in ('0001SE00000000000004','0001SE00000000000005','0001SE00000000000006')"
+					+ " and a.transtypecode = 'HV7A-0xx-01'"
+					+ " and trade_date between '" + beginDateStr + "'"
+					+ " and '" + endDateStr + "|| 23:59:59'";
 			nowBowResult = (ArrayList<ZqjdVO>) baseDAO.executeQuery(
 					sql_bow_now, new BeanListProcessor(ZqjdVO.class));
 			List<NewStockChangeVO> tempList = new ArrayList<NewStockChangeVO>();

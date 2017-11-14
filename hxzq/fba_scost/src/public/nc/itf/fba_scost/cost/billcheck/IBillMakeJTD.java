@@ -8,7 +8,7 @@ import nc.vo.fba_scost.cost.checkpara.CheckParaVO;
 import nc.vo.pub.BusinessException;
 
 public interface IBillMakeJTD {
-	public void MakeJTD(CheckParaVO checkParaVO) throws BusinessException;
-	public void DeleteJTD(CheckParaVO checkParaVO) throws BusinessException;
-	public boolean getBooleanFromInitcode(String pk_glorgbook,String initcode)throws BusinessException;
+	public void MakeJTD(CheckParaVO checkParaVO);
+	public void DeleteJTD(CheckParaVO checkParaVO);
+	public boolean getBooleanFromInitcode(String pk_glorgbook,String initcode);
 }
