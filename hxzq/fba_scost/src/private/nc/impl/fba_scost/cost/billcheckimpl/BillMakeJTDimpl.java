@@ -49,7 +49,7 @@ public class BillMakeJTDimpl implements IBillMakeJTD {
 					ZqjdVO.class));
 			UFDouble jdfy = new UFDouble(0);
 			int yjrts = 0;// 已借入天数
-			// 查询出来所有当前时间之前的借入单
+			// 查询出来所有当前时间之前的借入单,有借入单进行如下操作
 			if (yshzqjd.size() > 0) {
 				Date sdate = null;
 				Date edate = null;
@@ -352,13 +352,7 @@ public class BillMakeJTDimpl implements IBillMakeJTD {
  			BaseDAO dao = new BaseDAO();
 			List<ZqjdVO> yshzqjd = new ArrayList<ZqjdVO>();
 			yshzqjd = (List<ZqjdVO>) dao.executeQuery(sql, new BeanListProcessor(ZqjdVO.class));
-			if (yshzqjd.size() > 0) {
-				for (int j = 0; j < yshzqjd.size(); j++) {
-					ZqjdVO jtdvo = yshzqjd.get(j);
-					jtdvo.setAttributeValue("dr", 1);
-					dao.updateVO(jtdvo, new String[] { "dr" });
-				}
-			}
+			if (yshzqjd.size() > 0) { }
 		} catch (DAOException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
