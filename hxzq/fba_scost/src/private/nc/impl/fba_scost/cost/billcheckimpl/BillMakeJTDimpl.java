@@ -225,6 +225,7 @@ public class BillMakeJTDimpl implements IBillMakeJTD {
 							yshzqjdvo.setBargain_num(null);
 							yshzqjdvo.setBillno(null);
 							yshzqjdvo.setTrade_fee(null);
+							yshzqjdvo.setFact_sum(null);
 							yshzqjdvo.setApprovedate(new UFDateTime(checkParaVO
 									.getTrade_date().toString().substring(0, 10)
 									+ " 00:00:00"));
@@ -283,6 +284,7 @@ public class BillMakeJTDimpl implements IBillMakeJTD {
 							yshzqjdvo.setTrade_fee(jdfy);
 							yshzqjdvo.setBargain_num(null);
 							yshzqjdvo.setBillno(null);
+							yshzqjdvo.setFact_sum(null);
 							yshzqjdvo.setApprovedate(new UFDateTime(checkParaVO
 									.getTrade_date().toString().substring(0, 10)
 									+ " 00:00:00"));
