@@ -218,9 +218,18 @@ public class BillMakeJTDimpl implements IBillMakeJTD {
 							yshzqjdvo.setBargain_num(null);
 							yshzqjdvo.setBillno(null);
 							yshzqjdvo.setTrade_fee(null);
-							yshzqjdvo.setApprovedate(new UFDateTime(checkParaVO
-									.getTrade_date().toString().substring(0, 10)
-									+ " 00:00:00"));
+							if (checkParaVO.getTrade_date().beforeDate(
+									new UFDate(yshzqjdvo.getDate_end()
+											.toString().substring(0, 10)
+											+ " 00:00:00")))
+								yshzqjdvo.setApprovedate(new UFDateTime(
+										checkParaVO.getTrade_date().toString()
+												.substring(0, 10)
+												+ " 00:00:00"));
+							else
+								yshzqjdvo.setApprovedate(new UFDateTime(yshzqjdvo.getDate_end()
+										.toString().substring(0, 10)
+										+ " 00:00:00"));
 							yshzqjdvo.setPk_secloan(null);
 							jtdVO = yshzqjdvo;
 							jtdVO.setState(2);
@@ -269,9 +278,18 @@ public class BillMakeJTDimpl implements IBillMakeJTD {
 							yshzqjdvo.setTrade_fee(jdfy);
 							yshzqjdvo.setBargain_num(null);
 							yshzqjdvo.setBillno(null);
-							yshzqjdvo.setApprovedate(new UFDateTime(checkParaVO
-									.getTrade_date().toString().substring(0, 10)
-									+ " 00:00:00"));
+							if (checkParaVO.getTrade_date().beforeDate(
+									new UFDate(yshzqjdvo.getDate_end()
+											.toString().substring(0, 10)
+											+ " 00:00:00")))
+								yshzqjdvo.setApprovedate(new UFDateTime(
+										checkParaVO.getTrade_date().toString()
+												.substring(0, 10)
+												+ " 00:00:00"));
+							else
+								yshzqjdvo.setApprovedate(new UFDateTime(yshzqjdvo.getDate_end()
+										.toString().substring(0, 10)
+										+ " 00:00:00"));
 							yshzqjdvo.setPk_secloan(null);
 							jtdVO = yshzqjdvo;
 							jtdVO.setState(2);

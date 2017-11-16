@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="fba_zqjd/src/private"/>
+	<classpathentry kind="src" path="fba_fund/src/public"/>
+	<classpathentry kind="src" path="fba_fund/src/client"/>
+	<classpathentry kind="src" path="fba_fund/src/private"/>
 	<classpathentry kind="src" path="fba_secd/src/public"/>
 	<classpathentry kind="src" path="fba_secd/src/client"/>
 	<classpathentry kind="src" path="fba_secd/src/private"/>
@@ -26,6 +28,7 @@
 	<classpathentry kind="src" path="gl/src/client"/>
 	<classpathentry kind="src" output="hxzq_cd/classes" path="hxzq_cd/resources"/>
 	<classpathentry kind="src" output="hxzq_cd/classes" path="hxzq_cd/src/test"/>
+	<classpathentry kind="src" path="fba_zqjd/src/private"/>
 	<classpathentry kind="src" output="out/resources" path="resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="nc.uap.mde.library.container/Ant_Library"/>
