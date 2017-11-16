@@ -240,6 +240,7 @@ public class BillMakeJTDimpl implements IBillMakeJTD {
 											jtdVO.getPk_group(), jtdVO.getPk_org(),
 											jtdVO);
 							jtdVO.setBillno("JTD" + newCode);
+							jtdVO.setFact_sum(null);
 							String sql1 = "select * from scost_pendingbill "
 									+ "where trade_date like '%"
 									+ yshzqjdvo.getTrade_date().toString()
@@ -298,6 +299,7 @@ public class BillMakeJTDimpl implements IBillMakeJTD {
 											jtdVO.getPk_group(), jtdVO.getPk_org(),
 											jtdVO);
 							jtdVO.setBillno("JTD" + newCode);
+							jtdVO.setFact_sum(null);
 							String sql1 = "select * from scost_pendingbill "
 									+ "where trade_date like '%"
 									+ yshzqjdvo.getTrade_date().toString()
@@ -351,12 +353,13 @@ public class BillMakeJTDimpl implements IBillMakeJTD {
 		try {
 			String sql = "select a.* from sim_zqjd a" +
 					" left join (" +
-					"select approvedate,date_begin," +
+					"select trade_date,approvedate,date_begin," +
 					"date_end,pk_securities,pk_capaccount," +
 					"pk_assetsprop,contractno,transtypecode " +
 					"from sim_zqjd " +
 					"where nvl(dr,0)=0 and transtypecode = 'HV7A-0xx-07')" +
 					" b on a.date_begin = b.date_begin " +
+					"and a.trade_date = b.trade_date "+
 					"and a.date_end = b.date_end " +
 					"and a.pk_securities = b.pk_securities " +
 					"and a.pk_capaccount = b.pk_capaccount " +
@@ -368,7 +371,9 @@ public class BillMakeJTDimpl implements IBillMakeJTD {
  			BaseDAO dao = new BaseDAO();
 			List<ZqjdVO> yshzqjd = new ArrayList<ZqjdVO>();
 			yshzqjd = (List<ZqjdVO>) dao.executeQuery(sql, new BeanListProcessor(ZqjdVO.class));
-			if (yshzqjd.size() > 0) { }
+			if (yshzqjd.size() > 0) {
+				dao.deleteVOList(yshzqjd);
+			}
 		} catch (DAOException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();

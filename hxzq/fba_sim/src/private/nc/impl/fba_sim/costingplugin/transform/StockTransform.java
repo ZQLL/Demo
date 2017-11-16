@@ -100,8 +100,11 @@ public class StockTransform extends AbstractTransform {
 		if (hasSameTradeDate(tradevo)) {
 			tradevo.setVdef2(UFDouble.ZERO_DBL.toString());
 		} else {
-			Double bl = tradevo.getBargain_num().div(outstockbalancevo.getStocks_num()).toDouble();
-			UFDouble sum_jzwfsy = sumJZWFSY(tradevo).multiply(bl).setScale(2, UFDouble.ROUND_HALF_UP);
+			UFDouble sum_jzwfsy = new UFDouble(0);
+			if(!outstockbalancevo.getStocks_num().equals(new UFDouble(0))){
+				Double bl = tradevo.getBargain_num().div(outstockbalancevo.getStocks_num()).toDouble();
+				sum_jzwfsy = sumJZWFSY(tradevo).multiply(bl).setScale(2, UFDouble.ROUND_HALF_UP);
+			}
 			tradevo.setVdef2(sum_jzwfsy.toString());
 		}
 		/******根据转出占比计算转出证券的计提未付收益 add by lihbj end*******/
