@@ -8,16 +8,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
 import nc.bs.dao.BaseDAO;
 import nc.bs.logging.Logger;
 import nc.itf.fba_scost.cost.tool.ICostBalanceTool;
 import nc.itf.fba_scost.cost.tool.ICostingTool;
 import nc.itf.fba_scost.cost.tool.IScostCalCacheManager;
+import nc.itf.fba_scost.cost.tool.IScostCheckCache;
+import nc.vo.fba_fund.interbanklending.InterbankLendingVO;
+import nc.vo.fba_scost.cost.billtypegroup.BilltypeGroupVO;
+import nc.vo.fba_scost.cost.costplan.CostPlanVO;
 import nc.vo.fba_scost.cost.fundbalance.FundBalanceVO;
+import nc.vo.fba_scost.cost.inventoryinfo.InventoryInfoVO;
 import nc.vo.fba_scost.cost.pub.BanlanceQueryKeyVO;
 import nc.vo.fba_scost.cost.pub.PubMethod;
-import nc.vo.fba_scost.cost.pub.SystemConst;
 import nc.vo.fba_scost.cost.stockbalance.StockBalanceVO;
 import nc.vo.fba_scost.cost.transferbalance.TransferBalanceVO;
 import nc.vo.fba_scost.pub.tools.VODeepCloneUtil;
@@ -28,130 +31,107 @@ import nc.vo.pub.lang.UFDate;
 import nc.vo.pub.lang.UFDouble;
 import nc.vo.trade.voutils.VOUtil;
 
-/**
- * 期初工具类，单据审核反审核时使用此类来处理期初期末
- * 
- * @author liangwei
- * 
- */
-public class CostBalanceTool implements ICostBalanceTool{
+public class CostBalanceTool implements ICostBalanceTool {
 	private static final FundBalanceVO fundbalancevo = null;
 	private IScostCalCacheManager scostcalcachemanager;
-
-	public IScostCalCacheManager getScostcalcachemanager() {
-		return scostcalcachemanager;
-	}
-
-	public void setScostcalcachemanager(IScostCalCacheManager scostcalcachemanager) {
-		this.scostcalcachemanager = scostcalcachemanager;
-	}
-
 	private static CostBalanceTool tool;
 	private BaseDAO dao;
 
-	// 可能产生成本变动的库存
-	private Map<String, StockBalanceVO> costchangevomap = new HashMap<String, StockBalanceVO>();
+	public IScostCalCacheManager getScostcalcachemanager() {
+		return this.scostcalcachemanager;
+	}
 
-	public Map<String, Map<String, TransferBalanceVO>> transfermap = new HashMap<String, Map<String, TransferBalanceVO>>();// 保存当前最新的券源划转余额表
+	public void setScostcalcachemanager(
+			IScostCalCacheManager scostcalcachemanager) {
+		this.scostcalcachemanager = scostcalcachemanager;
+	}
 
-	/**
-	 * 单例生成
-	 * 
-	 * @return
-	 */
+	private Map<String, StockBalanceVO> costchangevomap = new HashMap();
+	public Map<String, Map<String, TransferBalanceVO>> transfermap = new HashMap();
+
 	public CostBalanceTool getInstance() {
-		if (null == tool) {
+		if (tool == null) {
 			tool = new CostBalanceTool();
 		}
 		return tool;
 	}
 
 	public CostBalanceTool() {
-
 	}
 
-	/**
-	 * 根据成本计算vo进行初始化
-	 * 
-	 * @param costParaVO
-	 */
 	public CostBalanceTool(CostParaVO costParaVO) {
-
 	}
 
-	/**
-	 * YangJie 2014-03-18
-	 * 
-	 * @return 根据主键获取库存vo 若查找不到库存 考虑默认为新增库存
-	 * @throws BusinessException
-	 */
-	public StockBalanceVO getStockbalanceVO(BanlanceQueryKeyVO sbqkVO, ICostingTool costingtool) throws BusinessException {
-		Map<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, StockBalanceVO>>>> stockmap = scostcalcachemanager
-				.getCacheByTypeCode(SystemConst.StockBalance, costingtool);
+	public StockBalanceVO getStockbalanceVO(BanlanceQueryKeyVO sbqkVO,
+			ICostingTool costingtool) throws BusinessException {
+		Map<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, StockBalanceVO>>>> stockmap = this.scostcalcachemanager
+				.getCacheByTypeCode("stockbalance", costingtool);
 		String pk_stocksort = sbqkVO.getPk_stocksort();
 		String pk_assetsprop = sbqkVO.getPk_assetsprop();
 		String trade_date = sbqkVO.getTrade_date();
 		String key = sbqkVO.getKey();
 		if (sbqkVO.getPk_stocksort() == null) {
-			pk_stocksort = SystemConst.pk_defaultstocksort;
+			pk_stocksort = "0001SE00000000000001";
 			Logger.debug("getStockbalanceVO时: 库存组织为空,取默认库存组织!");
 		}
-		if (stockmap.get(trade_date).get(pk_assetsprop) == null) {
+		if (((ConcurrentHashMap) stockmap.get(trade_date)).get(pk_assetsprop) == null) {
 			return null;
 		}
-		if (stockmap.get(trade_date).get(pk_assetsprop).get(pk_stocksort) == null) {
+		if (((ConcurrentHashMap) ((ConcurrentHashMap) stockmap.get(trade_date))
+				.get(pk_assetsprop)).get(pk_stocksort) == null) {
 			return null;
 		}
-		SuperVO vo = stockmap.get(trade_date).get(pk_assetsprop).get(pk_stocksort).get(key);
+		SuperVO vo = (SuperVO) ((ConcurrentHashMap) ((ConcurrentHashMap) ((ConcurrentHashMap) stockmap
+				.get(trade_date)).get(pk_assetsprop)).get(pk_stocksort))
+				.get(key);
 		return (StockBalanceVO) VODeepCloneUtil.deepClone(vo);
 	}
 
-	/**
-	 * YangJie 2014-03-18
-	 * 
-	 * @return 根据主键获取库存vo 若查找不到库存 考虑默认为新增库存
-	 * @throws BusinessException
-	 */
-	public TransferBalanceVO getTransferbalanceVO(String key, ICostingTool costingtool) throws BusinessException {
-		Map<String, Map<String, TransferBalanceVO>> transfermap = scostcalcachemanager.getCacheByTypeCode(SystemConst.TransferBalance, costingtool);
+	public TransferBalanceVO getTransferbalanceVO(String key,
+			ICostingTool costingtool) throws BusinessException {
+		Map<String, Map<String, TransferBalanceVO>> transfermap = this.scostcalcachemanager
+				.getCacheByTypeCode("transferbalance", costingtool);
 		String trade_date = costingtool.getCurrdate();
-		if (transfermap.get(trade_date) != null)
-			return (TransferBalanceVO) VODeepCloneUtil.deepClone(transfermap.get(trade_date).get(key));
+		if (transfermap.get(trade_date) != null) {
+			return (TransferBalanceVO) VODeepCloneUtil
+					.deepClone((SuperVO) ((Map) transfermap.get(trade_date))
+							.get(key));
+		}
 		return null;
 	}
 
-	/**
-	 * YangJie 2014-03-18
-	 * 
-	 * @return 根据主键获取库存vo 若查找不到库存 考虑默认为新增库存
-	 * @throws BusinessException
-	 */
-	public TransferBalanceVO getTransferBalanceVOByVO(SuperVO tradevo, ICostingTool costingtool) throws BusinessException {
+	public TransferBalanceVO getTransferBalanceVOByVO(SuperVO tradevo,
+			ICostingTool costingtool) throws BusinessException {
 		try {
-			Map<String, Map<String, TransferBalanceVO>> transfermap = scostcalcachemanager.getCacheByTypeCode(SystemConst.TransferBalance,
-					costingtool);
+			Map<String, Map<String, TransferBalanceVO>> transfermap = this.scostcalcachemanager
+					.getCacheByTypeCode("transferbalance", costingtool);
 			String trade_date = costingtool.getCurrdate();
 			if (transfermap.get(trade_date) == null) {
-				transfermap.put(trade_date, new ConcurrentHashMap<String, TransferBalanceVO>());
+				transfermap.put(trade_date, new ConcurrentHashMap());
 			}
 			TransferBalanceVO vo = new TransferBalanceVO();
-			/**
-			 * hc_pk_group 可能没有 后续找人加 YangJie
-			 */
-			String hc_pk_group = (String) tradevo.getAttributeValue("hc_pk_group");
+
+			String hc_pk_group = (String) tradevo
+					.getAttributeValue("hc_pk_group");
 			String hc_pk_org = (String) tradevo.getAttributeValue("hc_pk_org");
-			String hc_pk_glorgbook = (String) tradevo.getAttributeValue("hc_pk_glorgbook");
+			String hc_pk_glorgbook = (String) tradevo
+					.getAttributeValue("hc_pk_glorgbook");
 			String pk_group = (String) tradevo.getAttributeValue("pk_group");
 			String pk_org = (String) tradevo.getAttributeValue("pk_org");
 			String pk_org_v = (String) tradevo.getAttributeValue("pk_org_v");
-			String pk_glorgbook = (String) tradevo.getAttributeValue("pk_glorgbook");
-			String[] keys = PubMethod.getInstance().getTransferBalanceKeys(hc_pk_group, hc_pk_org, hc_pk_glorgbook, pk_group, pk_org, pk_glorgbook);
+			String pk_glorgbook = (String) tradevo
+					.getAttributeValue("pk_glorgbook");
+			String[] keys = PubMethod.getInstance().getTransferBalanceKeys(
+					hc_pk_group, hc_pk_org, hc_pk_glorgbook, pk_group, pk_org,
+					pk_glorgbook);
 			vo.setPk_org(pk_org);
 			vo.setPk_group(pk_group);
-			vo.setPk_costplan(costingtool.getCostParaVO().getCostplanvo().getPk_costplan());
+			vo.setPk_costplan(costingtool.getCostParaVO().getCostplanvo()
+					.getPk_costplan());
 			vo.setPk_glorgbook(pk_glorgbook);
 			vo.setPk_org_v(pk_org_v);
-			vo.setPk_billtypegroup(costingtool.getCurrbilltypegroupvo().getPk_billtypegroup());
+			vo.setPk_billtypegroup(costingtool.getCurrbilltypegroupvo()
+					.getPk_billtypegroup());
 			for (String key : keys) {
 				vo.setAttributeValue(key, tradevo.getAttributeValue(key));
 			}
@@ -159,105 +139,83 @@ public class CostBalanceTool implements ICostBalanceTool{
 		} catch (Exception e) {
 			throw new BusinessException(e);
 		}
-
 	}
 
-	/**
-	 * YangJie 2014-04-18
-	 * 
-	 * @return 根据主键获取库存vo 若查找不到库存 考虑默认为新增库存
-	 * @throws BusinessException
-	 */
-	public FundBalanceVO getFundbalanceVO(String key, ICostingTool costingtool) throws BusinessException {
-		Map<String, Map<String, FundBalanceVO>> fundBalancemap = scostcalcachemanager.getCacheByTypeCode(SystemConst.FundBalance, costingtool);
+	public FundBalanceVO getFundbalanceVO(String key, ICostingTool costingtool)
+			throws BusinessException {
+		Map<String, Map<String, FundBalanceVO>> fundBalancemap = this.scostcalcachemanager
+				.getCacheByTypeCode("fundbalance", costingtool);
 		String trade_date = costingtool.getCurrdate();
-		if (fundBalancemap.get(trade_date) != null)
-			return (FundBalanceVO) VODeepCloneUtil.deepClone(fundBalancemap.get(trade_date).get(key));
+		if (fundBalancemap.get(trade_date) != null) {
+			return (FundBalanceVO) VODeepCloneUtil
+					.deepClone((SuperVO) ((Map) fundBalancemap.get(trade_date))
+							.get(key));
+		}
 		return null;
 	}
 
-	/**
-	 * YangJie 2014-04-18
-	 * 
-	 * @return 根据主键获取库存vo 若查找不到库存 考虑默认为新增库存
-	 * @throws BusinessException
-	 */
-	public FundBalanceVO getFundbalanceVOByVO(SuperVO tradevo, ICostingTool costingtool) {
-		String[] keys = costingtool.getCostParaVO().getCostplanvo().getFundsFieldArray();
+	public FundBalanceVO getFundbalanceVOByVO(SuperVO tradevo,
+			ICostingTool costingtool) {
+		String[] keys = costingtool.getCostParaVO().getCostplanvo()
+				.getFundsFieldArray();
 		FundBalanceVO vo = new FundBalanceVO();
 		vo.setStocks_sum(new UFDouble(0));
 		for (String key : keys) {
 			vo.setAttributeValue(key, tradevo.getAttributeValue(key));
 		}
-		/**
-		 * 新增资金必须要存资金账号
-		 * YangJie
-		 * 2014-07-01
-		 */
-		vo.setAttributeValue("pk_capaccount", tradevo.getAttributeValue("pk_capaccount"));
+		vo.setAttributeValue("pk_capaccount",
+				tradevo.getAttributeValue("pk_capaccount"));
 		return vo;
 	}
 
-	/**
-	 * YangJie 2014-03-18
-	 * 
-	 * @return 根据主键获取库存vo
-	 * @throws BusinessException
-	 */
-	public void updateStockbalanceVO(BanlanceQueryKeyVO sbqkVO, StockBalanceVO vo) throws BusinessException {
-		scostcalcachemanager.getCacheInstanceBytypeCode(SystemConst.StockBalance).updateCache(sbqkVO, vo);
+	public void updateStockbalanceVO(BanlanceQueryKeyVO sbqkVO,
+			StockBalanceVO vo) throws BusinessException {
+		this.scostcalcachemanager.getCacheInstanceBytypeCode("stockbalance")
+				.updateCache(sbqkVO, vo);
 	}
 
-	/**
-	 * YangJie 2014-03-18
-	 * 
-	 * @return 根据主键获取库存vo
-	 * @throws BusinessException
-	 */
-	public void updateTransferBalanceVO(BanlanceQueryKeyVO sbqkVO, TransferBalanceVO vo) throws BusinessException {
-		scostcalcachemanager.getCacheInstanceBytypeCode(SystemConst.TransferBalance).updateCache(sbqkVO, vo);
+	public void updateTransferBalanceVO(BanlanceQueryKeyVO sbqkVO,
+			TransferBalanceVO vo) throws BusinessException {
+		this.scostcalcachemanager.getCacheInstanceBytypeCode("transferbalance")
+				.updateCache(sbqkVO, vo);
 	}
 
-	/**
-	 * YangJie 2014-04-18
-	 * 
-	 * @return 根据主键获取库存vo
-	 * @throws BusinessException
-	 */
-	public void updateFundbalanceVO(BanlanceQueryKeyVO sbqkVO, FundBalanceVO vo) throws BusinessException {
-		scostcalcachemanager.getCacheInstanceBytypeCode(SystemConst.FundBalance).updateCache(sbqkVO, vo);
+	public void updateFundbalanceVO(BanlanceQueryKeyVO sbqkVO, FundBalanceVO vo)
+			throws BusinessException {
+		this.scostcalcachemanager.getCacheInstanceBytypeCode("fundbalance")
+				.updateCache(sbqkVO, vo);
 	}
 
-	/**
-	 * YangJie 2014-03-18
-	 * 
-	 * @return 根据主键获取库存vo
-	 * @throws BusinessException
-	 */
-	public StockBalanceVO getStockbalanceVOByVO(SuperVO tradevo, ICostingTool costingtool) throws BusinessException {
-		String[] manFieldV = costingtool.getCostParaVO().getCostplanvo().getCostFieldArray();
-		String pk_assetsprop = (String) tradevo.getAttributeValue("pk_assetsprop");// 资产属性[转入]
-		String pk_stocksort = (String) tradevo.getAttributeValue("pk_stocksort");// 库存组织[转入]
+	public StockBalanceVO getStockbalanceVOByVO(SuperVO tradevo,
+			ICostingTool costingtool) throws BusinessException {
+		String[] manFieldV = costingtool.getCostParaVO().getCostplanvo()
+				.getCostFieldArray();
+		String pk_assetsprop = (String) tradevo
+				.getAttributeValue("pk_assetsprop");
+		String pk_stocksort = (String) tradevo
+				.getAttributeValue("pk_stocksort");
 		StockBalanceVO vo = new StockBalanceVO();
-		vo.setPk_costplan(costingtool.getCostParaVO().getCostplanvo().getPk_costplan());
+		vo.setPk_costplan(costingtool.getCostParaVO().getCostplanvo()
+				.getPk_costplan());
 		if ("HV3F".equals(tradevo.getAttributeValue("billtypecode"))) {
 			for (String field : manFieldV) {
-				vo.setAttributeValue(field, tradevo.getAttributeValue("hr_" + field));
+				vo.setAttributeValue(field,
+						tradevo.getAttributeValue("hr_" + field));
 			}
-			//证券档案赋值
-			vo.setAttributeValue("pk_securities", tradevo.getAttributeValue("pk_securities"));
 		} else if ("HV3G".equals(tradevo.getAttributeValue("billtypecode"))) {
 			for (String field : manFieldV) {
-				vo.setAttributeValue(field, tradevo.getAttributeValue("hr_" + field));
+				vo.setAttributeValue(field,
+						tradevo.getAttributeValue("hr_" + field));
 			}
-			//证券档案赋值
-			vo.setAttributeValue("pk_securities", tradevo.getAttributeValue("pk_securities"));
+			vo.setAttributeValue("pk_securities",
+					tradevo.getAttributeValue("pk_securities"));
 		} else if ("HV9B".equals(tradevo.getAttributeValue("billtypecode"))) {
 			for (String field : manFieldV) {
-				vo.setAttributeValue(field, tradevo.getAttributeValue("hr_" + field));
+				vo.setAttributeValue(field,
+						tradevo.getAttributeValue("hr_" + field));
 			}
-			//证券档案赋值
-			vo.setAttributeValue("pk_securities", tradevo.getAttributeValue("pk_securities"));
+			vo.setAttributeValue("pk_securities",
+					tradevo.getAttributeValue("pk_securities"));
 		} else {
 			for (String field : manFieldV) {
 				vo.setAttributeValue(field, tradevo.getAttributeValue(field));
@@ -270,164 +228,305 @@ public class CostBalanceTool implements ICostBalanceTool{
 		vo.setTrade_date(new UFDate(costingtool.getCurrdate()));
 		vo.setStocks_sum(new UFDouble(0));
 		vo.setStocks_num(new UFDouble(0));
-		vo.setState(0);
+		vo.setState(Integer.valueOf(0));
 		vo.getPk_assetsprop();
 		String trade_date = costingtool.getCurrdate();
-		String pk_billtypegroup = costingtool.getCurrbilltypegroupvo().getPk_billtypegroup();
+		String pk_billtypegroup = costingtool.getCurrbilltypegroupvo()
+				.getPk_billtypegroup();
 		String key = VOUtil.getCombinesKey(vo, manFieldV);
 		key = pk_billtypegroup + key;
 		vo.setPk_billtypegroup(pk_billtypegroup);
 		pk_assetsprop = vo.getPk_assetsprop();
 		pk_stocksort = vo.getPk_stocksort();
-		// 构造证券转换转入库存jinhd
-		// if (tradevo instanceof TransformtradeVO) {
-		// String[] keys = new String[manFieldV.length - 1];
-		// for (int i = 0; i < keys.length; i++) {
-		// keys[i] = manFieldV[i];
-		// }
-		// key = new StockTransform().getCombinesKey((TransformtradeVO) tradevo,
-		// keys, true);
-		// key = key + ((TransformtradeVO) tradevo).getPk_securities2();
-		// String pk2 = ((TransformtradeVO) tradevo).getPk_securities2();
-		// vo.setPk_securities(pk2);
-		// }
-		// // jinhd end
-		Map<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, StockBalanceVO>>>> stockmap = scostcalcachemanager
-				.getCacheByTypeCode(SystemConst.StockBalance, costingtool);
-		if (stockmap.get(trade_date).get(pk_assetsprop) == null) {
-			stockmap.get(trade_date).put(pk_assetsprop, new ConcurrentHashMap<String, ConcurrentHashMap<String, StockBalanceVO>>());
-		}
-		if (stockmap.get(trade_date).get(pk_assetsprop).get(pk_stocksort) == null) {
-			stockmap.get(trade_date).get(pk_assetsprop).put(pk_stocksort, new ConcurrentHashMap<String, StockBalanceVO>());
-		}
-		//update by lihaibo 注释掉--影响库存改动
-//		stockmap.get(trade_date).get(pk_assetsprop).get(pk_stocksort).put(key, vo);
-		return vo;
 
+		Object stockmap = this.scostcalcachemanager.getCacheByTypeCode(
+				"stockbalance", costingtool);
+		if (((ConcurrentHashMap) ((Map) stockmap).get(trade_date))
+				.get(pk_assetsprop) == null) {
+			((ConcurrentHashMap) ((Map) stockmap).get(trade_date)).put(
+					pk_assetsprop, new ConcurrentHashMap());
+		}
+		if (((ConcurrentHashMap) ((ConcurrentHashMap) ((Map) stockmap)
+				.get(trade_date)).get(pk_assetsprop)).get(pk_stocksort) == null) {
+			((ConcurrentHashMap) ((ConcurrentHashMap) ((Map) stockmap)
+					.get(trade_date)).get(pk_assetsprop)).put(pk_stocksort,
+					new ConcurrentHashMap());
+		}
+		((ConcurrentHashMap) ((ConcurrentHashMap) ((ConcurrentHashMap) ((Map) stockmap)
+				.get(trade_date)).get(pk_assetsprop)).get(pk_stocksort)).put(
+				key, vo);
+		return vo;
+	}
+
+	public InventoryInfoVO getInventoryInfoVOByVO(SuperVO tradevo,
+			ICostingTool costingtool) throws BusinessException {
+		String[] manFieldV = costingtool.getCostParaVO().getCostplanvo()
+				.getFundCostFieldArray();
+		String pk_assetsprop = (String) tradevo
+				.getAttributeValue("pk_assetsprop");
+		String pk_stocksort = (String) tradevo
+				.getAttributeValue("pk_stocksort");
+		InventoryInfoVO vo = new InventoryInfoVO();
+		vo.setPk_costplan(costingtool.getCostParaVO().getCostplanvo()
+				.getPk_costplan());
+		for (String field : manFieldV) {
+			vo.setAttributeValue(field, tradevo.getAttributeValue(field));
+		}
+		vo.setTranstypecode((String) tradevo.getAttributeValue("transtypecode"));
+
+		vo.setPk_transtype((String) tradevo.getAttributeValue("pk_transtype"));
+
+		vo.setBilltypecode((String) tradevo.getAttributeValue("billtypecode"));
+
+		vo.setPk_billtype((String) tradevo.getAttributeValue("pk_billtype"));
+
+		vo.setStartdate(((UFDate) tradevo.getAttributeValue("trade_date"))
+				.asBegin());
+
+		vo.setEnddate(((UFDate) tradevo.getAttributeValue("enddate")).asBegin());
+		if (vo.getTranstypecode().equals("HV8E-0xx-01")) {
+			Integer timelimit = Integer.valueOf(UFDate.getDaysBetween(
+					(UFDate) tradevo.getAttributeValue("trade_date"),
+					(UFDate) tradevo.getAttributeValue("enddate")) + 1);
+
+			vo.setTimelimit(timelimit);
+		} else {
+			vo.setTimelimit((Integer) tradevo.getAttributeValue("timelimit"));
+		}
+		vo.setPaytype((Integer) tradevo.getAttributeValue("paytype"));
+
+		vo.setExecutefacerate((UFDouble) tradevo
+				.getAttributeValue("contractrate"));
+
+		vo.setFundtype((Integer) tradevo.getAttributeValue("fundtype"));
+
+		vo.setProductorcounterparty((String) tradevo
+				.getAttributeValue("productorcounterparty"));
+
+		vo.setManagedept((String) tradevo.getAttributeValue("managedept"));
+
+		vo.setRealrate((UFDouble) tradevo.getAttributeValue("realrate"));
+
+		vo.setPk_org_v((String) tradevo.getAttributeValue("pk_org_v"));
+		vo.setPk_glorgbook((String) tradevo.getAttributeValue("pk_glorgbook"));
+		vo.setTrade_date(new UFDate(costingtool.getCurrdate()));
+		vo.setStocks_sum(new UFDouble(0));
+		vo.setStocks_num(new UFDouble(0));
+		vo.setState(Integer.valueOf(0));
+		vo.getPk_assetsprop();
+		String trade_date = costingtool.getCurrdate();
+		String pk_billtypegroup = costingtool.getCurrbilltypegroupvo()
+				.getPk_billtypegroup();
+		String key = VOUtil.getCombinesKey(vo, manFieldV);
+		key = pk_billtypegroup + key;
+		vo.setPk_billtypegroup(pk_billtypegroup);
+		pk_assetsprop = vo.getPk_assetsprop();
+		pk_stocksort = vo.getPk_stocksort();
+		Object stockmap = this.scostcalcachemanager.getCacheByTypeCode(
+				"inventoryinfo", costingtool);
+		if(stockmap != null){
+			if (((ConcurrentHashMap) ((Map) stockmap).get(trade_date))
+					.get(pk_assetsprop) == null) {
+				((ConcurrentHashMap) ((Map) stockmap).get(trade_date)).put(
+						pk_assetsprop, new ConcurrentHashMap());
+			}
+			if (((ConcurrentHashMap) ((ConcurrentHashMap) ((Map) stockmap)
+					.get(trade_date)).get(pk_assetsprop)).get(pk_stocksort) == null) {
+				((ConcurrentHashMap) ((ConcurrentHashMap) ((Map) stockmap)
+						.get(trade_date)).get(pk_assetsprop)).put(pk_stocksort,
+						new ConcurrentHashMap());
+			}
+			((ConcurrentHashMap) ((ConcurrentHashMap) ((ConcurrentHashMap) ((Map) stockmap)
+					.get(trade_date)).get(pk_assetsprop)).get(pk_stocksort)).put(
+					key, vo);
+		}
+		return vo;
 	}
 
 	private void initAllBalance() {
-
 	}
 
-	/**
-	 * 清除所有缓存
-	 * 
-	 * @date 2012-9-10 下午4:00:03
-	 */
 	public void clearAllCache() {
-
 	}
 
-	/**
-	 * 更新所有余额表
-	 * 
-	 * @param costplanvo
-	 * @throws Exception
-	 */
 	public void updateAll(String trade_date) throws Exception {
 		updateStockBalancecache(trade_date);
 		updateFundBalancecache(trade_date);
 		updateTransferBalancecache(trade_date);
+		updateInventoryInfocache(trade_date);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void updateStockBalancecache(String trade_date) throws Exception {
-
-		Map<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, StockBalanceVO>>>> newmap = scostcalcachemanager
-				.getCacheInstanceBytypeCode(SystemConst.StockBalance).getCache(null);
-
+		Map<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, StockBalanceVO>>>> newmap = this.scostcalcachemanager
+				.getCacheInstanceBytypeCode("stockbalance").getCache(null);
 		if (newmap.get(trade_date) == null) {
 			return;
 		}
-		Set<String> keys = newmap.get(trade_date).keySet();
+		Set<String> keys = ((ConcurrentHashMap) newmap.get(trade_date))
+				.keySet();
 		Iterator<String> it = keys.iterator();
 		Collection<ConcurrentHashMap<String, StockBalanceVO>> vosmap = null;
 		Collection<StockBalanceVO> vos = null;
-		List<StockBalanceVO> updatevos = new ArrayList<StockBalanceVO>();
-		while (it.hasNext()) {
-			vosmap = newmap.get(trade_date).get(it.next()).values();
-			for (Map<String, StockBalanceVO> map : vosmap) {
-				vos = map.values();
-				if (vos == null || vos.isEmpty()) {
-					continue;
-				}
+		List<StockBalanceVO> updatevos = new ArrayList();
+		Iterator localIterator1;
+		for (; it.hasNext(); localIterator1.hasNext()) {
+			vosmap = ((ConcurrentHashMap) ((ConcurrentHashMap) newmap
+					.get(trade_date)).get(it.next())).values();
+			localIterator1 = vosmap.iterator();
+			if (vosmap == null || vosmap.isEmpty()) {
+				continue;
+			}
+			Map<String, StockBalanceVO> map = (Map) localIterator1.next();
+			vos = map.values();
+			if ((vos != null) && (!vos.isEmpty())) {
 				for (StockBalanceVO balancevo : vos) {
-					String pk_sec = balancevo.getPk_securities();
-					if (pk_sec.equals("1001A110000000003Q7S")) {
-						int i = 0;
-					}
-					if (balancevo.getStocks_num() == null || balancevo.getStocks_num().doubleValue() < 0 || balancevo.getStocks_sum() == null
-							|| balancevo.getStocks_sum().doubleValue() < 0) {
+					if ((balancevo.getStocks_num() == null)
+							|| (balancevo.getStocks_num().doubleValue() < 0.0D)
+							|| (balancevo.getStocks_sum() == null)
+							|| (balancevo.getStocks_sum().doubleValue() < 0.0D)) {
 						return;
 					}
-					/**
-					 * 只插入新增的
-					 */
 					if (balancevo.getIsnew()) {
 						updatevos.add(balancevo);
 						balancevo.setTrade_date(new UFDate(trade_date));
-						/**
-						 * 使用完毕后 还原 防止下一日仍然插入 YangJie 2014-04-15
-						 */
+
 						balancevo.setIsnew(false);
 					}
 				}
-
 			}
 		}
-		getBaseDao().insertVOArray(updatevos.toArray(new StockBalanceVO[updatevos.size()]));
-
+		getBaseDao().insertVOArray(
+				(SuperVO[]) updatevos.toArray(new StockBalanceVO[updatevos
+						.size()]));
 	}
 
 	private void updateFundBalancecache(String trade_date) throws Exception {
-		Map<String, Map<String, FundBalanceVO>> newmap = scostcalcachemanager.getCacheInstanceBytypeCode(SystemConst.FundBalance).getCache(null);
+		Map<String, Map<String, FundBalanceVO>> newmap = this.scostcalcachemanager
+				.getCacheInstanceBytypeCode("fundbalance").getCache(null);
 		if (newmap.get(trade_date) == null) {
 			return;
 		}
-		Set<String> keys = newmap.get(trade_date).keySet();
+		Set<String> keys = ((Map) newmap.get(trade_date)).keySet();
 		Iterator<String> it = keys.iterator();
-		List<FundBalanceVO> updatevos = new ArrayList<FundBalanceVO>();
+		List<FundBalanceVO> updatevos = new ArrayList();
 		while (it.hasNext()) {
-			FundBalanceVO vo = newmap.get(trade_date).get(it.next());
-			/**
-			 * 只插入新增的
-			 */
+			FundBalanceVO vo = (FundBalanceVO) ((Map) newmap.get(trade_date))
+					.get(it.next());
 			if (vo.getIsnew()) {
 				updatevos.add(vo);
 				vo.setIsnew(false);
 			}
 		}
-		getBaseDao().insertVOArray(updatevos.toArray(new FundBalanceVO[updatevos.size()]));
+		getBaseDao().insertVOArray(
+				(SuperVO[]) updatevos.toArray(new FundBalanceVO[updatevos
+						.size()]));
 	}
 
 	private void updateTransferBalancecache(String trade_date) throws Exception {
-		Map<String, Map<String, TransferBalanceVO>> newmap = scostcalcachemanager.getCacheInstanceBytypeCode(SystemConst.TransferBalance).getCache(
-				null);
+		Map<String, Map<String, TransferBalanceVO>> newmap = this.scostcalcachemanager
+				.getCacheInstanceBytypeCode("transferbalance").getCache(null);
 		if (newmap.get(trade_date) == null) {
 			return;
 		}
-		Set<String> keys = newmap.get(trade_date).keySet();
+		Set<String> keys = ((Map) newmap.get(trade_date)).keySet();
 		Iterator<String> it = keys.iterator();
-		List<TransferBalanceVO> updatevos = new ArrayList<TransferBalanceVO>();
+		List<TransferBalanceVO> updatevos = new ArrayList();
 		while (it.hasNext()) {
-			TransferBalanceVO vo = newmap.get(trade_date).get(it.next());
-			/**
-			 * 只插入新增的
-			 */
+			TransferBalanceVO vo = (TransferBalanceVO) ((Map) newmap
+					.get(trade_date)).get(it.next());
 			if (vo.getIsnew()) {
 				updatevos.add(vo);
 				vo.setIsnew(false);
 			}
 		}
-		getBaseDao().insertVOArray(updatevos.toArray(new TransferBalanceVO[updatevos.size()]));
-
+		getBaseDao().insertVOArray(
+				(SuperVO[]) updatevos.toArray(new TransferBalanceVO[updatevos
+						.size()]));
 	}
 
 	private BaseDAO getBaseDao() {
-		if (dao == null) {
-			dao = new BaseDAO();
+		if (this.dao == null) {
+			this.dao = new BaseDAO();
 		}
-		return dao;
+		return this.dao;
 	}
 
+	public InventoryInfoVO getInventoryInfoVO(BanlanceQueryKeyVO sbqkVO,
+			ICostingTool costingtool) throws BusinessException {
+		Map<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, InventoryInfoVO>>>> stockmap = this.scostcalcachemanager
+				.getCacheByTypeCode("inventoryinfo", costingtool);
+		String pk_stocksort = sbqkVO.getPk_stocksort();
+		String pk_assetsprop = sbqkVO.getPk_assetsprop();
+		String trade_date = sbqkVO.getTrade_date();
+		String key = sbqkVO.getKey();
+		if (sbqkVO.getPk_stocksort() == null) {
+			pk_stocksort = "0001SE00000000000001";
+			Logger.debug("getInventoryInfoVO时: 库存组织为空,取默认库存组织!");
+		}
+		if(stockmap==null){
+			return null;
+		}
+		if (((ConcurrentHashMap) stockmap.get(trade_date)).get(pk_assetsprop) == null) {
+			return null;
+		}
+		if (((ConcurrentHashMap) ((ConcurrentHashMap) stockmap.get(trade_date))
+				.get(pk_assetsprop)).get(pk_stocksort) == null) {
+			return null;
+		}
+		SuperVO vo = (SuperVO) ((ConcurrentHashMap) ((ConcurrentHashMap) ((ConcurrentHashMap) stockmap
+				.get(trade_date)).get(pk_assetsprop)).get(pk_stocksort))
+				.get(key);
+		return (InventoryInfoVO) VODeepCloneUtil.deepClone(vo);
+	}
+
+	public void updateInventoryInfoVO(BanlanceQueryKeyVO sbqkVO,
+			InventoryInfoVO vo) throws BusinessException {
+		this.scostcalcachemanager.getCacheInstanceBytypeCode("inventoryinfo")
+				.updateCache(sbqkVO, vo);
+	}
+
+	private void updateInventoryInfocache(String trade_date) throws Exception {
+		Map<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, InventoryInfoVO>>>> newmap = this.scostcalcachemanager
+				.getCacheInstanceBytypeCode("inventoryinfo").getCache(null);
+		if (newmap.get(trade_date) == null) {
+			return;
+		}
+		Set<String> keys = ((ConcurrentHashMap) newmap.get(trade_date))
+				.keySet();
+		Iterator<String> it = keys.iterator();
+		Collection<ConcurrentHashMap<String, InventoryInfoVO>> vosmap = null;
+		Collection<InventoryInfoVO> vos = null;
+		List<InventoryInfoVO> updatevos = new ArrayList();
+		Iterator localIterator1;
+		for (; it.hasNext(); localIterator1.hasNext()) {
+			vosmap = ((ConcurrentHashMap) ((ConcurrentHashMap) newmap
+					.get(trade_date)).get(it.next())).values();
+			localIterator1 = vosmap.iterator();
+			if (vosmap == null || vosmap.isEmpty()) {
+				continue;
+			}
+			Map<String, InventoryInfoVO> map = (Map) localIterator1.next();
+			vos = map.values();
+			if ((vos != null) && (!vos.isEmpty())) {
+				for (InventoryInfoVO inventoryInfoVO : vos) {
+					if ((inventoryInfoVO.getStocks_num() == null)
+							|| (inventoryInfoVO.getStocks_num().doubleValue() < 0.0D)
+							|| (inventoryInfoVO.getStocks_sum() == null)
+							|| (inventoryInfoVO.getStocks_sum().doubleValue() < 0.0D)) {
+						return;
+					}
+					if (inventoryInfoVO.getIsnew()) {
+						updatevos.add(inventoryInfoVO);
+						inventoryInfoVO.setTrade_date(new UFDate(trade_date));
+
+						inventoryInfoVO.setIsnew(false);
+					}
+				}
+			}
+		}
+		getBaseDao().insertVOArray(
+				(SuperVO[]) updatevos.toArray(new InventoryInfoVO[updatevos
+						.size()]));
+	}
 }

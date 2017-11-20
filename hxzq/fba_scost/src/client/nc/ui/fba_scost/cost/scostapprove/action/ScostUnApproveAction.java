@@ -46,6 +46,7 @@ public class ScostUnApproveAction extends NCAction {
 
 	}
 
+	@SuppressWarnings("restriction")
 	@Override
 	public void doAction(ActionEvent e) throws Exception {
 		int rowno = getEditor().getBillCardPanel().getRowCount();

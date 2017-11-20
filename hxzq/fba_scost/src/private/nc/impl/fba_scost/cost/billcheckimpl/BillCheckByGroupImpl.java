@@ -21,6 +21,7 @@ import nc.itf.fba_scost.cost.billcheck.ISpecialBusiness;
 import nc.itf.fba_scost.cost.pub.IBillCheckPlugin;
 import nc.itf.fba_scost.cost.pub.TradeDataTool;
 import nc.itf.fba_scost.cost.tool.CheckClassTool;
+import nc.vo.fba_fund.inventoryinfo.InventoryInfoVO;
 import nc.vo.fba_scost.cost.billtypegroup.BilltypeGroupVO;
 import nc.vo.fba_scost.cost.checkpara.CheckParaVO;
 import nc.vo.fba_scost.cost.costplan.CostPlanVO;
@@ -164,7 +165,8 @@ public class BillCheckByGroupImpl implements IBillCheckByGroup {
 				PrivateMethod.getInstance().getBaseDAO().deleteByClause(FundBalanceVO.class, sqlwhere);
 				// 删除券源划转余额表
 				PrivateMethod.getInstance().getBaseDAO().deleteByClause(TransferBalanceVO.class, sqlwhere);
-
+				//删除筹资管理库存表 --zq
+				PrivateMethod.getInstance().getBaseDAO().deleteByClause(InventoryInfoVO.class, sqlwhere);
 				// basedao.deleteByClause(TotalwinVO.class, sqlwhere);// 删除累计收益表
 			}
 		} catch (Exception e) {
