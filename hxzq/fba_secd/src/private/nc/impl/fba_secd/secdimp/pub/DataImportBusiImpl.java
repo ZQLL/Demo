@@ -53,6 +53,7 @@ public class DataImportBusiImpl implements IDataImportBusiService {
 		}
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public String importToDBHead() throws BusinessException {
 		DataImportDBHdl dbHdl = new DataImportDBHdl();
 		Map unNormalMetaDataCache = DataImportCacheHdl.getInstance().get_unNormal_MetaData_Cache();

@@ -1,11 +1,7 @@
 package nc.impl.fba_secd.secdimp.pub;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -13,14 +9,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import org.apache.taglibs.standard.tag.el.fmt.ParseDateTag;
-
 import nc.bs.dao.BaseDAO;
 import nc.bs.framework.common.NCLocator;
 import nc.bs.pf.pub.PfDataCache;
 import nc.impl.pubapp.pattern.data.bill.BillInsert;
+import nc.impl.pubapp.pattern.data.bill.BillQuery;
 import nc.impl.pubapp.pattern.data.bill.BillUpdate;
 import nc.itf.fba_secd.secdimp.pub.IDataImportBusiService;
+import nc.jdbc.framework.processor.BeanListProcessor;
+import nc.jdbc.framework.processor.BeanProcessor;
 import nc.jdbc.framework.processor.VectorProcessor;
 import nc.md.MDBaseQueryFacade;
 import nc.md.model.IComponent;
@@ -47,6 +44,7 @@ import nc.vo.pub.lang.UFBoolean;
 import nc.vo.pub.lang.UFDate;
 import nc.vo.pubapp.AppContext;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
+import nc.vo.pubapp.pattern.model.entity.bill.IBill;
 import nc.vo.pubapp.pattern.tool.performance.DeepCloneTool;
 import nc.vo.tmpub.ia.InterestVO;
 
@@ -144,6 +142,7 @@ public class DataImportDBHdl {
 		return saveVOS;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public List constructImpVOHead(Map successDataLst, Map unNormalMetaDataCache)
 			throws BusinessException {
 		List saveVOS = new ArrayList();
@@ -224,6 +223,7 @@ public class DataImportDBHdl {
 		return saveVOS;
 	}
 
+	@SuppressWarnings("rawtypes")
 	private boolean genBillNo(Map unNormalMetaDataCache) {
 		Map fldMap = (Map) unNormalMetaDataCache.get(SystemConst.HEAD);
 		Set keySet = fldMap.keySet();
@@ -766,7 +766,7 @@ public class DataImportDBHdl {
 	 * @param unNormalMetaDataCache
 	 * @throws BusinessException
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes", "unchecked", "unused" })
 	public String importToDB(List dataLst, Map unNormalMetaDataCache)
 			throws BusinessException {
 		Integer successNum = 0;
@@ -816,28 +816,32 @@ public class DataImportDBHdl {
 						CircularlyAccessibleValueObject pvo = vos[i]
 								.getParentVO();
 						int m = cvo.length;
-						String sql1 = "select pk_interest from sim_interest where nvl(dr,0)=0 and pk_securities = '"
-								+ code + "'";
+						String sd = pvo.getAttributeValue("startdate")
+								.toString();
+						String ed = pvo.getAttributeValue("vdef4")
+								.toString();
+						UFDate Begdate = new UFDate(pvo.getAttributeValue("issuedate").toString());//债券到期日
+						UFDate Enddate = new UFDate(pvo.getAttributeValue("enddate").toString());//债券到期日
+						UFDate startd = new UFDate(sd);
+						UFDate endd = new UFDate(ed);
+						String sql1 = "select pk_interest,enddate from sim_interest where nvl(dr,0)=0 and pk_securities = '"
+								+ code + "' and issuedate like '" + Begdate.toString().substring(0, 10) + "%'";
 						Vector vec1 = (Vector) dao.executeQuery(sql1,
 								new VectorProcessor());
-						Date sdate = null;
-						Date edate = null;
+//						Date sdate = null;
+//						Date edate = null;
 						int daysnum = 0;
 						// 取出利率设置表的pk
 						if (vec1 != null && vec1.size() == 1) {
 							String pk_interest = ((Vector) vec1.get(0)).get(0)
+									.toString();
+							String end_date =  ((Vector) vec1.get(0)).get(1)
 									.toString();
 							for (int j = 0; j < m; j++) {
 								String paypercent = cvo[j].getAttributeValue(
 										"paypercent").toString();
 								String yearrate = cvo[j].getAttributeValue(
 										"year_rate").toString();
-								String sd = pvo.getAttributeValue("startdate")
-										.toString();
-								String ed = pvo.getAttributeValue("enddate")
-										.toString();
-								UFDate startd = new UFDate(sd);
-								UFDate endd = new UFDate(ed);
 //								SimpleDateFormat sdf = new SimpleDateFormat(
 //										"yyyy-MM-dd");
 //
@@ -869,6 +873,56 @@ public class DataImportDBHdl {
 								} else {
 									daysnum = 365;
 								}
+////								添加五年制变成三年制的券，删除冗余信息；								
+								if(!new UFDate(Enddate.toString()).equals(new UFDate(end_date.toString()))){
+									//修改主表的信息
+									String periodsum = pvo.getAttributeValue("periodsum").toString();//计息总周期数
+									String ratetype = pvo.getAttributeValue("ratetype").toString();//利率种类
+									String periodtype = pvo.getAttributeValue("periodtype").toString();//付息周期
+									String paytype = pvo.getAttributeValue("paytype").toString();//付息方式
+									String profittype = pvo.getAttributeValue("profittype").toString();//收益方式
+									String sqlin = "update sim_interest set yearrate = '"
+											+ yearrate
+											+ "' , enddate ='"
+											+ Enddate
+											+ "' ,periodsum ='"
+											+ periodsum
+											+ "' ,ratetype ='"
+											+ ratetype
+											+ "' ,periodtype ='"
+											+ periodtype
+											+ "' ,paytype ='"
+											+ paytype
+											+ "' ,profittype ='"
+											+ profittype
+											+ "' where nvl(dr,0) = 0 and pk_interest ='"
+											+ pk_interest
+											+ "' and issuedate ='"
+											+ Begdate.toString() + "'";
+									dao.executeUpdate(sqlin);
+									
+									//查出多余信息条数
+									String sqlmore = "select count(*) from sim_rateperiod " +
+											"where nvl(dr,0)=0 " +
+											"and pk_interest ='"
+											+ pk_interest
+											+ "' and end_day > '"
+											+ Enddate.toString().substring(0,10) + " 23:59:59'";
+									Vector vec =  (Vector) dao.executeQuery(sqlmore, new VectorProcessor());
+									int more = (Integer) ((Vector)vec.get(0)).get(0);
+									
+									//删除多余的信息
+									String sqlout = "update sim_rateperiod set dr=1 " +
+											"where nvl(dr,0)=0 " +
+											"and pk_interest ='"
+											+ pk_interest
+											+ "' and end_day > '"
+											+ Enddate.toString().substring(0,10) + " 23:59:59'";
+									dao.executeUpdate(sqlout);
+									
+									//删除的数据条数当作修改数据条数处理
+									updateNum += more; 
+								}
 								
 								String sql2 = "select start_day from SIM_RATEPERIOD where nvl(dr,0)=0 and pk_interest = '"
 										+ pk_interest + "'";
@@ -889,7 +943,7 @@ public class DataImportDBHdl {
 											+ yearrate
 											+ "',end_day ='"
 											+ ed
-											+ "' where start_day like '%"
+											+ "' where nvl(dr,0)=0 and start_day like '%"
 											+ sd.substring(0, 10)
 											+ "%' and pk_interest = '"
 											+ pk_interest + "'";
@@ -909,12 +963,6 @@ public class DataImportDBHdl {
 						} else {
 							AbstractBill[] vos1 = new AbstractBill[1];
 							for (int j = 0; j < vos[i].getAllChildrenVO().length; j++) {
-								String sd = pvo.getAttributeValue("startdate")
-										.toString();
-								String ed = pvo.getAttributeValue("enddate")
-										.toString();
-								UFDate startd = new UFDate(sd);
-								UFDate endd = new UFDate(ed);
 //								SimpleDateFormat sdf = new SimpleDateFormat(
 //										"yyyy-MM-dd");
 //
@@ -950,8 +998,7 @@ public class DataImportDBHdl {
 										"days_num", daysnum);
 							}
 							vos1[0] = vos[i];
-							nc.vo.pubapp.pattern.model.entity.bill.IBill[] bills = new BillInsert()
-									.insert(vos1);
+							new BillInsert().insert(vos1);
 							successNum++;
 						}
 					}
@@ -1062,6 +1109,7 @@ public class DataImportDBHdl {
 				+ "条数据，请到对应节点查询！";
 	}
 
+	@SuppressWarnings("rawtypes")
 	private boolean CheckReapet(String startday, Vector vec1, String endday,
 			Vector vec2) {
 		boolean b = false;
@@ -1122,6 +1170,7 @@ public class DataImportDBHdl {
 		return rMap;
 	}
 
+	@SuppressWarnings("deprecation")
 	private Map<String, List<SuperVO>> getUpdateLstByImpMode(SuperVO[] vos,
 			ImportProjVO projvo, String[] repeatFld, String[] updateFld)
 			throws BusinessException {
@@ -1179,6 +1228,7 @@ public class DataImportDBHdl {
 
 	}
 
+	@SuppressWarnings("unused")
 	private void contractUpdateLst(List<SuperVO> updateLst, SuperVO vo,
 			SuperVO dataBaseVO, String[] updateFld) {
 		if (updateFld != null && updateFld.length > 0) {
@@ -1202,6 +1252,7 @@ public class DataImportDBHdl {
 	 * @param compareKeyMap
 	 * @param fieldArr
 	 */
+	@SuppressWarnings("unused")
 	private void initCompareKeyMap(SuperVO[] dataBaseVOs,
 			Map<String, SuperVO> compareKeyMap, String[] fieldArr) {
 		int voSize = dataBaseVOs.length;
@@ -1266,6 +1317,7 @@ public class DataImportDBHdl {
 		return retMap;
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void initPendingMap(Map<String, String> pendingMap)
 			throws BusinessException {
 		StringBuffer sqlBuf = new StringBuffer();
@@ -1301,6 +1353,7 @@ public class DataImportDBHdl {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void savePendingBill(List<PendingBillVO> pendingLst)
 			throws BusinessException {
 		/**
