@@ -114,8 +114,8 @@ public class Accrual_SecInvestDailyVO extends SuperVO {
 	private String sclassifyname = null;
 
 	private String propertyhistoryname = null;
-	
-	//add by lihaibo 2017-05-08
+
+	// add by lihaibo 2017-05-08
 	private UFDouble first_marketSum = new UFDouble(0);// ÆÚ³õÊÐÖµ
 
 	public UFDouble getFirst_marketSum() {
@@ -543,15 +543,18 @@ public class Accrual_SecInvestDailyVO extends SuperVO {
 	}
 
 	@Override
+	
 	public String getPKFieldName() {
 		return null;
 	}
 
+	
 	@Override
 	public String getParentPKFieldName() {
 		return null;
 	}
 
+	
 	@Override
 	public String getTableName() {
 		return null;

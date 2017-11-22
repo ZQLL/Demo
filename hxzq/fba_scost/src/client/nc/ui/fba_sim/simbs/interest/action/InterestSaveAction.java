@@ -1,15 +1,13 @@
 package nc.ui.fba_sim.simbs.interest.action;
 
 import java.awt.event.ActionEvent;
+
 import nc.bs.framework.common.NCLocator;
 import nc.itf.uap.IUAPQueryBS;
-import nc.ui.pub.bill.BillCardPanel;
 import nc.ui.pub.bill.BillItem;
 import nc.ui.pubapp.uif2app.actions.SaveAction;
 import nc.ui.pubapp.uif2app.view.BillForm;
 import nc.ui.uif2.UIState;
-import nc.ui.uif2.editor.IEditor;
-import nc.ui.uif2.model.AbstractAppModel;
 import nc.vo.fba_sim.simbs.interest.AggInterest;
 import nc.vo.fba_sim.simbs.interest.Interest;
 import nc.vo.fba_sim.simbs.interest.InterestControl;
@@ -39,8 +37,7 @@ public class InterestSaveAction extends SaveAction {
 		if (newObj.getPk_interest() == null) {
 			return true;
 		}
-		IUAPQueryBS queryBS = (IUAPQueryBS) NCLocator.getInstance().lookup(
-				IUAPQueryBS.class);
+		IUAPQueryBS queryBS = NCLocator.getInstance().lookup(IUAPQueryBS.class);
 		Interest oldObj = (Interest) queryBS.retrieveByPK(Interest.class,
 				newObj.getPk_interest());
 		if (oldObj == null) {

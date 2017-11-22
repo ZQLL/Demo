@@ -1,8 +1,8 @@
 /*** Eclipse Class Decompiler plugin, copyright (c) 2012 Chao Chen (cnfree2000@hotmail.com) ***/
 package nc.bs.fba_scost.cost.interest.pub;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
 import nc.bs.uif2.validation.IValidationService;
 import nc.bs.uif2.validation.ValidationException;
 
@@ -22,6 +22,7 @@ public class UtilsZqjdCompositeValidation implements IValidationService {
 		return this.validators;
 	}
 
+	@Override
 	public void validate(Object obj) throws ValidationException {
 		for (IValidationService service : this.validators)
 			service.validate(obj);

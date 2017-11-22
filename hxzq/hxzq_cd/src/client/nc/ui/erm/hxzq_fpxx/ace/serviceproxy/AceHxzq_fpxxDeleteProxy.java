@@ -3,6 +3,7 @@ package nc.ui.erm.hxzq_fpxx.ace.serviceproxy;
 import nc.bs.framework.common.NCLocator;
 import nc.ui.pubapp.pub.task.ISingleBillService;
 import nc.vo.hxzq.fpxx.FpxxBillVO;
+
 /**
  * 示例单据的删除代理，支持批删除
  * 
@@ -12,13 +13,14 @@ import nc.vo.hxzq.fpxx.FpxxBillVO;
  */
 public class AceHxzq_fpxxDeleteProxy implements ISingleBillService<FpxxBillVO> {
 
-    @Override
-    public FpxxBillVO operateBill(FpxxBillVO bill) throws Exception {
-        nc.itf.erm.hxzq_fpxx.IHxzq_fpxxMaintain operator = NCLocator.getInstance().lookup(nc.itf.erm.hxzq_fpxx.IHxzq_fpxxMaintain.class);
-        operator.delete(new FpxxBillVO[] {
-            bill
-        });
-        return bill;
-    }
+	
+	@Override
+	public FpxxBillVO operateBill(FpxxBillVO bill) throws Exception {
+		nc.itf.erm.hxzq_fpxx.IHxzq_fpxxMaintain operator = NCLocator
+				.getInstance().lookup(
+						nc.itf.erm.hxzq_fpxx.IHxzq_fpxxMaintain.class);
+		operator.delete(new FpxxBillVO[] { bill });
+		return bill;
+	}
 
 }

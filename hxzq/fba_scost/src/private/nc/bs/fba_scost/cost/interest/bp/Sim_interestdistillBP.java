@@ -27,70 +27,75 @@ public class Sim_interestdistillBP {
 		return new SchemeVOQuery<InterestdistillVO>(InterestdistillVO.class)
 				.query(querySheme, null);
 	}
+
 	/**
 	 * 应收利息计提
 	 */
-	public InterestdistillVO[] distill(LoginContext context,UFDate trade_date) throws BusinessException {
-		//校验
+	public InterestdistillVO[] distill(LoginContext context, UFDate trade_date)
+			throws BusinessException {
+		// 校验
 		InterestDistillCheck check = new InterestDistillCheck();
 		check.checkJt(context, trade_date);
-		//查询成本计算方案
+		// 查询成本计算方案
 		QueryInterestBaseInfo base = new QueryInterestBaseInfo();
 		CostPlanVO[] planvos = base.getCostPlanInfo(context);
-		if(planvos == null || planvos.length == 0)
+		if (planvos == null || planvos.length == 0)
 			return null;
 		List<InterestdistillVO> lists = new ArrayList<InterestdistillVO>();
 		CalcInterestByConverse conver = new CalcInterestByConverse();
-		//start 20150612 性能优化：计提利息之前更新一次缓存  by:mx
+		// start 20150612 性能优化：计提利息之前更新一次缓存 by:mx
 		CacheProxy.fireDataUpdated("SIM_INTERESTDISTILL");
 		CacheProxy.fireDataUpdated("SIM_RATEPERIOD");
 		CacheProxy.fireDataUpdated("SIM_INTEREST");
 		CacheProxy.fireDataUpdated("SIM_TRADEMARKET");
-		//end 20150612 性能优化：计提利息之前更新一次缓存  by:mx
-		for(CostPlanVO costplanvo : planvos){
-			List<InterestdistillVO> list = conver.calcInterest(costplanvo, context, trade_date);
-			if(list != null && list.size() > 0)
+		// end 20150612 性能优化：计提利息之前更新一次缓存 by:mx
+		for (CostPlanVO costplanvo : planvos) {
+			List<InterestdistillVO> list = conver.calcInterest(costplanvo,
+					context, trade_date);
+			if (list != null && list.size() > 0)
 				lists.addAll(list);
 		}
 
 		return lists.toArray(new InterestdistillVO[0]);
 	}
-	
+
 	/**
-	 * 取消计提 
+	 * 取消计提
 	 */
-	public void unDistill(LoginContext context,UFDate trade_date)throws BusinessException{
-		try{
-			//校验
-			InterestDistillCheck  check = new InterestDistillCheck();
-			check.unCheckJt(context,trade_date);
-			//查询生成实时凭证的单据
+	public void unDistill(LoginContext context, UFDate trade_date)
+			throws BusinessException {
+		try {
+			// 校验
+			InterestDistillCheck check = new InterestDistillCheck();
+			check.unCheckJt(context, trade_date);
+			// 查询生成实时凭证的单据
 			QueryInterestBaseInfo fv = new QueryInterestBaseInfo();
-			AggInterestDist[] interestdata = fv.queryDelVoucherData(context,trade_date);
-			//清空凭证数据
-			if(interestdata != null && interestdata.length > 0)
+			AggInterestDist[] interestdata = fv.queryDelVoucherData(context,
+					trade_date);
+			// 清空凭证数据
+			if (interestdata != null && interestdata.length > 0)
 				new DistillSendVoucher().deleteRTVoucher(interestdata);
-			//清空数据
-			fv.clearData(context,trade_date);
-		}catch(Exception e){
+			// 清空数据
+			fv.clearData(context, trade_date);
+		} catch (Exception e) {
 			throw new BusinessException(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * 记账
 	 */
-	public void  tally(LoginContext context) throws BusinessException{
-		try{
-			//查询未生成实时凭证的单据
+	public void tally(LoginContext context) throws BusinessException {
+		try {
+			// 查询未生成实时凭证的单据
 			QueryInterestBaseInfo fv = new QueryInterestBaseInfo();
 			AggInterestDist[] fairdata = fv.querytallVoucherData(context);
-			if(fairdata != null && fairdata.length > 0){
+			if (fairdata != null && fairdata.length > 0) {
 				new DistillSendVoucher().addRTVoucher(fairdata);
-				//更改单据状态
+				// 更改单据状态
 				fv.updatetallVoucherData(fairdata);
 			}
-		}catch(Exception e){
+		} catch (Exception e) {
 			throw new BusinessException(e.getMessage());
 		}
 	}

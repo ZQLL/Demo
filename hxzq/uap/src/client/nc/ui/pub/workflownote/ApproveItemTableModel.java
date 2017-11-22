@@ -86,9 +86,10 @@ public class ApproveItemTableModel extends VOTableModel implements
 
 		return rowNumberList.toArray(new Integer[rowNumberList.size()]);
 	}
-	
+
 	/**
 	 * 根据索引获取activity add by lihaibo
+	 * 
 	 * @param activity
 	 * @return
 	 */
@@ -118,6 +119,7 @@ public class ApproveItemTableModel extends VOTableModel implements
 		return iWidths;
 	}
 
+	@Override
 	public Class getColumnClass(int columnIndex) {
 		if (columnIndex < 9) {
 			return String.class;
@@ -126,14 +128,17 @@ public class ApproveItemTableModel extends VOTableModel implements
 		}
 	}
 
+	@Override
 	public int getColumnCount() {
 		return strColNames.length;
 	}
 
+	@Override
 	public String getColumnName(int column) {
 		return strColNames[column];
 	}
 
+	@Override
 	public Object getValueAt(int row, int col) {
 		WorkflownoteVO flownote = (WorkflownoteVO) getVO(row);
 
@@ -155,11 +160,13 @@ public class ApproveItemTableModel extends VOTableModel implements
 		return rowData == null ? "" : rowData[col];
 	}
 
+	@Override
 	public boolean isCellEditable(int row, int col) {
 		return col == 7;
 		// return false;
 	}
 
+	@Override
 	public void setValueAt(Object obj, int row, int col) {
 		// Noop!
 	}

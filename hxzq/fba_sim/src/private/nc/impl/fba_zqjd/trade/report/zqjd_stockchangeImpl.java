@@ -1,8 +1,5 @@
 package nc.impl.fba_zqjd.trade.report;
 
-import java.util.Map;
-import java.util.Vector;
-
 import nc.bs.dao.BaseDAO;
 import nc.bs.dao.DAOException;
 import nc.itf.fba_zqjd.trade.report.Izqjd_stockchange;
@@ -10,7 +7,7 @@ import nc.jdbc.framework.processor.VectorProcessor;
 import nc.vo.fba_zqjd.trade.report.NewStockChangeVO;
 import nc.vo.pub.lang.UFDate;
 import nc.vo.pub.lang.UFDouble;
-
+import java.util.*;
 import org.olap4j.impl.ArrayMap;
 
 public class zqjd_stockchangeImpl implements Izqjd_stockchange {
@@ -19,6 +16,7 @@ public class zqjd_stockchangeImpl implements Izqjd_stockchange {
 	 * 
 	 * @param StockBalanceVO 期初证券交易记录证券的买入卖出
 	 */
+	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Map SearchQCZQJY(NewStockChangeVO scvo, String begin_date) {
 		UFDouble MRMC = new UFDouble(0);
@@ -93,6 +91,7 @@ public class zqjd_stockchangeImpl implements Izqjd_stockchange {
 	 * 
 	 * @param StockBalanceVO 期初资产转负债,负债转资产的证券转换记录
 	 */
+	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Map SearchQCZQZH(NewStockChangeVO scvo, String begin_date) {
 		UFDouble ZRZC = new UFDouble(0);
@@ -163,6 +162,7 @@ public class zqjd_stockchangeImpl implements Izqjd_stockchange {
 	 * 
 	 * @param StockBalanceVO 期末证券交易记录证券的买入卖出
 	 */
+	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Map SearchQMZQJY(NewStockChangeVO scvo, String end_date) {
 		UFDouble MRMC = new UFDouble(0);
@@ -239,6 +239,7 @@ public class zqjd_stockchangeImpl implements Izqjd_stockchange {
 	 * 
 	 * @param StockBalanceVO 期末资产转负债,负债转资产的证券转换记录
 	 */
+	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Map SearchQMZQZH(NewStockChangeVO scvo, String end_date) {
 		UFDouble ZRZC = new UFDouble(0);
@@ -311,6 +312,7 @@ public class zqjd_stockchangeImpl implements Izqjd_stockchange {
 	 * 
 	 * @param StockBalanceVO 期初实际负债数量
 	 */
+	@Override
 	@SuppressWarnings("rawtypes")
 	public UFDouble SearchQCActual_num(NewStockChangeVO scvo, String begin_date) {
 		UFDouble actualnum = new UFDouble(0);
@@ -357,6 +359,7 @@ public class zqjd_stockchangeImpl implements Izqjd_stockchange {
 	 * 
 	 * @param StockBalanceVO 期末实际负债数量
 	 */
+	@Override
 	@SuppressWarnings("rawtypes")
 	public UFDouble SearchQMActual_num(NewStockChangeVO scvo, String end_date) {
 		UFDouble actualnum = new UFDouble(0);
@@ -402,6 +405,7 @@ public class zqjd_stockchangeImpl implements Izqjd_stockchange {
 	 * @param StockChangeVO 期初负债市值计算--找到该券该时间的收盘价
 	 * 负债数量*交易日期trade_date为开始日期当天的行情sim_trademarket的收盘价close_price
 	 */
+	@Override
 	@SuppressWarnings("rawtypes")
 	public UFDouble SearchQCclose_price(NewStockChangeVO scvo, String begin_date) {
 		String pksec = scvo.getPk_securities();
@@ -437,6 +441,7 @@ public class zqjd_stockchangeImpl implements Izqjd_stockchange {
 	 * @param StockChangeVO 期末负债市值计算--找到该券该时间的收盘价
 	 * 负债数量*交易日期trade_date为开始日期当天的行情sim_trademarket的收盘价close_price
 	 */
+	@Override
 	@SuppressWarnings("rawtypes")
 	public UFDouble SearchQMclose_price(NewStockChangeVO scvo, String end_date) {
 		String pksec = scvo.getPk_securities();
@@ -473,6 +478,7 @@ public class zqjd_stockchangeImpl implements Izqjd_stockchange {
 	 * @param StockChangeVO, begin_date, end_date 本期计提利息计算 交易类型HV3A-
 	 * 0xx-21负债买入交易中的结转应收利息interest+（转入：负债转托管HV3F-Cxx-04+业务类型为负债转换0404的，interest）
 	 */
+	@Override
 	@SuppressWarnings("rawtypes")
 	public UFDouble SearchBQJT(NewStockChangeVO scvo, String begin_date,
 			String end_date) {
@@ -535,6 +541,7 @@ public class zqjd_stockchangeImpl implements Izqjd_stockchange {
 	 * 
 	 * @param StockChangeVO, begin_date, end_date 本期卖出应收利息
 	 */
+	@Override
 	@SuppressWarnings("rawtypes")
 	public UFDouble SearchBQinterest(NewStockChangeVO scvo, String begin_date,
 			String end_date) {
@@ -612,6 +619,7 @@ public class zqjd_stockchangeImpl implements Izqjd_stockchange {
 	 * 
 	 * @param StockChangeVO, begin_date, end_date 本期买入结转应收利息
 	 */
+	@Override
 	@SuppressWarnings("rawtypes")
 	public UFDouble SearchBQJZ(NewStockChangeVO scvo, String begin_date,
 			String end_date) {
@@ -659,6 +667,7 @@ public class zqjd_stockchangeImpl implements Izqjd_stockchange {
 	 * 
 	 * @param StockBalanceVO 期初负债转托管,托管转负债的证券转换记录
 	 */
+	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Map SearchQCZQZHTG(NewStockChangeVO stvo, String begin_date) {
 		UFDouble ZRZC = new UFDouble(0);
@@ -724,6 +733,7 @@ public class zqjd_stockchangeImpl implements Izqjd_stockchange {
 	 * 
 	 * @param StockBalanceVO 期末负债转托管,托管转负债的证券转换记录
 	 */
+	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Map SearchQMZQZHTG(NewStockChangeVO stvo, String end_date) {
 		UFDouble ZRZC = new UFDouble(0);

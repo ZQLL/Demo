@@ -3,10 +3,8 @@ package nc.impl.fba_sim.costingplugin.zyshg;
 import java.util.List;
 
 import nc.impl.fba_sim.costingplugin.AbstractZyshg;
-import nc.itf.fba_sabb.constant.SabbModuleConst;
 import nc.itf.fba_scost.cost.tool.ICostingTool;
 import nc.jdbc.framework.processor.BeanListProcessor;
-import nc.vo.fba_scost.cost.pub.PubMethod;
 import nc.vo.fba_sim.simtrade.hgtally.HgtallyVO;
 import nc.vo.fba_sim.simtrade.zyshg.ZyshgVO;
 import nc.vo.pub.BusinessException;
@@ -22,6 +20,7 @@ public class Zyshg extends AbstractZyshg {
 	 * @param tradevo
 	 * @throws Exception
 	 */
+	@Override
 	protected void calculateWhenCheck(ICostingTool costingtool, ZyshgVO vo)
 			throws Exception {
 		/**
@@ -38,7 +37,7 @@ public class Zyshg extends AbstractZyshg {
 						"审核日期："
 								+ costingtool.getCurrdate()
 								+ " 质押式回购交易记录； 交易类型：质押式融资回购、质押式融券回购、质押式融资购回、质押式融券购回；不能为空字段：首次结算金额、到期结算金额；");
-			} else if (vo.getBargain_sum().compareTo(UFDouble.ZERO_DBL) == 0 
+			} else if (vo.getBargain_sum().compareTo(UFDouble.ZERO_DBL) == 0
 					|| vo.getDq_settleamounts().compareTo(UFDouble.ZERO_DBL) == 0) {
 				throw new Exception(
 						"审核日期："
@@ -125,6 +124,7 @@ public class Zyshg extends AbstractZyshg {
 	 * @param tradevo
 	 * @throws Exception
 	 */
+	@Override
 	protected void calculateWhenUnCheck(ICostingTool costingtool, ZyshgVO vo)
 			throws Exception {
 		// 删除台账处理

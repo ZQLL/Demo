@@ -52,24 +52,25 @@ public class DataImportImportAction extends AddAction {
 	private static final long serialVersionUID = -745837781088023096L;
 
 	private HierachicalDataAppModel treeModel = null;
-	
-	nc.ui.uif2.TangramContainer container = null; 
-	
-	
+
+	nc.ui.uif2.TangramContainer container = null;
+
 	String currdate = AppContext.getInstance().getServerTime().toLocalString();
-	String pk_glorgbook =null;
+	String pk_glorgbook = null;
 	String dsname = WorkbenchEnvironment.getInstance().getDSName();
-	
-	
+
 	private UIComboBox m_importWay = null;
 	private int importWay = 0;
-	//private ImportProjVO importProjVO=null;
-	private AggDataImportVO aggDataImportVO=null;
-	//private ImportFileSetVO filesetvo = null;
-	
+	// private ImportProjVO importProjVO=null;
+	private AggDataImportVO aggDataImportVO = null;
+
+	// private ImportFileSetVO filesetvo = null;
+
 	public String getPk_glorgbook() {
 		try {
-			pk_glorgbook=OrgSettingAccessor.getDefaultAccountingBookID(getModel().getContext().getPk_loginUser(), getModel().getContext().getPk_group());
+			pk_glorgbook = OrgSettingAccessor.getDefaultAccountingBookID(
+					getModel().getContext().getPk_loginUser(), getModel()
+							.getContext().getPk_group());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -80,7 +81,6 @@ public class DataImportImportAction extends AddAction {
 		this.pk_glorgbook = pk_glorgbook;
 	}
 
-
 	public HierachicalDataAppModel getTreeModel() {
 		return treeModel;
 	}
@@ -88,7 +88,7 @@ public class DataImportImportAction extends AddAction {
 	public void setTreeModel(HierachicalDataAppModel treeModel) {
 		this.treeModel = treeModel;
 	}
-	
+
 	public nc.ui.uif2.TangramContainer getContainer() {
 		return container;
 	}
@@ -101,19 +101,21 @@ public class DataImportImportAction extends AddAction {
 		super();
 		setCode("DataImportAction");
 		setBtnName("导入");
-		
+
 		initVariable();
 	}
 
 	private void initVariable() {
-		 currdate = AppContext.getInstance().getServerTime().toLocalString();
-		 pk_glorgbook =null;
-		 dsname = WorkbenchEnvironment.getInstance().getDSName();
+		currdate = AppContext.getInstance().getServerTime().toLocalString();
+		pk_glorgbook = null;
+		dsname = WorkbenchEnvironment.getInstance().getDSName();
 	}
 
+	
 	@Override
 	protected boolean isActionEnable() {
-		if (getTreeModel().getSelectedNode() != null && getTreeModel().getSelectedNode().isLeaf()
+		if (getTreeModel().getSelectedNode() != null
+				&& getTreeModel().getSelectedNode().isLeaf()
 				&& model.getUiState() == UIState.NOT_EDIT
 				&& ((DataImportAppModel) model).getData().size() > 0) {
 			return true;
@@ -121,10 +123,11 @@ public class DataImportImportAction extends AddAction {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * 导入三种方式
-	 * @return	UIComboBox	
+	 * 
+	 * @return UIComboBox
 	 */
 	public UIComboBox getImportWay() {
 		if (m_importWay == null) {
@@ -144,36 +147,40 @@ public class DataImportImportAction extends AddAction {
 	}
 
 	private UIPanel getNormalPanel() {
-		
+
 		StringBuilder field = new StringBuilder();
-//		boolean if_repeat = false;
+		// boolean if_repeat = false;
 		// 重复字段
-//		DataImportAppModel dataModel = (DataImportAppModel) getModel();
-//		List aggVOLst = dataModel.getData();
-//		if (aggVOLst != null && aggVOLst.size() > 0) {
-//			AggDataImportVO aggDataImportVO = (AggDataImportVO) aggVOLst.get(0);
-//			
-//			DataImportBVO1[] dataImportBVO1=(DataImportBVO1[]) aggDataImportVO.getChildren(DataImportBVO1.class);
-//			DataImportBVO2[] dataImportBVO2=(DataImportBVO2[]) aggDataImportVO.getChildren(DataImportBVO2.class);
-//			if(null!=dataImportBVO1&&dataImportBVO1.length>0){
-//				int bvo1Len = dataImportBVO1.length;
-//				for(int i=0;i<bvo1Len;i++){
-//					if_repeat =  dataImportBVO1[i].getIf_repeat().booleanValue();
-//					if (!if_repeat) {
-//						field.append(", ").append(dataImportBVO1[i].getAim_field()).append(" ");//(mei add: 如果中文名称为空,显示字段英文名,否则界面上显示为null) 
-//					}
-//				}
-//			}
-//			if(null!=dataImportBVO2&&dataImportBVO2.length>0){
-//				int bvo1Len = dataImportBVO2.length;
-//				for(int i=0;i<bvo1Len;i++){
-//					if_repeat =  dataImportBVO2[i].getIf_repeat().booleanValue();
-//					if (!if_repeat) {
-//						field.append(", ").append(dataImportBVO2[i].getAim_field()).append(" ");//(mei add: 如果中文名称为空,显示字段英文名,否则界面上显示为null) 
-//					}
-//				}
-//			}
-//		}
+		// DataImportAppModel dataModel = (DataImportAppModel) getModel();
+		// List aggVOLst = dataModel.getData();
+		// if (aggVOLst != null && aggVOLst.size() > 0) {
+		// AggDataImportVO aggDataImportVO = (AggDataImportVO) aggVOLst.get(0);
+		//
+		// DataImportBVO1[] dataImportBVO1=(DataImportBVO1[])
+		// aggDataImportVO.getChildren(DataImportBVO1.class);
+		// DataImportBVO2[] dataImportBVO2=(DataImportBVO2[])
+		// aggDataImportVO.getChildren(DataImportBVO2.class);
+		// if(null!=dataImportBVO1&&dataImportBVO1.length>0){
+		// int bvo1Len = dataImportBVO1.length;
+		// for(int i=0;i<bvo1Len;i++){
+		// if_repeat = dataImportBVO1[i].getIf_repeat().booleanValue();
+		// if (!if_repeat) {
+		// field.append(", ").append(dataImportBVO1[i].getAim_field()).append(" ");//(mei
+		// add: 如果中文名称为空,显示字段英文名,否则界面上显示为null)
+		// }
+		// }
+		// }
+		// if(null!=dataImportBVO2&&dataImportBVO2.length>0){
+		// int bvo1Len = dataImportBVO2.length;
+		// for(int i=0;i<bvo1Len;i++){
+		// if_repeat = dataImportBVO2[i].getIf_repeat().booleanValue();
+		// if (!if_repeat) {
+		// field.append(", ").append(dataImportBVO2[i].getAim_field()).append(" ");//(mei
+		// add: 如果中文名称为空,显示字段英文名,否则界面上显示为null)
+		// }
+		// }
+		// }
+		// }
 		if (field.toString().length() > 0)
 			field = new StringBuilder(field.toString().substring(1));
 		else
@@ -203,14 +210,13 @@ public class DataImportImportAction extends AddAction {
 		panel.add(m_label2, c);
 		return panel;
 	}
-	
-	
+
 	@Override
 	public void doAction(ActionEvent e) throws Exception {
 		ImportProjVO importProjVO = null;
-		//DataImportParaVO paraVO = new DataImportParaVO();
+		// DataImportParaVO paraVO = new DataImportParaVO();
 		importProjVO = (ImportProjVO) getTreeModel().getSelectedData();
-		//paraVO.setImportProjVO(importProjVO);
+		// paraVO.setImportProjVO(importProjVO);
 		DataImportAppModel dataModel = (DataImportAppModel) getModel();
 		List aggVOLst = dataModel.getData();
 		boolean isShowHint = true;
@@ -218,8 +224,10 @@ public class DataImportImportAction extends AddAction {
 		AggDataImportVO aggDataImportVO = null;
 		if (aggVOLst != null && aggVOLst.size() >= 1) {
 			aggDataImportVO = (AggDataImportVO) aggVOLst.get(0);
-			String hintMsg = execImpAction(importProjVO, isShowHint, isShowData, aggDataImportVO);
-			MessageDialog.showHintDlg(model.getContext().getEntranceUI(), "提示信息", hintMsg);
+			String hintMsg = execImpAction(importProjVO, isShowHint,
+					isShowData, aggDataImportVO);
+			MessageDialog.showHintDlg(model.getContext().getEntranceUI(),
+					"提示信息", hintMsg);
 		}
 	}
 
@@ -248,7 +256,7 @@ public class DataImportImportAction extends AddAction {
 			}
 			int btn = MessageDialog.showOkCancelDlg(getContainer(), title,
 					"不允许重复的字段为：" + showRepeatFld);
-			if (btn == MessageDialog.ID_CANCEL) {
+			if (btn == UIDialog.ID_CANCEL) {
 				return "取消导入";
 			}
 
@@ -256,9 +264,8 @@ public class DataImportImportAction extends AddAction {
 		@SuppressWarnings("rawtypes")
 		Map hm_info;
 		// 1.根据界面数据关系构建各字段对应关系
-			hm_info = dataImportMethod
-				.getConstInfoByDataImportVO(aggDataImportVO);
-		
+		hm_info = dataImportMethod.getConstInfoByDataImportVO(aggDataImportVO);
+
 		// 2.根据导入配置信息主表查询出导入项目导入方式（文件、数据源），并区分服务器端还是本地端
 		DataImportVO dataImportVO = aggDataImportVO.getParentVO();
 		Integer dataFrom = dataImportVO.getDatafrom();// 导入方式 0:数据源，1：文件
@@ -276,12 +283,15 @@ public class DataImportImportAction extends AddAction {
 			Boolean isserver = filesetvo.getIsserver().booleanValue();
 			String filePath = filesetvo.getFilepath();
 			// 导入文件
-			if(importProjVO.getAttributeValue("projcode").toString().equals("0199")){
-				//利率信息导入，走新写的方法 -zq
-				getImportDataByFileHead(filePath, isserver, aggDataImportVO, hm_info);
+			if (importProjVO.getAttributeValue("projcode").toString()
+					.equals("0199")) {
+				// 利率信息导入，走新写的方法 -zq
+				getImportDataByFileHead(filePath, isserver, aggDataImportVO,
+						hm_info);
 				getDataConstrastRefHashMap(hm_info, aggDataImportVO);
-			}else{
-				getImportDataByFile(filePath, isserver, aggDataImportVO, hm_info);
+			} else {
+				getImportDataByFile(filePath, isserver, aggDataImportVO,
+						hm_info);
 				getDataConstrastRefHashMap(hm_info, aggDataImportVO);
 			}
 		} else if (SystemConst.DATAFORM_DATASOURCE.equals(dataFrom)) {
@@ -339,10 +349,10 @@ public class DataImportImportAction extends AddAction {
 		// 导入数据
 		String hitMsg = null;
 		try {
-			//利率导入节点的处理
-			if(importProjVO.getAttributeValue("projcode").equals("0199")){
+			// 利率导入节点的处理
+			if (importProjVO.getAttributeValue("projcode").equals("0199")) {
 				hitMsg = busiService.importToDBHead();
-			}else
+			} else
 				hitMsg = busiService.importToDB();
 		} catch (Exception ex) {
 			busiService.clearBusiCache();
@@ -350,31 +360,31 @@ public class DataImportImportAction extends AddAction {
 		}
 		// 备份文件
 		if (SystemConst.DATAFORM_FILE.equals(dataFrom)) {
-			dataImportMethod.bakFile(filesetvo,hitMsg);
+			dataImportMethod.bakFile(filesetvo, hitMsg);
 		}
 		busiService.clearBusiCache();
-		
+
 		return hitMsg;
 	}
 
 	private String handlerRepeatFld(AggDataImportVO aggDataImportVO) {
-		
+
 		StringBuffer fldBuf = new StringBuffer();
-		
-		DataImportBVO1[] dataImportBVO1=(DataImportBVO1[]) aggDataImportVO.getChildren(DataImportBVO1.class);
-		
+
+		DataImportBVO1[] dataImportBVO1 = (DataImportBVO1[]) aggDataImportVO
+				.getChildren(DataImportBVO1.class);
+
 		int voLen = dataImportBVO1.length;
-		for(int i=0;i<voLen;i++){
+		for (int i = 0; i < voLen; i++) {
 			DataImportBVO1 vo = dataImportBVO1[i];
-			if(!vo.getIf_repeat().booleanValue()){
+			if (!vo.getIf_repeat().booleanValue()) {
 				fldBuf.append(" [");
 				fldBuf.append(vo.getAim_field_cn());
 				fldBuf.append("] ");
 			}
 		}
-		
+
 		return fldBuf.toString();
-		
 
 	}
 
@@ -387,67 +397,75 @@ public class DataImportImportAction extends AddAction {
 	 * @param hm_info
 	 * @throws Exception
 	 */
-	public void getImportDataByFile(String filepath, boolean isserver,AggDataImportVO aggDataImportVO, Map hm_info) throws Exception {
+	public void getImportDataByFile(String filepath, boolean isserver,
+			AggDataImportVO aggDataImportVO, Map hm_info) throws Exception {
 		DataImportMethod dataImportMethod = DataImportMethod.getInstance();
 		if (filepath == null || null == aggDataImportVO)
 			return;
 		if (isserver) {
 			IDataImportQueryService service = (IDataImportQueryService) NCLocator
-					.getInstance().lookup(IDataImportQueryService.class.getName());
+					.getInstance().lookup(
+							IDataImportQueryService.class.getName());
 			service.getDataByFilePath(aggDataImportVO, filepath, hm_info);
 		} else {
-			dataImportMethod.getDataByFilePath(aggDataImportVO, filepath, hm_info);
+			dataImportMethod.getDataByFilePath(aggDataImportVO, filepath,
+					hm_info);
 		}
 	}
-	
-	public void getImportDataByFileHead(String filepath, boolean isserver,AggDataImportVO aggDataImportVO, Map hm_info) throws Exception {
+
+	public void getImportDataByFileHead(String filepath, boolean isserver,
+			AggDataImportVO aggDataImportVO, Map hm_info) throws Exception {
 		DataImportMethod dataImportMethod = DataImportMethod.getInstance();
 		if (filepath == null || null == aggDataImportVO)
 			return;
 		if (isserver) {
 			IDataImportQueryService service = (IDataImportQueryService) NCLocator
-					.getInstance().lookup(IDataImportQueryService.class.getName());
+					.getInstance().lookup(
+							IDataImportQueryService.class.getName());
 			service.getDataByFilePath(aggDataImportVO, filepath, hm_info);
 		} else {
-			//新方法 -zq
-			dataImportMethod.getDataByFilePathHead(aggDataImportVO, filepath, hm_info);
+			// 新方法 -zq
+			dataImportMethod.getDataByFilePathHead(aggDataImportVO, filepath,
+					hm_info);
 		}
 	}
 
 	public String getWhereSqlByDS(Map hm_info, boolean isNotFromFile) {
 
 		// 根据选择的导入项目，默认导入方式
-		ImportProjVO vo = (ImportProjVO) getTreeModel().getSelectedData();;
+		ImportProjVO vo = (ImportProjVO) getTreeModel().getSelectedData();
+		;
 		if (vo.getVdef2() == null)
 			getImportWay().setSelectedIndex(0);
 		else
 			getImportWay().setSelectedIndex(Integer.parseInt(vo.getVdef2()));
-		
+
 		Map ht_sd_aim = (Map) hm_info.get(SystemConst.HT_SD_AIM);
 		// 构造查询界面，如果从文件导入，不用设置查询条件，数据全部导入，如果从数据源导入，根据查询条件取数：0，文件；1，数据源
 		QueryConditionClient dlg = new QueryConditionClient();
 		dlg.getUITabbedPane().setComponentAt(0, getNormalPanel());
-		
-		
+
 		QueryConditionVO[] qvos = null;
 		if (isNotFromFile) {
 
 			// 组合查询模板，如果查询模板为空，则插入构造的查询模板，这样处理是为了利用查询模板保存查询条件。否则为临时构造的查询模板，不能加载历史查询条件
-			String nodecode = "HS_HPL_" + "SECD" + "_"
-					+ vo.getProjcode();
+			String nodecode = "HS_HPL_" + "SECD" + "_" + vo.getProjcode();
 			try {
 				qvos = PubMethod.getInstance().autoGenQueryTemplet(nodecode,
 						vo.getProjcode(), aggDataImportVO);
 				// 如果为空，表示已经存在查询模板，从数据库直接取数，并从缓存得到qvos；否则自动生成查询模板，这时没有历史查询条件
 				if (qvos == null) {
 					// 这里必须使用setTempletID，这样才能给类QueryConditionClient中m_curPKCorp，m_curFunCode，m_curUserID，m_templetID赋值;否则不能取历史查询条件
-					dlg.setTempletID(getModel().getContext().getPk_org(), nodecode, getModel().getContext().getPk_loginUser(), null);
+					dlg.setTempletID(getModel().getContext().getPk_org(),
+							nodecode,
+							getModel().getContext().getPk_loginUser(), null);
 					qvos = dlg.getConditionDatas();
 				} else {
 					dlg.initTempletDatas(qvos);
 				}
 				// 查询条件的特殊处理,如增加参照,日期等等
-//				dataSpecialDealUI(qvos, ht_sd_aim, pk_corp, currdate, userid);
+				// dataSpecialDealUI(qvos, ht_sd_aim, pk_corp, currdate,
+				// userid);
 				// 修改了查询模板，更新缓存数据
 				dlg.setConditionDatas(qvos);
 			} catch (Exception e) {
@@ -462,11 +480,12 @@ public class DataImportImportAction extends AddAction {
 			if (isNotFromFile) {
 				String wherecond = dlg.getWhereSQL();
 				if (wherecond == null) {
-					String question="数据量可能很大，可能需要等待很长时间。建议增加查询条件，继续导入吗？";
-					int flag=MessageDialog.showYesNoCancelDlg(getContainer(), "提示信息", question);
-					if (flag == MessageDialog.ID_YES)
+					String question = "数据量可能很大，可能需要等待很长时间。建议增加查询条件，继续导入吗？";
+					int flag = MessageDialog.showYesNoCancelDlg(getContainer(),
+							"提示信息", question);
+					if (flag == UIDialog.ID_YES)
 						return "1=1";
-					else if (flag == MessageDialog.ID_NO)
+					else if (flag == UIDialog.ID_NO)
 						return getWhereSqlByDS(ht_sd_aim, isNotFromFile);
 					else
 						return null;
@@ -477,50 +496,59 @@ public class DataImportImportAction extends AddAction {
 			}
 		}
 		return null;// 这里返回null表示是点击取消按钮
-	
+
 	}
+
 	@SuppressWarnings("rawtypes")
-	private void getDataConstrastRefHashMap(Map hm_info, AggDataImportVO aggDataImpVO)
-			throws Exception {
+	private void getDataConstrastRefHashMap(Map hm_info,
+			AggDataImportVO aggDataImpVO) throws Exception {
 		IDataImportBusiService dataImportBS = (IDataImportBusiService) NCLocator
 				.getInstance().lookup(IDataImportBusiService.class.getName());
-		Map hm_ref = dataImportBS.getFailRefData();//存在没有对照的
+		Map hm_ref = dataImportBS.getFailRefData();// 存在没有对照的
 		// 显示基础数据对照dlg
 		List headMap = (List) hm_ref.get(SystemConst.HEAD);
 		List bodyMap = (List) hm_ref.get(SystemConst.BODY);
-		if ((headMap != null && headMap.size() > 0)||(bodyMap != null && bodyMap.size()>0)) { // 表示存在没有设置对照的外系统数据，这时需要弹出基础数据对照界面进行设置。
-			showDataContrastDlg(hm_ref,hm_info,aggDataImpVO);
+		if ((headMap != null && headMap.size() > 0)
+				|| (bodyMap != null && bodyMap.size() > 0)) { // 表示存在没有设置对照的外系统数据，这时需要弹出基础数据对照界面进行设置。
+			showDataContrastDlg(hm_ref, hm_info, aggDataImpVO);
 			dataImportBS.setHdlData(hm_ref);
 		}
 	}
-	private boolean showDataContrastDlg(Map dataMap, Map hm_info, AggDataImportVO aggDataImpVO) throws Exception {
+
+	private boolean showDataContrastDlg(Map dataMap, Map hm_info,
+			AggDataImportVO aggDataImpVO) throws Exception {
 		boolean isReturn = false;
-		//第一个Key：pk_bdinfo$extsys,第二个KEY: H_,B_ 值：List<FieldPropVO>
-		Map<String,Map<String,List>> pendingRef = new HashMap<String,Map<String,List>>();
-		//根据主子表配置，取出所有参照字段
-		Map<String,List<String>> refFld = handleRefFld(aggDataImpVO);
-		//处理主表问题数据
+		// 第一个Key：pk_bdinfo$extsys,第二个KEY: H_,B_ 值：List<FieldPropVO>
+		Map<String, Map<String, List>> pendingRef = new HashMap<String, Map<String, List>>();
+		// 根据主子表配置，取出所有参照字段
+		Map<String, List<String>> refFld = handleRefFld(aggDataImpVO);
+		// 处理主表问题数据
 		handleHeadRefData(dataMap, pendingRef, refFld);
-		//处理子表问题数据
-		handleBodyRefData(dataMap,pendingRef,refFld);
-		
+		// 处理子表问题数据
+		handleBodyRefData(dataMap, pendingRef, refFld);
+
 		Set<String> keySet = pendingRef.keySet();
 		Iterator<String> keyIt = keySet.iterator();
-		while(keyIt.hasNext()){
+		while (keyIt.hasNext()) {
 			String keyVal = keyIt.next();
 			Map refDataMap = pendingRef.get(keyVal);
-			//弹出基础数据对照界面进行设置。
+			// 弹出基础数据对照界面进行设置。
 			/** JINGQT 2016年4月12日 过滤未对照功能完善 ADD START */
-			/** 这里添加一个处理，在dataMap中因为过滤了未对照数据，故未对照的数据可能已经没了，但是refDataMap里面还是有值，导致其会重新显示此对话框。 */
+			/**
+			 * 这里添加一个处理，在dataMap中因为过滤了未对照数据，故未对照的数据可能已经没了，但是refDataMap里面还是有值，
+			 * 导致其会重新显示此对话框。
+			 */
 			/** 故这里需要再去对照一下dataMap中是否还有需要对照的数据，做一下过滤即可 */
-			if (this.filterRefDataMapByDataMap(refDataMap, dataMap, refFld, keyVal) == null) {
+			if (this.filterRefDataMapByDataMap(refDataMap, dataMap, refFld,
+					keyVal) == null) {
 				// 如果是空的，则说明不需要再弹出框处理未对照数据了
 				continue;
 			}
 			/** JINGQT 2016年4月12日 过滤未对照功能完善 ADD END */
-			DataContrastDlg dlg = new DataContrastDlg(this.getContainer(),refDataMap,dataMap, hm_info,keyVal);
+			DataContrastDlg dlg = new DataContrastDlg(this.getContainer(),
+					refDataMap, dataMap, hm_info, keyVal);
 			dlg.setTitle("未配置基础数据对照的外系统数据");
-			if (dlg.showModal() == MessageDialog.ID_CANCEL) {
+			if (dlg.showModal() == UIDialog.ID_CANCEL) {
 				isReturn = true;
 			}
 		}
@@ -532,15 +560,20 @@ public class DataImportImportAction extends AddAction {
 	 * 导致其会重新显示此对话框 ,这里使用了系统既存的方法重新生成未对照的数据，然后去判断<br>
 	 * <b>虽然代码有冗余，但是因为数据都是在内存中，故性能和原来基本一致</b>
 	 * 
-	 * @param refDataMap 此次弹出的未对照的数据
-	 * @param dataMap 所有未对照的数据
-	 * @param refFld 存在未对照数据的参照信息
-	 * @param key 此次未对照数据的key值
+	 * @param refDataMap
+	 *            此次弹出的未对照的数据
+	 * @param dataMap
+	 *            所有未对照的数据
+	 * @param refFld
+	 *            存在未对照数据的参照信息
+	 * @param key
+	 *            此次未对照数据的key值
 	 * @return 此次弹出框需要显示的数据key，如果为空，则不弹出框了，否则正常显示。
 	 * @author jingqt
 	 * @date 2016-4-12 上午9:58:11
 	 */
-	private String filterRefDataMapByDataMap(Map refDataMap, Map dataMap, Map<String, List<String>> refFld, String key) {
+	private String filterRefDataMapByDataMap(Map refDataMap, Map dataMap,
+			Map<String, List<String>> refFld, String key) {
 		Map<String, Map<String, List>> pendingRef = new HashMap<String, Map<String, List>>();
 		// 处理主表问题数据
 		handleHeadRefData(dataMap, pendingRef, refFld);
@@ -564,35 +597,40 @@ public class DataImportImportAction extends AddAction {
 		return null;
 	}
 
-	private void handleBodyRefData(Map dataMap, Map<String, Map<String, List>> pendingRef, Map<String, List<String>> refFld) {
-		List bodyDataLst = (List) dataMap.get(SystemConst.BODY);//子表问题数据
-		List<String> bodyFldLst = refFld.get(SystemConst.BODY);//子表参照字段
-		if(bodyDataLst != null && bodyDataLst.size()>0){//判断主表是否有参照不到的数据 
-			if(bodyFldLst != null && bodyFldLst.size()>0){//判断主表是否有设置参照的字段
+	private void handleBodyRefData(Map dataMap,
+			Map<String, Map<String, List>> pendingRef,
+			Map<String, List<String>> refFld) {
+		List bodyDataLst = (List) dataMap.get(SystemConst.BODY);// 子表问题数据
+		List<String> bodyFldLst = refFld.get(SystemConst.BODY);// 子表参照字段
+		if (bodyDataLst != null && bodyDataLst.size() > 0) {// 判断主表是否有参照不到的数据
+			if (bodyFldLst != null && bodyFldLst.size() > 0) {// 判断主表是否有设置参照的字段
 				int bodyFldSize = bodyFldLst.size();
-				for(int i=0;i<bodyFldSize;i++){
-					String fldVal = bodyFldLst.get(i);//取参照字段名
+				for (int i = 0; i < bodyFldSize; i++) {
+					String fldVal = bodyFldLst.get(i);// 取参照字段名
 					int headDataSize = bodyDataLst.size();
-					for(int j=0;j<headDataSize;j++){
-						Map fldRefVal = (Map) bodyDataLst.get(j);//取参照出问题数据,先取一行
+					for (int j = 0; j < headDataSize; j++) {
+						Map fldRefVal = (Map) bodyDataLst.get(j);// 取参照出问题数据,先取一行
 						Object refObj = fldRefVal.get(fldVal);
-						if(refObj instanceof FieldPropVO){//如果是FieldPropVO说明没有对照上
+						if (refObj instanceof FieldPropVO) {// 如果是FieldPropVO说明没有对照上
 							FieldPropVO fldProp = (FieldPropVO) refObj;
 							String pk_bdinfo = fldProp.getPk_bdinfo();
 							String expsys = fldProp.getDef_expsys();
 							String pk_org = fldProp.getPk_org();
-							String key = pk_bdinfo + "$"+expsys + "$" +pk_org;
-							if(pendingRef.get(key) != null){
+							String key = pk_bdinfo + "$" + expsys + "$"
+									+ pk_org;
+							if (pendingRef.get(key) != null) {
 								Map pendingRefData = pendingRef.get(key);
-								if(pendingRefData.get(SystemConst.BODY) != null){
-									List bodyLst = (List) pendingRefData.get(SystemConst.BODY);
+								if (pendingRefData.get(SystemConst.BODY) != null) {
+									List bodyLst = (List) pendingRefData
+											.get(SystemConst.BODY);
 									bodyLst.add(fldProp);
-								}else{
+								} else {
 									List bodyLst = new ArrayList();
 									bodyLst.add(fldProp);
-									pendingRefData.put(SystemConst.BODY, bodyLst);
+									pendingRefData.put(SystemConst.BODY,
+											bodyLst);
 								}
-							}else{
+							} else {
 								Map tmpDataMap = new HashMap();
 								List bodyLst = new ArrayList();
 								bodyLst.add(fldProp);
@@ -606,38 +644,43 @@ public class DataImportImportAction extends AddAction {
 		}
 	}
 
-	private void handleHeadRefData(Map dataMap, Map<String, Map<String, List>> pendingRef, Map<String, List<String>> refFld) {
-		//处理主表问题数据
-		List headDataLst = (List) dataMap.get(SystemConst.HEAD);//主表问题数据
-		List<String> headFldLst = refFld.get(SystemConst.HEAD);//主表参照字段
-		if(headDataLst != null && headDataLst.size()>0){//判断主表是否有参照不到的数据 
-			if(headFldLst != null && headFldLst.size()>0){//判断主表是否有设置参照的字段
+	private void handleHeadRefData(Map dataMap,
+			Map<String, Map<String, List>> pendingRef,
+			Map<String, List<String>> refFld) {
+		// 处理主表问题数据
+		List headDataLst = (List) dataMap.get(SystemConst.HEAD);// 主表问题数据
+		List<String> headFldLst = refFld.get(SystemConst.HEAD);// 主表参照字段
+		if (headDataLst != null && headDataLst.size() > 0) {// 判断主表是否有参照不到的数据
+			if (headFldLst != null && headFldLst.size() > 0) {// 判断主表是否有设置参照的字段
 				int headFldSize = headFldLst.size();
-				for(int i=0;i<headFldSize;i++){
-					String fldVal = headFldLst.get(i);//取参照字段名
+				for (int i = 0; i < headFldSize; i++) {
+					String fldVal = headFldLst.get(i);// 取参照字段名
 					int headDataSize = headDataLst.size();
-					for(int j=0;j<headDataSize;j++){
-						Map fldRefVal = (Map) headDataLst.get(j);//取参照出问题数据,先取一行
+					for (int j = 0; j < headDataSize; j++) {
+						Map fldRefVal = (Map) headDataLst.get(j);// 取参照出问题数据,先取一行
 						Object refObj = fldRefVal.get(fldVal);
-						if(refObj instanceof FieldPropVO){//如果是FieldPropVO说明没有对照上
+						if (refObj instanceof FieldPropVO) {// 如果是FieldPropVO说明没有对照上
 							FieldPropVO fldProp = (FieldPropVO) refObj;
 							String pk_bdinfo = fldProp.getPk_bdinfo();
 							String expsys = fldProp.getDef_expsys();
 							String pk_org = fldProp.getPk_org();
 							String pk_group = fldProp.getPk_group();
 							String pk_org_v = fldProp.getPk_org_v();
-							String key = pk_bdinfo + "$"+expsys + "$"+pk_org+"$"+pk_group+"$"+pk_org_v;
-							if(pendingRef.get(key) != null){
+							String key = pk_bdinfo + "$" + expsys + "$"
+									+ pk_org + "$" + pk_group + "$" + pk_org_v;
+							if (pendingRef.get(key) != null) {
 								Map pendingRefData = pendingRef.get(key);
-								if(pendingRefData.get(SystemConst.HEAD) != null){
-									List headLst = (List) pendingRefData.get(SystemConst.HEAD);
+								if (pendingRefData.get(SystemConst.HEAD) != null) {
+									List headLst = (List) pendingRefData
+											.get(SystemConst.HEAD);
 									headLst.add(fldProp);
-								}else{
+								} else {
 									List headLst = new ArrayList();
 									headLst.add(fldProp);
-									pendingRefData.put(SystemConst.HEAD, headLst);
+									pendingRefData.put(SystemConst.HEAD,
+											headLst);
 								}
-							}else{
+							} else {
 								Map tmpDataMap = new HashMap();
 								List headLst = new ArrayList();
 								headLst.add(fldProp);
@@ -652,19 +695,21 @@ public class DataImportImportAction extends AddAction {
 	}
 
 	private Map<String, List<String>> handleRefFld(AggDataImportVO aggDataImpVO) {
-		Map<String,List<String>> refFldMap = new HashMap<String,List<String>>();
-		DataImportBVO1[] dataImportBVO1=(DataImportBVO1[]) aggDataImpVO.getChildren(DataImportBVO1.class);
-		DataImportBVO2[] dataImportBVO2=(DataImportBVO2[]) aggDataImpVO.getChildren(DataImportBVO2.class);
-		if(dataImportBVO1 != null && dataImportBVO1.length>0){
+		Map<String, List<String>> refFldMap = new HashMap<String, List<String>>();
+		DataImportBVO1[] dataImportBVO1 = (DataImportBVO1[]) aggDataImpVO
+				.getChildren(DataImportBVO1.class);
+		DataImportBVO2[] dataImportBVO2 = (DataImportBVO2[]) aggDataImpVO
+				.getChildren(DataImportBVO2.class);
+		if (dataImportBVO1 != null && dataImportBVO1.length > 0) {
 			int bvo1Len = dataImportBVO1.length;
-			for(int i=0;i<bvo1Len;i++){
+			for (int i = 0; i < bvo1Len; i++) {
 				DataImportBVO1 vo1 = dataImportBVO1[i];
-				if(vo1.getIf_ref().booleanValue()){
-					if(refFldMap.get(SystemConst.HEAD) != null){
+				if (vo1.getIf_ref().booleanValue()) {
+					if (refFldMap.get(SystemConst.HEAD) != null) {
 						List headFldLst = refFldMap.get(SystemConst.HEAD);
 						headFldLst.add(vo1.getDs_field());
 						refFldMap.put(SystemConst.HEAD, headFldLst);
-					}else{
+					} else {
 						List headFldLst = new ArrayList();
 						headFldLst.add(vo1.getDs_field());
 						refFldMap.put(SystemConst.HEAD, headFldLst);
@@ -672,17 +717,17 @@ public class DataImportImportAction extends AddAction {
 				}
 			}
 		}
-		
-		if(dataImportBVO2 != null && dataImportBVO2.length >0){
+
+		if (dataImportBVO2 != null && dataImportBVO2.length > 0) {
 			int bvo2Len = dataImportBVO2.length;
-			for(int i=0;i<bvo2Len;i++){
+			for (int i = 0; i < bvo2Len; i++) {
 				DataImportBVO2 vo2 = dataImportBVO2[i];
-				if(vo2.getIf_ref().booleanValue()){
-					if(refFldMap.get(SystemConst.BODY) != null){
+				if (vo2.getIf_ref().booleanValue()) {
+					if (refFldMap.get(SystemConst.BODY) != null) {
 						List bodyFldLst = refFldMap.get(SystemConst.BODY);
 						bodyFldLst.add(vo2.getDs_field());
 						refFldMap.put(SystemConst.BODY, bodyFldLst);
-					}else{
+					} else {
 						List bodyFldLst = new ArrayList();
 						bodyFldLst.add(vo2.getDs_field());
 						refFldMap.put(SystemConst.BODY, bodyFldLst);

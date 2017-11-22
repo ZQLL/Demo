@@ -13,6 +13,5 @@ public class SecBillTypeRefModel extends AbstractRefModel {
 		setPkFieldCode("pk_billtypecode");
 		setWherePart(" isnull(dr,0)=0 and is_enable = 'Y' ");
 	}
-	
-	
+
 }

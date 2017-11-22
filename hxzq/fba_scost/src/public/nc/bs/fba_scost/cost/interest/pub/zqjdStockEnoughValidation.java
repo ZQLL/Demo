@@ -1,14 +1,13 @@
 /*** Eclipse Class Decompiler plugin, copyright (c) 2012 Chao Chen (cnfree2000@hotmail.com) ***/
 package nc.bs.fba_scost.cost.interest.pub;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
 import nc.bs.uif2.validation.IValidationService;
 import nc.bs.uif2.validation.ValidationException;
 import nc.bs.uif2.validation.ValidationFailure;
 import nc.vo.fba_scost.cost.stockbalance.StockBalanceVO;
 import nc.vo.fba_zqjd.trade.zqjdtrade.ZqjdVO;
-import nc.vo.pub.lang.UFDouble;
 import nc.vo.trade.voutils.SafeCompute;
 
 public class zqjdStockEnoughValidation implements IValidationService {
@@ -19,6 +18,7 @@ public class zqjdStockEnoughValidation implements IValidationService {
 		this.zqjdVO = null;
 	}
 
+	@Override
 	public void validate(Object obj) throws ValidationException {
 		this.zqjdVO = ((ZqjdVO) obj);
 
@@ -28,7 +28,7 @@ public class zqjdStockEnoughValidation implements IValidationService {
 
 		validateQuantity(vlist);
 
-//		validateMoneySum(vlist);
+		// validateMoneySum(vlist);
 
 		if ((null != vlist) && (vlist.size() > 0)) {
 			ValidationFailure failure = new ValidationFailure();

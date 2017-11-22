@@ -1,23 +1,12 @@
 package nc.impl.fba_secd.secdimp.pub;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
 
 import nc.bs.dao.BaseDAO;
 import nc.bs.framework.common.NCLocator;
 import nc.bs.pf.pub.PfDataCache;
 import nc.impl.pubapp.pattern.data.bill.BillInsert;
-import nc.impl.pubapp.pattern.data.bill.BillQuery;
-import nc.impl.pubapp.pattern.data.bill.BillUpdate;
 import nc.itf.fba_secd.secdimp.pub.IDataImportBusiService;
-import nc.jdbc.framework.processor.BeanListProcessor;
-import nc.jdbc.framework.processor.BeanProcessor;
 import nc.jdbc.framework.processor.VectorProcessor;
 import nc.md.MDBaseQueryFacade;
 import nc.md.model.IComponent;
@@ -25,7 +14,6 @@ import nc.md.model.access.javamap.AggVOStyle;
 import nc.md.model.impl.BusinessEntity;
 import nc.pub.billcode.itf.IBillcodeManage;
 import nc.pubitf.org.IOrgUnitPubService;
-import nc.ui.trade.business.HYPubBO_Client;
 import nc.vo.fba_sec.pub.PendingBillVO;
 import nc.vo.fba_sec.secbd.securities.SecuritiesVO;
 import nc.vo.fba_secd.secdimp.dataimport.DataImportBVO1;
@@ -34,7 +22,6 @@ import nc.vo.fba_secd.secdimp.dataimport.DataImportVO;
 import nc.vo.fba_secd.secdimp.importproj.ImportProjVO;
 import nc.vo.fba_secd.secdimp.pub.AppContextUtil;
 import nc.vo.fba_secd.secdimp.pub.SystemConst;
-import nc.vo.fi.rateconfig.RatePeriodVO;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.CircularlyAccessibleValueObject;
 import nc.vo.pub.SuperVO;
@@ -44,10 +31,8 @@ import nc.vo.pub.lang.UFBoolean;
 import nc.vo.pub.lang.UFDate;
 import nc.vo.pubapp.AppContext;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
-import nc.vo.pubapp.pattern.model.entity.bill.IBill;
 import nc.vo.pubapp.pattern.tool.performance.DeepCloneTool;
-import nc.vo.tmpub.ia.InterestVO;
-
+import java.util.*;
 public class DataImportDBHdl {
 
 	private Map<String, String> orgInfoMap = new HashMap<String, String>();
@@ -818,69 +803,78 @@ public class DataImportDBHdl {
 						int m = cvo.length;
 						String sd = pvo.getAttributeValue("startdate")
 								.toString();
-						String ed = pvo.getAttributeValue("vdef4")
-								.toString();
-						UFDate Begdate = new UFDate(pvo.getAttributeValue("issuedate").toString());//债券到期日
-						UFDate Enddate = new UFDate(pvo.getAttributeValue("enddate").toString());//债券到期日
+						String ed = pvo.getAttributeValue("vdef4").toString();
+						UFDate Begdate = new UFDate(pvo.getAttributeValue(
+								"issuedate").toString());// 债券到期日
+						UFDate Enddate = new UFDate(pvo.getAttributeValue(
+								"enddate").toString());// 债券到期日
 						UFDate startd = new UFDate(sd);
 						UFDate endd = new UFDate(ed);
 						String sql1 = "select pk_interest,enddate from sim_interest where nvl(dr,0)=0 and pk_securities = '"
-								+ code + "' and issuedate like '" + Begdate.toString().substring(0, 10) + "%'";
+								+ code
+								+ "' and issuedate like '"
+								+ Begdate.toString().substring(0, 10) + "%'";
 						Vector vec1 = (Vector) dao.executeQuery(sql1,
 								new VectorProcessor());
-//						Date sdate = null;
-//						Date edate = null;
+						// Date sdate = null;
+						// Date edate = null;
 						int daysnum = 0;
 						// 取出利率设置表的pk
 						if (vec1 != null && vec1.size() == 1) {
 							String pk_interest = ((Vector) vec1.get(0)).get(0)
 									.toString();
-							String end_date =  ((Vector) vec1.get(0)).get(1)
+							String end_date = ((Vector) vec1.get(0)).get(1)
 									.toString();
 							for (int j = 0; j < m; j++) {
 								String paypercent = cvo[j].getAttributeValue(
 										"paypercent").toString();
 								String yearrate = cvo[j].getAttributeValue(
 										"year_rate").toString();
-//								SimpleDateFormat sdf = new SimpleDateFormat(
-//										"yyyy-MM-dd");
-//
-//								try {
-//									sdate = sdf.parse(sd.substring(0, 10));
-//									edate = sdf.parse(ed.substring(0, 10));
-//
-//								} catch (ParseException e) {
-//									// TODO 自动生成的 catch 块
-//									e.printStackTrace();
-//								}
-//								Calendar cal = Calendar.getInstance();
-//								cal.setTime(sdate);
-//								long time1 = cal.getTimeInMillis();
-//								cal.setTime(edate);
-//								long time2 = cal.getTimeInMillis();
-//								long between_days = (time2 - time1)
-//										/ (1000 * 3600 * 24);
+								// SimpleDateFormat sdf = new SimpleDateFormat(
+								// "yyyy-MM-dd");
+								//
+								// try {
+								// sdate = sdf.parse(sd.substring(0, 10));
+								// edate = sdf.parse(ed.substring(0, 10));
+								//
+								// } catch (ParseException e) {
+								// // TODO 自动生成的 catch 块
+								// e.printStackTrace();
+								// }
+								// Calendar cal = Calendar.getInstance();
+								// cal.setTime(sdate);
+								// long time1 = cal.getTimeInMillis();
+								// cal.setTime(edate);
+								// long time2 = cal.getTimeInMillis();
+								// long between_days = (time2 - time1)
+								// / (1000 * 3600 * 24);
 								// 使用UFDate的类进行天数获取
 								daysnum = UFDate.getDaysBetween(startd, endd) + 1;
 								if (UFDate.isLeapYear(startd.getYear() + 1)
-										&& startd.compareTo(new UFDate(startd.getYear()
-												+ "-02-28")) > 0) {
+										&& startd.compareTo(new UFDate(startd
+												.getYear() + "-02-28")) > 0) {
 									daysnum = 366;
 								} else if (UFDate.isLeapYear(startd.getYear())
-										&& startd.compareTo(new UFDate(startd.getYear()
-												+ "-02-28")) < 0) {
+										&& startd.compareTo(new UFDate(startd
+												.getYear() + "-02-28")) < 0) {
 									daysnum = 366;
 								} else {
 									daysnum = 365;
 								}
-////								添加五年制变成三年制的券，删除冗余信息；								
-								if(!new UFDate(Enddate.toString()).equals(new UFDate(end_date.toString()))){
-									//修改主表的信息
-									String periodsum = pvo.getAttributeValue("periodsum").toString();//计息总周期数
-									String ratetype = pvo.getAttributeValue("ratetype").toString();//利率种类
-									String periodtype = pvo.getAttributeValue("periodtype").toString();//付息周期
-									String paytype = pvo.getAttributeValue("paytype").toString();//付息方式
-									String profittype = pvo.getAttributeValue("profittype").toString();//收益方式
+								// // 添加五年制变成三年制的券，删除冗余信息；
+								if (!new UFDate(Enddate.toString())
+										.equals(new UFDate(end_date.toString()))) {
+									// 修改主表的信息
+									String periodsum = pvo.getAttributeValue(
+											"periodsum").toString();// 计息总周期数
+									String ratetype = pvo.getAttributeValue(
+											"ratetype").toString();// 利率种类
+									String periodtype = pvo.getAttributeValue(
+											"periodtype").toString();// 付息周期
+									String paytype = pvo.getAttributeValue(
+											"paytype").toString();// 付息方式
+									String profittype = pvo.getAttributeValue(
+											"profittype").toString();// 收益方式
 									String sqlin = "update sim_interest set yearrate = '"
 											+ yearrate
 											+ "' , enddate ='"
@@ -900,30 +894,34 @@ public class DataImportDBHdl {
 											+ "' and issuedate ='"
 											+ Begdate.toString() + "'";
 									dao.executeUpdate(sqlin);
-									
-									//查出多余信息条数
-									String sqlmore = "select count(*) from sim_rateperiod " +
-											"where nvl(dr,0)=0 " +
-											"and pk_interest ='"
+
+									// 查出多余信息条数
+									String sqlmore = "select count(*) from sim_rateperiod "
+											+ "where nvl(dr,0)=0 "
+											+ "and pk_interest ='"
 											+ pk_interest
 											+ "' and end_day > '"
-											+ Enddate.toString().substring(0,10) + " 23:59:59'";
-									Vector vec =  (Vector) dao.executeQuery(sqlmore, new VectorProcessor());
-									int more = (Integer) ((Vector)vec.get(0)).get(0);
-									
-									//删除多余的信息
-									String sqlout = "update sim_rateperiod set dr=1 " +
-											"where nvl(dr,0)=0 " +
-											"and pk_interest ='"
+											+ Enddate.toString().substring(0,
+													10) + " 23:59:59'";
+									Vector vec = (Vector) dao.executeQuery(
+											sqlmore, new VectorProcessor());
+									int more = (Integer) ((Vector) vec.get(0))
+											.get(0);
+
+									// 删除多余的信息
+									String sqlout = "update sim_rateperiod set dr=1 "
+											+ "where nvl(dr,0)=0 "
+											+ "and pk_interest ='"
 											+ pk_interest
 											+ "' and end_day > '"
-											+ Enddate.toString().substring(0,10) + " 23:59:59'";
+											+ Enddate.toString().substring(0,
+													10) + " 23:59:59'";
 									dao.executeUpdate(sqlout);
-									
-									//删除的数据条数当作修改数据条数处理
-									updateNum += more; 
+
+									// 删除的数据条数当作修改数据条数处理
+									updateNum += more;
 								}
-								
+
 								String sql2 = "select start_day from SIM_RATEPERIOD where nvl(dr,0)=0 and pk_interest = '"
 										+ pk_interest + "'";
 								String sql3 = "select end_day from SIM_RATEPERIOD where nvl(dr,0)=0 and pk_interest = '"
@@ -963,33 +961,33 @@ public class DataImportDBHdl {
 						} else {
 							AbstractBill[] vos1 = new AbstractBill[1];
 							for (int j = 0; j < vos[i].getAllChildrenVO().length; j++) {
-//								SimpleDateFormat sdf = new SimpleDateFormat(
-//										"yyyy-MM-dd");
-//
-//								try {
-//									sdate = sdf.parse(sd.substring(0, 10));
-//									edate = sdf.parse(ed.substring(0, 10));
-//
-//								} catch (ParseException e) {
-//									// TODO 自动生成的 catch 块
-//									e.printStackTrace();
-//								}
-//								Calendar cal = Calendar.getInstance();
-//								cal.setTime(sdate);
-//								long time1 = cal.getTimeInMillis();
-//								cal.setTime(edate);
-//								long time2 = cal.getTimeInMillis();
-//								long between_days = (time2 - time1)
-//										/ (1000 * 3600 * 24);
-								//时间天数算法修改，调用系统方法
+								// SimpleDateFormat sdf = new SimpleDateFormat(
+								// "yyyy-MM-dd");
+								//
+								// try {
+								// sdate = sdf.parse(sd.substring(0, 10));
+								// edate = sdf.parse(ed.substring(0, 10));
+								//
+								// } catch (ParseException e) {
+								// // TODO 自动生成的 catch 块
+								// e.printStackTrace();
+								// }
+								// Calendar cal = Calendar.getInstance();
+								// cal.setTime(sdate);
+								// long time1 = cal.getTimeInMillis();
+								// cal.setTime(edate);
+								// long time2 = cal.getTimeInMillis();
+								// long between_days = (time2 - time1)
+								// / (1000 * 3600 * 24);
+								// 时间天数算法修改，调用系统方法
 								daysnum = UFDate.getDaysBetween(startd, endd) + 1;
 								if (UFDate.isLeapYear(startd.getYear() + 1)
-										&& startd.compareTo(new UFDate(startd.getYear()
-												+ "-02-28")) > 0) {
+										&& startd.compareTo(new UFDate(startd
+												.getYear() + "-02-28")) > 0) {
 									daysnum = 366;
 								} else if (UFDate.isLeapYear(startd.getYear())
-										&& startd.compareTo(new UFDate(startd.getYear()
-												+ "-02-28")) < 0) {
+										&& startd.compareTo(new UFDate(startd
+												.getYear() + "-02-28")) < 0) {
 									daysnum = 366;
 								} else {
 									daysnum = 365;

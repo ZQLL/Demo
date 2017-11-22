@@ -1,18 +1,14 @@
 package nc.impl.sim.iufo;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import nc.bs.dao.BaseDAO;
-import nc.bs.fba_sim.simtrade.report.FundInOutUtils;
 import nc.bs.fba_sim.simtrade.report.ReportSqlUtil;
 import nc.bs.framework.common.NCLocator;
 import nc.bs.logging.Logger;
 import nc.itf.sim.iufo.IufoQuerySIMVO;
 import nc.itf.uap.IUAPQueryBS;
 import nc.jdbc.framework.processor.BeanListProcessor;
-import nc.pub.freereport.ReportConst;
-import nc.pub.freereport.SimReportUtils;
 import nc.vo.fba_sabb.trade.ydsgh.AgreedbbVO;
 import nc.vo.fba_scost.cost.costplan.CostPlanVO;
 import nc.vo.fba_scost.cost.pub.CostConstant;
@@ -21,40 +17,44 @@ import nc.vo.fba_scost.cost.trademarket.TradeMarketVO;
 import nc.vo.fba_sim.simtrade.report.SecInvestDailyRepVO;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.freereport.ReportDataVO;
-import nc.vo.pub.lang.UFDate;
 import nc.vo.pub.lang.UFDateTime;
 import nc.vo.pub.lang.UFDouble;
-import nc.vo.pub.query.ConditionVO;
 
 /**
  * 证券市值函数
+ * 
  * @author hupl
  */
 public class SIM_HXZQSZImpl extends SIMIufoResultServiceImpl {
 	/**
 	 * 
 	 */
-	public Object getFuncResult(IufoQuerySIMVO simvo,boolean isqc)throws Exception {
+	public Object getFuncResult(IufoQuerySIMVO simvo, boolean isqc)
+			throws Exception {
 		try {
-			
+
 			SIM_Analysis an = new SIM_Analysis();
 			String condition = an.bulidCondition(simvo, true);
 			String distillDate = null;
-			if(isqc){//期初
+			if (isqc) {// 期初
 				distillDate = getQcDate(simvo);
-			}else{//期末
+			} else {// 期末
 				distillDate = getQmDate(simvo);
 			}
-			CostPlanVO costplan = queryCostPlanInfo(simvo.getPk_group(),simvo.getPk_org(), simvo.getPk_glBookCode());
-			//查询库存
+			CostPlanVO costplan = queryCostPlanInfo(simvo.getPk_group(),
+					simvo.getPk_org(), simvo.getPk_glBookCode());
+			// 查询库存
 			SimStockBanlance banlace = new SimStockBanlance();
 			List<StockBalanceVO> zl = this.getFir(condition, distillDate);
 			UFDouble result = new UFDouble(0.0);
-			if(zl != null && zl.size() > 0){
-				for(StockBalanceVO z : zl){
-					UFDouble stocknum = z.getStocks_num() == null ? new UFDouble(0.0) : z.getStocks_num();
-					TradeMarketVO vo = queryLastMarket(z.getPk_securities(),distillDate,isqc);
-					UFDouble price = vo.getClose_price() == null ? new UFDouble(0.0) : vo.getClose_price();
+			if (zl != null && zl.size() > 0) {
+				for (StockBalanceVO z : zl) {
+					UFDouble stocknum = z.getStocks_num() == null ? new UFDouble(
+							0.0) : z.getStocks_num();
+					TradeMarketVO vo = queryLastMarket(z.getPk_securities(),
+							distillDate, isqc);
+					UFDouble price = vo.getClose_price() == null ? new UFDouble(
+							0.0) : vo.getClose_price();
 					result = result.add(stocknum.multiply(price));
 				}
 			}
@@ -64,29 +64,36 @@ public class SIM_HXZQSZImpl extends SIMIufoResultServiceImpl {
 			return null;
 		}
 	}
-	
-	public TradeMarketVO queryLastMarket(String pk_securities,String trade_date,boolean isqc)throws BusinessException{
+
+	public TradeMarketVO queryLastMarket(String pk_securities,
+			String trade_date, boolean isqc) throws BusinessException {
 		TradeMarketVO marketvo = null;
-		if(pk_securities == null || trade_date == null)
+		if (pk_securities == null || trade_date == null)
 			return null;
 		StringBuffer sf = new StringBuffer();
-		sf.append(" select * from sim_trademarket where pk_securities = '"+pk_securities+"' ");
+		sf.append(" select * from sim_trademarket where pk_securities = '"
+				+ pk_securities + "' ");
 		sf.append(" and trade_date =  ");
-		sf.append(" (select isnull(max(trade_date),'"+CostConstant.DEFAULT_DATE+"')  from sim_trademarket where ");
-		if(isqc){
-			sf.append(" isnull(dr, 0) = 0 and trade_date < '"+trade_date+"' ");//期初
-		}else{
-			sf.append(" isnull(dr, 0) = 0 and trade_date <= '"+trade_date+"' ");//期末
+		sf.append(" (select isnull(max(trade_date),'"
+				+ CostConstant.DEFAULT_DATE + "')  from sim_trademarket where ");
+		if (isqc) {
+			sf.append(" isnull(dr, 0) = 0 and trade_date < '" + trade_date
+					+ "' ");// 期初
+		} else {
+			sf.append(" isnull(dr, 0) = 0 and trade_date <= '" + trade_date
+					+ "' ");// 期末
 		}
-		sf.append(" and pk_securities = '"+pk_securities+"') ");
+		sf.append(" and pk_securities = '" + pk_securities + "') ");
 		sf.append(" and isnull(dr, 0) = 0 ");
-		List<TradeMarketVO> list = (List<TradeMarketVO>)new BaseDAO().executeQuery(sf.toString(), new BeanListProcessor(TradeMarketVO.class));
-		if(list != null && list.size() > 0 ){
+		List<TradeMarketVO> list = (List<TradeMarketVO>) new BaseDAO()
+				.executeQuery(sf.toString(), new BeanListProcessor(
+						TradeMarketVO.class));
+		if (list != null && list.size() > 0) {
 			marketvo = list.get(0);
 		}
 		return marketvo;
 	}
-	
+
 	private List<StockBalanceVO> getFir(String condition, String end_date)
 			throws BusinessException {
 		IUAPQueryBS queryservice = (IUAPQueryBS) NCLocator.getInstance()
@@ -180,7 +187,7 @@ public class SIM_HXZQSZImpl extends SIMIufoResultServiceImpl {
 			throw new BusinessException("期初查询出错！");
 		}
 	}
-	
+
 	/**
 	 * 获取过滤sql 查询'HV5A-0xx-03'类型的交易记录
 	 */
@@ -188,20 +195,17 @@ public class SIM_HXZQSZImpl extends SIMIufoResultServiceImpl {
 
 		IUAPQueryBS queryservice = (IUAPQueryBS) NCLocator.getInstance()
 				.lookup(IUAPQueryBS.class.getName());
-		String querydbbSql = 
-				"select a.contract_id, a.pk_aggreedbb\n" +
-						"  from sim_agreedbb a\n" + 
-						" where a.state > 1\n" + 
-						"   and nvl(a.dr, 0) = 0\n" + 
-						"   and a.contract_id not in\n" + 
-						"       (select contract_id\n" + 
-						"          from (select count(*), contract_id\n" + 
-						"                  from sim_agreedbb a\n" + 
-						"                 where a.state > 1\n" + 
-						"                   and nvl(a.dr, 0) = 0\n" + 
-						"                 group by contract_id\n" + 
-						"                having count(*) > 1))\n" + 
-						"   and a.transtypecode = 'HV5A-0xx-03'";
+		String querydbbSql = "select a.contract_id, a.pk_aggreedbb\n"
+				+ "  from sim_agreedbb a\n" + " where a.state > 1\n"
+				+ "   and nvl(a.dr, 0) = 0\n" + "   and a.contract_id not in\n"
+				+ "       (select contract_id\n"
+				+ "          from (select count(*), contract_id\n"
+				+ "                  from sim_agreedbb a\n"
+				+ "                 where a.state > 1\n"
+				+ "                   and nvl(a.dr, 0) = 0\n"
+				+ "                 group by contract_id\n"
+				+ "                having count(*) > 1))\n"
+				+ "   and a.transtypecode = 'HV5A-0xx-03'";
 
 		String glsql = "";
 		try {
@@ -234,7 +238,7 @@ public class SIM_HXZQSZImpl extends SIMIufoResultServiceImpl {
 		}
 		return glsql;
 	}
-	
+
 	// 去重复数据
 	public static List<String> array_unique(List<String> a) {
 		// array_unique

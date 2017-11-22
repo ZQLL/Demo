@@ -12,17 +12,20 @@ import nc.vo.uif2.LoginContext;
 
 public interface IPayableinterestcalMaintain extends ISmartService {
 
-	public PayableInterestCalVO[] query(IQueryScheme queryScheme) throws BusinessException, Exception;
+	public PayableInterestCalVO[] query(IQueryScheme queryScheme)
+			throws BusinessException, Exception;
 
 	/**
 	 * 计提
 	 */
-	public PayableInterestCalVO[] calInterest(LoginContext context, UFDate trade_date) throws BusinessException;
+	public PayableInterestCalVO[] calInterest(LoginContext context,
+			UFDate trade_date) throws BusinessException;
 
 	/**
 	 * 取消计提
 	 */
-	public void cancelCal(LoginContext context, UFDate trade_date) throws BusinessException;
+	public void cancelCal(LoginContext context, UFDate trade_date)
+			throws BusinessException;
 
 	/**
 	 * 记账

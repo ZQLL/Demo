@@ -1,22 +1,12 @@
 package nc.message.reconstruction;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -57,6 +47,9 @@ import nc.ui.pub.style.Style;
 import nc.uitheme.ui.ThemeResourceCenter;
 import nc.vo.pub.BusinessException;
 import net.miginfocom.swing.MigLayout;
+import java.util.*;
+import java.util.List;
+import java.awt.*;
 
 public class NCMessageQueryPanel extends JPanel implements MessageEventListener {
 	private static final long serialVersionUID = -1242880109922663265L;
@@ -441,8 +434,8 @@ public class NCMessageQueryPanel extends JPanel implements MessageEventListener 
 	private UICheckBox getReadBox() {
 		if (cbreadbox == null) {
 			// update by lihaibo
-			//cbreadbox = new UICheckBox(NCLangRes.getInstance().getStrByID(
-			//		"ncmessage", "msgboxres-000027")/* 包含已读消息 */);
+			// cbreadbox = new UICheckBox(NCLangRes.getInstance().getStrByID(
+			// "ncmessage", "msgboxres-000027")/* 包含已读消息 */);
 			cbreadbox = new UICheckBox("已处理消息");
 			cbreadbox.setOpaque(false);
 			cbreadbox.addActionListener(new ActionListener() {
@@ -559,6 +552,7 @@ public class NCMessageQueryPanel extends JPanel implements MessageEventListener 
 			isQuik = true;
 		}
 
+		@Override
 		public void setSelected(boolean isselected) {
 			selected = isselected;
 			putValue(SELECTED_KEY, selected);
@@ -598,7 +592,7 @@ public class NCMessageQueryPanel extends JPanel implements MessageEventListener 
 		String[] bmpks = getBmRef().getRefPKs();// 部门参照
 		if (bmpks != null && bmpks.length > 0) {
 			String bmpk = bmpks[0];
-//			 bmpk = "1001A1100000000009RF";
+			// bmpk = "1001A1100000000009RF";
 			try {
 				Vector vec = (Vector) NCLocator
 						.getInstance()
@@ -637,14 +631,14 @@ public class NCMessageQueryPanel extends JPanel implements MessageEventListener 
 				// 将两个数组合并
 				System.arraycopy(bmpkss, 0, sts, 0, bmpkss.length);// 将第二个数组与第一个数组合并
 				System.arraycopy(bmpkss2, 0, sts, bmpkss.length, bmpkss2.length);// 将第二个数组与第一个数组合并
-				if(sts != null && sts.length > 0) {
+				if (sts != null && sts.length > 0) {
 					info.setDetail(sts);// 部门参照
 				} else {
 					String[] ss = new String[1];
 					ss[0] = "000000000000000";
 					info.setDetail(ss);// 部门参照
 				}
-				
+
 			} catch (BusinessException e) {
 				e.printStackTrace();
 			}
@@ -692,6 +686,7 @@ public class NCMessageQueryPanel extends JPanel implements MessageEventListener 
 	}
 
 	@Override
+	
 	public void handleMsgEvent(MessageEvent me) {
 		if (me.getEventcode().equals(MessageEvent.BOXCHANGE)) {
 			Object object = me.getEventObject();
@@ -795,9 +790,9 @@ public class NCMessageQueryPanel extends JPanel implements MessageEventListener 
 	private void processReadBox(boolean isreadshow) {
 		getReadBox().setVisible(true);
 		// update by lihaibo
-		//getReadBox().setText(
-		//		NCLangRes.getInstance().getStrByID("ncmessage",
-		//				"msgboxres-000031")/* 包含已处理 */);
+		// getReadBox().setText(
+		// NCLangRes.getInstance().getStrByID("ncmessage",
+		// "msgboxres-000031")/* 包含已处理 */);
 		getReadBox().setText("已处理消息");
 		getReadBox().setSelected(isreadshow);
 	}

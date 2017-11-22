@@ -1,9 +1,8 @@
 /*** Eclipse Class Decompiler plugin, copyright (c) 2012 Chao Chen (cnfree2000@hotmail.com) ***/
 package nc.bs.fba_scost.cost.interest.pub;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+
 import nc.bs.dao.BaseDAO;
 import nc.bs.dao.DAOException;
 import nc.bs.logging.Logger;
@@ -23,6 +22,7 @@ public class zqjdOverReturnValidation implements IValidationService {
 		this.zqjdVO = null;
 	}
 
+	@Override
 	public void validate(Object obj) throws ValidationException {
 		this.zqjdVO = ((ZqjdVO) obj);
 

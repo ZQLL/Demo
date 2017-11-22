@@ -1,12 +1,8 @@
 package nc.message.msgcenter.msgtable;
 
-import nc.bs.logging.Logger;
 import nc.message.vo.MessageVO;
 import nc.message.vo.NCMessage;
-import nc.ui.format.NCFormater;
 import nc.ui.ml.NCLangRes;
-import nc.vo.pub.format.FormatResult;
-import nc.vo.pub.format.exception.FormatException;
 import nc.vo.sm.UserVO;
 import nc.vo.uap.rbac.util.RbacCacheUtil;
 
@@ -43,10 +39,12 @@ public class SendMsgTBModel extends AbstractMsgTBModel {
 		return colNames.length;
 	}
 
+	@Override
 	public String getColumnName(int column) {
 		return colNames[column];
 	}
 
+	
 	@Override
 	public Object getValueAt(int row, int column) {
 
@@ -56,26 +54,26 @@ public class SendMsgTBModel extends AbstractMsgTBModel {
 		switch (column) {
 		case 1:
 			return msgvo.getSubject();
-//			return msgvo.getPriority();
+			// return msgvo.getPriority();
 		case 2:
 			String receivers = msgvo.getReceiver();
 			return getReceivDisp(receivers);
-//			int attach = msg.getAttachmentSetting().getAttachments().length;
-//			return attach > 0 ? Boolean.TRUE : Boolean.FALSE;
-//		case 3:
-//			return msgvo.getSubject();
-//		case 4:
-//			String receivers = msgvo.getReceiver();
-//			return getReceivDisp(receivers);
-//		case 5:
-//			try {
-//				FormatResult result = NCFormater.formatDateTime(msgvo
-//						.getSendtime());
-//				return result.getValue();
-//			} catch (FormatException e) {
-//				Logger.error(msgvo, e);
-//				return msgvo.getSendtime().toLocalString();
-//			}
+			// int attach = msg.getAttachmentSetting().getAttachments().length;
+			// return attach > 0 ? Boolean.TRUE : Boolean.FALSE;
+			// case 3:
+			// return msgvo.getSubject();
+			// case 4:
+			// String receivers = msgvo.getReceiver();
+			// return getReceivDisp(receivers);
+			// case 5:
+			// try {
+			// FormatResult result = NCFormater.formatDateTime(msgvo
+			// .getSendtime());
+			// return result.getValue();
+			// } catch (FormatException e) {
+			// Logger.error(msgvo, e);
+			// return msgvo.getSendtime().toLocalString();
+			// }
 		}
 		return super.getValueAt(row, column);
 	}

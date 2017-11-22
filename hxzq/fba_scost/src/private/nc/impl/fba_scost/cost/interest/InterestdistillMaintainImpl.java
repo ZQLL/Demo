@@ -14,11 +14,13 @@ import nc.vo.uif2.LoginContext;
 
 public class InterestdistillMaintainImpl extends
 		AceSim_interestdistillPubServiceImpl implements InterestdistillMaintain {
+	@Override
 	public InterestdistillVO[] query(IQueryScheme queryScheme)
 			throws BusinessException {
 		return super.pubquerybasedoc(queryScheme);
 	}
 
+	@Override
 	public BatchOperateVO batchSave(BatchOperateVO batchVO)
 			throws BusinessException {
 		BatchSaveAction<InterestdistillVO> saveAction = new BatchSaveAction();
@@ -28,18 +30,21 @@ public class InterestdistillMaintainImpl extends
 		return retData;
 	}
 
+	@Override
 	public InterestdistillVO[] distill(LoginContext context, UFDate trade_date)
 			throws BusinessException {
 		Sim_interestdistillBP bp = new Sim_interestdistillBP();
 		return bp.distill(context, trade_date);
 	}
 
+	@Override
 	public void unDistill(LoginContext context, UFDate trade_date)
 			throws BusinessException {
 		Sim_interestdistillBP bp = new Sim_interestdistillBP();
 		bp.unDistill(context, trade_date);
 	}
 
+	@Override
 	public void tally(LoginContext context) throws BusinessException {
 		Sim_interestdistillBP bp = new Sim_interestdistillBP();
 		bp.tally(context);

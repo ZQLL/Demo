@@ -5,7 +5,6 @@ import java.util.List;
 import nc.impl.fba_sim.costingplugin.AbstractMdshg;
 import nc.itf.fba_scost.cost.tool.ICostingTool;
 import nc.jdbc.framework.processor.BeanListProcessor;
-import nc.vo.fba_scost.cost.pub.PubMethod;
 import nc.vo.fba_sim.simtrade.hgtally.HgtallyVO;
 import nc.vo.fba_sim.simtrade.mdshg.MdshgVO;
 import nc.vo.pub.BusinessException;
@@ -21,6 +20,7 @@ public class Mdshg extends AbstractMdshg {
 	 * @param tradevo
 	 * @throws Exception
 	 */
+	@Override
 	protected void calculateWhenCheck(ICostingTool costingtool, MdshgVO vo)
 			throws Exception {
 		/**
@@ -127,6 +127,7 @@ public class Mdshg extends AbstractMdshg {
 	 * @param tradevo
 	 * @throws Exception
 	 */
+	@Override
 	protected void calculateWhenUnCheck(ICostingTool costingtool, MdshgVO vo)
 			throws Exception {
 		// 删除台账处理 未完待续

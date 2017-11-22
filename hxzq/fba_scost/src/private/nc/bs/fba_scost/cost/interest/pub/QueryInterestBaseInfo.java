@@ -22,6 +22,7 @@ import nc.vo.fba_scost.cost.interest.Interest;
 import nc.vo.fba_scost.cost.interest.Rateperiod;
 import nc.vo.fba_scost.cost.interestdistill.AggInterestDist;
 import nc.vo.fba_scost.cost.interestdistill.InterestdistillVO;
+import nc.vo.fba_scost.cost.inventoryinfo.InventoryInfoVO;
 import nc.vo.fba_scost.cost.pub.AppContextUtil;
 import nc.vo.fba_scost.cost.pub.CostConstant;
 import nc.vo.fba_scost.cost.pub.SystemConst;
@@ -61,6 +62,7 @@ public class QueryInterestBaseInfo extends QueryBasePubInfo {
 					new ResultSetProcessor() {
 						private static final long serialVersionUID = 1L;
 
+						@Override
 						public Object handleResultSet(ResultSet rs)
 								throws SQLException {
 							boolean flag = false;
@@ -98,6 +100,7 @@ public class QueryInterestBaseInfo extends QueryBasePubInfo {
 					new ResultSetProcessor() {
 						private static final long serialVersionUID = 1L;
 
+						@Override
 						public Object handleResultSet(ResultSet rs)
 								throws SQLException {
 							UFDate date = new UFDate(CostConstant.DEFAULT_DATE);
@@ -335,14 +338,46 @@ public class QueryInterestBaseInfo extends QueryBasePubInfo {
 		sf.append("   and isnull(x.pk_securities, 'pk_securities') = isnull(y.pk_securities, 'pk_securities') ");
 		sf.append("   and isnull(x.pk_assetsprop, 'pk_assetsprop') = isnull(y.pk_assetsprop, 'pk_assetsprop') ");
 		sf.append("   and isnull(x.pk_stocksort, 'pk_stocksort') = isnull(y.pk_stocksort, 'pk_stocksort') ");
-		sf.append("   and y.stocks_num > 0  ");
-		
+		sf.append("   and y.stocks_num > 0 ");
 		sf.append("   and y.pk_costplan  = '" + costplanvo.getPk_costplan()
 				+ "' ");
 		List<StockBalanceVO> list = null;
 		try {
 			list = (List<StockBalanceVO>) new BaseDAO().executeQuery(
 					sf.toString(), new BeanListProcessor(StockBalanceVO.class));
+		} catch (DAOException e) {
+			throw new BusinessException(e);
+		}
+		return list;
+	}
+
+	/**
+	 * 查询筹资库存记录:审核日期当天及之前所有库存金额不为0的记录
+	 */
+	@SuppressWarnings("unchecked")
+	public List<InventoryInfoVO> queryLastInventory(CostPlanVO costplanvo,
+			String pk_group, String pk_org, UFDate trade_date)
+			throws BusinessException {
+		StringBuffer sf = new StringBuffer();
+		sf.append(" select a.* from fund_inventoryinfo a");
+		sf.append("   where a.enddate <= ");
+		sf.append("'" + trade_date.asEnd() + "'");
+		sf.append("   and a.enddate >= ");
+		sf.append("'" + trade_date.asBegin() + "'");
+		sf.append(" and a.stocks_sum > 0 ");
+		sf.append("         and a.pk_org = '" + pk_org + "' ");
+		sf.append("         and a.pk_group = '" + pk_group + "' ");
+		sf.append("   and a.pk_costplan  = '" + costplanvo.getPk_costplan()
+				+ "' ");
+		sf.append("   and isnull(dr,0)=0 ");
+		// 添加一个条件，保证只是查询买入的单子，不查询到期的单子
+		sf.append("   and a.transtypecode like 'HV8_-0xx-01' ");
+
+		List<InventoryInfoVO> list = null;
+		try {
+			list = (List<InventoryInfoVO>) new BaseDAO()
+					.executeQuery(sf.toString(), new BeanListProcessor(
+							InventoryInfoVO.class));
 		} catch (DAOException e) {
 			throw new BusinessException(e);
 		}

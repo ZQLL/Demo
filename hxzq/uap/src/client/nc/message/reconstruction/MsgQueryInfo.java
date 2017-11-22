@@ -1,9 +1,8 @@
 package nc.message.reconstruction;
 
-public class MsgQueryInfo
-{
+public class MsgQueryInfo {
 	private String quikdate;
-	
+
 	/**
 	 * 等同于isRead isHandle和isRead后续会统一归为isRead字段
 	 */
@@ -19,103 +18,83 @@ public class MsgQueryInfo
 
 	private boolean isQiukQry = true;
 
-	public String getQuikdate()
-	{
+	public String getQuikdate() {
 		return quikdate;
 	}
 
-	public void setQuikdate(String quikdate)
-	{
+	public void setQuikdate(String quikdate) {
 		this.quikdate = quikdate;
 	}
 
-	public boolean isHandle()
-	{
+	public boolean isHandle() {
 		return isHandle;
 	}
 
-	public void setHandle(boolean isHandle)
-	{
+	public void setHandle(boolean isHandle) {
 		this.isHandle = isHandle;
 	}
 
-	public boolean isShowQry()
-	{
+	public boolean isShowQry() {
 		return isShowQry;
 	}
 
-	public void setShowQry(boolean isShowQry)
-	{
+	public void setShowQry(boolean isShowQry) {
 		this.isShowQry = isShowQry;
 	}
 
-	public String getSubject()
-	{
+	public String getSubject() {
 		return subject;
 	}
 
-	public void setSubject(String subject)
-	{
+	public void setSubject(String subject) {
 		this.subject = subject;
 	}
-	
-	public String[] getDetail()
-	{
+
+	public String[] getDetail() {
 		return detail;
 	}
 
-	public void setDetail(String[] detail)
-	{
+	public void setDetail(String[] detail) {
 		this.detail = detail;
 	}
-	
-	public String[] getBillType()
-	{
+
+	public String[] getBillType() {
 		return billtype;
 	}
 
-	public void setBillType(String[] billtype)
-	{
+	public void setBillType(String[] billtype) {
 		this.billtype = billtype;
 	}
 
-	public String[] getSender()
-	{
+	public String[] getSender() {
 		return sender;
 	}
 
-	public void setSender(String[] sender)
-	{
+	public void setSender(String[] sender) {
 		this.sender = sender;
 	}
 
-	public String getFrom()
-	{
+	public String getFrom() {
 		return from;
 	}
 
-	public void setFrom(String from)
-	{
+	public void setFrom(String from) {
 		this.from = from;
 	}
 
-	public String getSenddate()
-	{
+	public String getSenddate() {
 		return senddate;
 	}
 
-	public void setSenddate(String senddate)
-	{
+	public void setSenddate(String senddate) {
 		this.senddate = senddate;
 	}
 
-	public boolean isQiukQry()
-	{
+	public boolean isQiukQry() {
 		return isQiukQry;
 	}
 
-	public void setQiukQry(boolean isQiukQry)
-	{
+	public void setQiukQry(boolean isQiukQry) {
 		this.isQiukQry = isQiukQry;
 	}
 }

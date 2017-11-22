@@ -31,12 +31,13 @@ public class FlowStateAction extends AbstractSingleApproveAction {
 		dlg.showModal();
 	}
 
+	
 	@Override
 	String getName() {
-		//update by lihaibo 
+		// update by lihaibo
 		return "历史审批情况"/* @res "处理情况" */;
-//		return nc.vo.ml.NCLangRes4VoTransl.getNCLangRes().getStrByID(
-//				"pfworkflow63", "2PLATFORM-00084")/* @res "处理情况" */;
+		// return nc.vo.ml.NCLangRes4VoTransl.getNCLangRes().getStrByID(
+		// "pfworkflow63", "2PLATFORM-00084")/* @res "处理情况" */;
 	}
 
 }

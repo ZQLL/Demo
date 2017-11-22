@@ -3,9 +3,9 @@ package nc.tool.fba_zqjd.pub;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 import nc.vo.fba_scost.cost.pub.SystemConst;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * 金融资产属性工具类
@@ -22,11 +22,11 @@ public class AssetsPropTool {
 	 */
 	public List<String> getDebtAssets() {
 
-		List<String> debts = new ArrayList<String  >();
-		//修改删除了债卷，取消规避该类型
+		List<String> debts = new ArrayList<String>();
+		// 修改删除了债卷，取消规避该类型
 		debts.add(SystemConst.Pk_AssetsProp5);
 		debts.add(SystemConst.Pk_AssetsProp6);
-		
+
 		return debts;
 	}
 

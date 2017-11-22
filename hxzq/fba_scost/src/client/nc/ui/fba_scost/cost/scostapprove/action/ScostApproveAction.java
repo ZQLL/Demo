@@ -2,8 +2,6 @@ package nc.ui.fba_scost.cost.scostapprove.action;
 
 import java.awt.Event;
 import java.awt.event.ActionEvent;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,17 +9,13 @@ import java.util.Map;
 import javax.swing.Action;
 import javax.swing.KeyStroke;
 
-import nc.bs.dao.BaseDAO;
-import nc.bs.dao.DAOException;
-import nc.bs.fba_sjll.sjll.ratecalc.QueryBaseInfo;
 import nc.bs.framework.common.NCLocator;
 import nc.bs.logging.Logger;
 import nc.itf.fba_scost.cost.billcheck.IBillCheckService;
-import nc.itf.fba_scost.cost.billcheck.IBillMakeJTD;
-import nc.jdbc.framework.processor.ResultSetProcessor;
 import nc.ui.fba_scost.cost.scostapprove.ace.view.ScostapproveTableModel;
 import nc.ui.fba_scost.cost.scostapprove.panel.WaitDlg;
 import nc.ui.pub.beans.MessageDialog;
+import nc.ui.pub.beans.UIDialog;
 import nc.ui.pubapp.uif2app.model.BatchModelDataManager;
 import nc.ui.uif2.NCAction;
 import nc.ui.uif2.editor.BatchBillTable;
@@ -30,7 +24,6 @@ import nc.vo.fba_scost.cost.billtypegroup.BilltypeGroupVO;
 import nc.vo.fba_scost.cost.checkpara.CheckParaVO;
 import nc.vo.fba_scost.cost.pub.AppContextUtil;
 import nc.vo.fba_scost.cost.pub.PubMethod;
-import nc.vo.fba_scost.pub.exception.ExceptionHandler;
 import nc.vo.fba_scost.scost.approve.ApproveVO;
 import nc.vo.fba_sec.pub.BilltypeDetailsVO;
 import nc.vo.fba_sec.pub.SecSysInitCache;
@@ -103,8 +96,7 @@ public class ScostApproveAction extends NCAction {
 			groupvos[i] = groupvo;
 		}
 		checkParaVO.setGroupvos(groupvos);
-		
-		
+
 		// 2015年6月23日 对配置成本调整单情况，进行警告！
 		SecSysInitCache.getInstance().clearCheckPlanDetails(
 				checkParaVO.getPk_group(), checkParaVO.getPk_org(),
@@ -119,7 +111,7 @@ public class ScostApproveAction extends NCAction {
 					String msg = "插件：成本调整单未配置，可能造成审核与弃审数据不一致，是否继续？";
 					Logger.warn(msg, this.getClass(), "doAction()");
 					int res = MessageDialog.showOkCancelDlg(null, "警告", msg);
-					if (res != MessageDialog.ID_OK) {
+					if (res != UIDialog.ID_OK) {
 						return;
 					}
 				}
@@ -128,6 +120,7 @@ public class ScostApproveAction extends NCAction {
 		// 2015年6月23日
 		waitDlg = new WaitDlg(this.model.getContext().getEntranceUI());
 		new Thread() {
+			@Override
 			public void run() {
 				String isSuccess = null;
 				String temp_e = null;
@@ -141,8 +134,7 @@ public class ScostApproveAction extends NCAction {
 							+ "' and pk_glorgbook='"
 							+ AppContextUtil.getDefaultOrgBook()
 							+ "' and islastest='Y' ");
-					
-					
+
 				} catch (BusinessException e) {
 					Logger.error("异常：" + e.getMessage(), e);
 					temp_e = e.getMessage();
@@ -162,18 +154,21 @@ public class ScostApproveAction extends NCAction {
 							MessageDialog.showErrorDlg(getModel().getContext()
 									.getEntranceUI(), "错误", temp_e);
 						} else {
-							//调用放在后台，这里不调用
-//							//通过前台参数来判断是否调用后台方法使已审核的借入单产生计提单--zq
-//							IBillMakeJTD bmj = NCLocator.getInstance().lookup(
-//									IBillMakeJTD.class);
-//							try {
-//								if (bmj.getBooleanFromInitcode(checkParaVO.getPk_glorgbook(), "Zqjd02")) {
-//										bmj.MakeJTD(checkParaVO);
-//								}
-//							} catch (BusinessException e) {
-//								// TODO 自动生成的 catch 块
-//								e.printStackTrace();
-//							}
+							// 调用放在后台，这里不调用
+							// //通过前台参数来判断是否调用后台方法使已审核的借入单产生计提单--zq
+							// IBillMakeJTD bmj =
+							// NCLocator.getInstance().lookup(
+							// IBillMakeJTD.class);
+							// try {
+							// if
+							// (bmj.getBooleanFromInitcode(checkParaVO.getPk_glorgbook(),
+							// "Zqjd02")) {
+							// bmj.MakeJTD(checkParaVO);
+							// }
+							// } catch (BusinessException e) {
+							// // TODO 自动生成的 catch 块
+							// e.printStackTrace();
+							// }
 							MessageDialog.showHintDlg(getModel().getContext()
 									.getEntranceUI(), "提示", "审核完毕！详情请参考日志栏！");
 						}

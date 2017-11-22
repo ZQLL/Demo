@@ -20,10 +20,11 @@ public class SIMIufoResultServiceImpl implements ISIMIufoResultService {
 	 * SIM UIFO 函数后台入口
 	 */
 	@Override
-	public Object getFuncResult(String funName, IufoQuerySIMVO simvo) throws Exception {
-//		String pk_group = AppContextUtil.getPk_group();// 取默认值
-//
-//		simvo.setPk_group(pk_group);// 当前登录集团
+	public Object getFuncResult(String funName, IufoQuerySIMVO simvo)
+			throws Exception {
+		// String pk_group = AppContextUtil.getPk_group();// 取默认值
+		//
+		// simvo.setPk_group(pk_group);// 当前登录集团
 		if (SIMIufoFuncConst.SIM_ZQQCSL.equals(funName)) {// 库存期初数量
 			SIM_ZQSLImpl slimp = new SIM_ZQSLImpl();
 			return slimp.getFuncResult(simvo, true, true);
@@ -42,7 +43,7 @@ public class SIMIufoResultServiceImpl implements ISIMIufoResultService {
 		} else if (SIMIufoFuncConst.SIM_ZQSZQM.equals(funName)) {// 市值期末金额
 			SIM_ZQSZImpl szimp = new SIM_ZQSZImpl();
 			return szimp.getFuncResult(simvo, false);
-		} else if (SIMIufoFuncConst.SIM_HXZQSZQM.equals(funName)) {//约定式购回-市值期末金额
+		} else if (SIMIufoFuncConst.SIM_HXZQSZQM.equals(funName)) {// 约定式购回-市值期末金额
 			SIM_HXZQSZImpl szimp = new SIM_HXZQSZImpl();
 			return szimp.getFuncResult(simvo, false);
 		} else if (SIMIufoFuncConst.SIM_ZQGYQC.equals(funName)) {// 公允价值期初金额
@@ -81,13 +82,12 @@ public class SIMIufoResultServiceImpl implements ISIMIufoResultService {
 			return SIM_CBZBPMImpl.getInstance().getFuncResult(simvo, 0);
 		} else if (SIMIufoFuncConst.SIM_CBZBPMPK.equals(funName)) {// 成本/净资本占比证券排名（返回PK）
 			return SIM_CBZBPMImpl.getInstance().getFuncResult(simvo, 0);
-		} else if(SIMIufoFuncConst.SIM_MRHYJZQM.equals(funName)){
+		} else if (SIMIufoFuncConst.SIM_MRHYJZQM.equals(funName)) {
 			SIM_MRHYJZQMImpl slimp = new SIM_MRHYJZQMImpl();
-			return slimp.getFuncResult(simvo,true);
-		}
-		else if(SIMIufoFuncConst.SIM_MCHYJZQM.equals(funName)){
+			return slimp.getFuncResult(simvo, true);
+		} else if (SIMIufoFuncConst.SIM_MCHYJZQM.equals(funName)) {
 			SIM_MRHYJZQMImpl slimp = new SIM_MRHYJZQMImpl();
-			return slimp.getFuncResult(simvo,false);
+			return slimp.getFuncResult(simvo, false);
 		}
 		return 0;
 	}
@@ -104,17 +104,20 @@ public class SIMIufoResultServiceImpl implements ISIMIufoResultService {
 	 * @author jingqt
 	 * @date 2016-1-29 下午3:34:40
 	 */
-	public CostPlanVO queryCostPlanInfo(String pk_group, String pk_org, String pk_glorybook) throws BusinessException {
+	public CostPlanVO queryCostPlanInfo(String pk_group, String pk_org,
+			String pk_glorybook) throws BusinessException {
 		if (pk_group == null || pk_org == null)
 			return null;
 		CostPlanVO[] planvos = null;
 		StringBuffer condition = new StringBuffer();
 		condition.append("  pk_org = '" + pk_org + "' ");
-		condition.append("  and pk_group = '" + pk_group + "' and isnull(dr,0) = 0 ");
+		condition.append("  and pk_group = '" + pk_group
+				+ "' and isnull(dr,0) = 0 ");
 		condition.append("  and isbusinessplan = 'Y' ");
 		condition.append("  and pk_glorgbook = '" + pk_glorybook + "' ");
 
-		planvos = (CostPlanVO[]) new HYSuperDMO().queryByWhereClause(CostPlanVO.class, condition.toString());
+		planvos = (CostPlanVO[]) new HYSuperDMO().queryByWhereClause(
+				CostPlanVO.class, condition.toString());
 		if (planvos.length == 0 || planvos == null) {
 			Logger.debug("查询出错！ 当前组织成本计算方案为空！！");
 			return null;

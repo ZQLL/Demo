@@ -12,50 +12,49 @@ import nc.vo.pubapp.vosplit.ExVOUtils;
 
 public class Hxzq_fpxxDeleteAction extends DeleteScriptAction {
 
-  private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-  private String billCodeName;
-  
-  private boolean powercheck;
-  
-  @Override
-  public void doAction(ActionEvent e) throws Exception {
-    if (this.powercheck) {
-      Object[] tempData = null;
-      if(this.editor != null && ((ITabbedPaneAwareComponent) this.editor)
-            .isComponentVisible()) {       
-        if (null != this.getModel().getSelectedData()) {
-          tempData = new Object[] {
-            this.getModel().getSelectedData()
-          };
-        }
-      }
-      tempData =
-            ((IMultiRowSelectModel) this.getModel()).getSelectedOperaDatas();
+	private String billCodeName;
 
-      IBill[] bills = ExVOUtils.convertArrayType(tempData);
-      PowerCheckUtils.checkHasPermission(bills, this.getBillType(),
-          PowerActionEnum.DELETE.getActioncode(), this.getBillCodeName());
-    }
+	private boolean powercheck;
 
-    super.doAction(e);
-  }
-  
-  public String getBillCodeName() {
-    return this.billCodeName;
-  }
+	@Override
+	public void doAction(ActionEvent e) throws Exception {
+		if (this.powercheck) {
+			Object[] tempData = null;
+			if (this.editor != null
+					&& ((ITabbedPaneAwareComponent) this.editor)
+							.isComponentVisible()) {
+				if (null != this.getModel().getSelectedData()) {
+					tempData = new Object[] { this.getModel().getSelectedData() };
+				}
+			}
+			tempData = ((IMultiRowSelectModel) this.getModel())
+					.getSelectedOperaDatas();
 
-  public void setBillCodeName(String billCodeName) {
-    this.billCodeName = billCodeName;
-  }
-  
-  public boolean isPowercheck() {
-    return this.powercheck;
-  }
+			IBill[] bills = ExVOUtils.convertArrayType(tempData);
+			PowerCheckUtils.checkHasPermission(bills, this.getBillType(),
+					PowerActionEnum.DELETE.getActioncode(),
+					this.getBillCodeName());
+		}
 
-  public void setPowercheck(boolean powercheck) {
-    this.powercheck = powercheck;
-  }
-  
+		super.doAction(e);
+	}
+
+	public String getBillCodeName() {
+		return this.billCodeName;
+	}
+
+	public void setBillCodeName(String billCodeName) {
+		this.billCodeName = billCodeName;
+	}
+
+	public boolean isPowercheck() {
+		return this.powercheck;
+	}
+
+	public void setPowercheck(boolean powercheck) {
+		this.powercheck = powercheck;
+	}
 
 }

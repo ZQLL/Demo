@@ -1,8 +1,5 @@
 package nc.starter.ui;
 
-import java.awt.DisplayMode;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 
 import javax.swing.JFrame;
@@ -45,26 +42,33 @@ public class NCLauncher {
 	}
 
 	private static void startNC(String protocol, String server, String portStr) {
-		/*int port = Integer.parseInt(portStr);
-		GraphicsDevice dev = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();  
-		DisplayMode mode = new DisplayMode(1366, 768, 32, DisplayMode.REFRESH_RATE_UNKNOWN); 
-		
-		AppletViewer viewer = new AppletViewer(protocol, server, port);
-		
-		viewer.setSize((int) Toolkit.getDefaultToolkit().getScreenSize().getWidth() / 2, (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight() / 2);
+		/*
+		 * int port = Integer.parseInt(portStr); GraphicsDevice dev =
+		 * GraphicsEnvironment
+		 * .getLocalGraphicsEnvironment().getDefaultScreenDevice(); DisplayMode
+		 * mode = new DisplayMode(1366, 768, 32,
+		 * DisplayMode.REFRESH_RATE_UNKNOWN);
+		 * 
+		 * AppletViewer viewer = new AppletViewer(protocol, server, port);
+		 * 
+		 * viewer.setSize((int)
+		 * Toolkit.getDefaultToolkit().getScreenSize().getWidth() / 2, (int)
+		 * Toolkit.getDefaultToolkit().getScreenSize().getHeight() / 2);
+		 * 
+		 * viewer.setState(JFrame.NORMAL);
+		 * 
+		 * dev.setFullScreenWindow(viewer); dev.setDisplayMode(mode);
+		 */
 
-		viewer.setState(JFrame.NORMAL);
-		
-		dev.setFullScreenWindow(viewer);
-		dev.setDisplayMode(mode);  */
-
-		
 		int port = Integer.parseInt(portStr);
 		AppletViewer viewer = new AppletViewer(protocol, server, port);
-		viewer.setSize((int) Toolkit.getDefaultToolkit().getScreenSize().getWidth() / 2, (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight() / 2);
+		viewer.setSize((int) Toolkit.getDefaultToolkit().getScreenSize()
+				.getWidth() / 2, (int) Toolkit.getDefaultToolkit()
+				.getScreenSize().getHeight() / 2);
 
 		viewer.setState(JFrame.NORMAL);
-		if (Toolkit.getDefaultToolkit().isFrameStateSupported(JFrame.MAXIMIZED_BOTH)) {
+		if (Toolkit.getDefaultToolkit().isFrameStateSupported(
+				JFrame.MAXIMIZED_BOTH)) {
 			viewer.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		}
 		viewer.setVisible(true);

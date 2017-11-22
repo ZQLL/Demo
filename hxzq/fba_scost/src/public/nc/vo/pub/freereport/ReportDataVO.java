@@ -17,9 +17,9 @@ public class ReportDataVO extends SuperVO {
 	private static final long serialVersionUID = 1L;
 
 	private String pk_org;
-	
+
 	private String pk_group;
-	
+
 	private String pk_glorgbook;
 
 	private String pk_billtype;
@@ -57,17 +57,17 @@ public class ReportDataVO extends SuperVO {
 	private UFDouble buysum;
 
 	private UFDouble buyaccrual;
-	
+
 	private UFDouble innum;
-	
+
 	private UFDouble insum;
 
 	private UFDouble sellnum;
 
 	private UFDouble sellsum;
-	
+
 	private UFDouble outnum;
-	
+
 	private UFDouble outsum;
 
 	private UFDouble sellaccrual;
@@ -91,21 +91,23 @@ public class ReportDataVO extends SuperVO {
 	private UFDouble num;
 
 	private UFDouble sum;
-	
+
 	private String summary;
 
-	/** JINGQT 2015年7月15日 投资经营日报中添加红股入账，并将其数据添加入本期收益中  ADD*/
+	/** JINGQT 2015年7月15日 投资经营日报中添加红股入账，并将其数据添加入本期收益中 ADD */
 	private UFDouble bonus = new UFDouble(0.0);
 
-	/** JINGQT 2015年8月19日 证券投资经营日报的增加公允价值变动列 公允价值变动=‘期末结存期末市值’-‘期末结存金额’；ADD START */
+	/**
+	 * JINGQT 2015年8月19日 证券投资经营日报的增加公允价值变动列 公允价值变动=‘期末结存期末市值’-‘期末结存金额’；ADD START
+	 */
 	private UFDouble fairValueChange = new UFDouble(0.0);
-	/** JINGQT 2015年7月15日  证券投资经营日报的增加公允价值变动列 公允价值变动=‘期末结存期末市值’-‘期末结存金额’； ADD END */
-	
+	/** JINGQT 2015年7月15日 证券投资经营日报的增加公允价值变动列 公允价值变动=‘期末结存期末市值’-‘期末结存金额’； ADD END */
+
 	private UFDouble lxtz;
-	
-	//份额分红 add by lihaibo 2017-06-13
+
+	// 份额分红 add by lihaibo 2017-06-13
 	private UFDouble fefh = new UFDouble(0);
-	
+
 	public UFDouble getFefh() {
 		return fefh;
 	}
@@ -147,18 +149,21 @@ public class ReportDataVO extends SuperVO {
 	}
 
 	@Override
+	
 	public String getPKFieldName() {
 
 		return null;
 	}
 
 	@Override
+	
 	public String getParentPKFieldName() {
 
 		return null;
 	}
 
 	@Override
+	
 	public String getTableName() {
 
 		return null;
@@ -422,7 +427,9 @@ public class ReportDataVO extends SuperVO {
 
 	/**
 	 * 2015年7月16日 jingqt添加红股入账的记录 bonus<BR>
-	 * 这个数组很重要... 这个景群涛加了一个红股记录，陈建辉加了一个lxtz，导致很多证券无缘无故多出来了很多的利息调整的数据。这里修正一下。把sum字段放在最后。
+	 * 这个数组很重要...
+	 * 这个景群涛加了一个红股记录，陈建辉加了一个lxtz，导致很多证券无缘无故多出来了很多的利息调整的数据。这里修正一下。把sum字段放在最后。
+	 * 
 	 * @return
 	 * @update jingqt 2017年1月18日
 	 */
@@ -431,7 +438,7 @@ public class ReportDataVO extends SuperVO {
 				"insum", "inaccrual", "outnum", "outsum", "outaccrual",
 				"sellnum", "sellsum", "sellaccrual", "sellcost", "total_win",
 				"fact_sum", "faccrual", "hrnum", "hrsum", "hcnum", "hcsum",
-				"num","bonus","lxtz", "sum", "fefh" };
+				"num", "bonus", "lxtz", "sum", "fefh" };
 	}
 
 	public void copyVO(SuperVO vo) {

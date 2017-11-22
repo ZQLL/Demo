@@ -14,7 +14,8 @@ public class SecInvestDailyViewMeta extends DataViewMeta {
 			"firstSum", "firstPrice", "buyNum", "buySum", "buyPrice",
 			"sellNum", "sellSum", "sellPrice", "sellCost", "endNum", "endSum",
 			"endPrice", "localwin", "marketPrice", "marketSum", "profitLoss",
-			"gyz", "zgbzb", "bonus", "fairValueChange", "first_marketSum", "fefh" };
+			"gyz", "zgbzb", "bonus", "fairValueChange", "first_marketSum",
+			"fefh" };
 
 	public static final String[] EXT_DATE_FIELD = new String[] {
 			FundTradeVO.TRADE_DATE, "begin_date", "end_date" };

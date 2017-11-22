@@ -1,19 +1,7 @@
 package nc.impl.fba_sim.simtrade.report;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang.StringUtils;
-
-import com.ufida.dataset.IContext;
-import com.ufida.report.anareport.FreeReportContextKey;
 
 import nc.bs.dao.BaseDAO;
 import nc.bs.fba_sim.simtrade.report.FundInOutUtils;
@@ -50,6 +38,9 @@ import nc.vo.pubapp.report.ReportQueryConUtil;
 import nc.vo.pubapp.report.ReportQueryResult;
 import nc.vo.trade.voutils.VOUtil;
 
+import com.ufida.dataset.IContext;
+import com.ufida.report.anareport.FreeReportContextKey;
+import java.util.*;
 /**
  * 约定式回购报表实现
  * 
@@ -57,6 +48,7 @@ import nc.vo.trade.voutils.VOUtil;
  * 
  */
 public class StereotypesBuybackImpl implements IStereotypesBuyback {
+
 
 	@Override
 	public ReportQueryResult queryDetailData(IContext context)
@@ -234,19 +226,21 @@ public class StereotypesBuybackImpl implements IStereotypesBuyback {
 					repVo.setMarketPrice(SimINFOPubMethod.getInstance()
 							.getClosePrice(endDate.substring(0, 10),
 									repVo.getPk_securities()));
-					//四舍五入保留两位小数
+					// 四舍五入保留两位小数
 					UFDouble marketSum = pm.multiply(repVo.getMarketPrice(),
 							repVo.getEndNum());
 					marketSum = marketSum.setScale(2, UFDouble.ROUND_HALF_UP);
 					repVo.setMarketSum(marketSum);
-					
-					//期初市值
+
+					// 期初市值
 					UFDouble first_marketPrice = SimINFOPubMethod.getInstance()
-							.getClosePrice(startDate.toString().substring(0, 10),
+							.getClosePrice(
+									startDate.toString().substring(0, 10),
 									repVo.getPk_securities());
 					UFDouble first_marketSum = pm.multiply(first_marketPrice,
 							repVo.getFirstNum());
-					first_marketSum = first_marketSum.setScale(2, UFDouble.ROUND_HALF_UP);
+					first_marketSum = first_marketSum.setScale(2,
+							UFDouble.ROUND_HALF_UP);
 					repVo.setFirst_marketSum(first_marketSum);
 
 					/**
@@ -462,7 +456,7 @@ public class StereotypesBuybackImpl implements IStereotypesBuyback {
 		 * JINGQT 2015年8月19日 证券投资经营日报的增加公允价值变动列 公允价值变动=‘期末结存期末市值’-‘期末结存金额’； ADD
 		 * START
 		 */
-//		rprtvo.setFairValueChange(datavo.getFairValueChange());
+		// rprtvo.setFairValueChange(datavo.getFairValueChange());
 		/**
 		 * JINGQT 2015年8月19日 证券投资经营日报的增加公允价值变动列 公允价值变动=‘期末结存期末市值’-‘期末结存金额’； ADD
 		 * END
@@ -501,20 +495,17 @@ public class StereotypesBuybackImpl implements IStereotypesBuyback {
 
 		IUAPQueryBS queryservice = (IUAPQueryBS) NCLocator.getInstance()
 				.lookup(IUAPQueryBS.class.getName());
-		String querydbbSql = 
-				"select a.contract_id, a.pk_aggreedbb\n" +
-						"  from sim_agreedbb a\n" + 
-						" where a.state > 1\n" + 
-						"   and nvl(a.dr, 0) = 0\n" + 
-						"   and a.contract_id not in\n" + 
-						"       (select contract_id\n" + 
-						"          from (select count(*), contract_id\n" + 
-						"                  from sim_agreedbb a\n" + 
-						"                 where a.state > 1\n" + 
-						"                   and nvl(a.dr, 0) = 0\n" + 
-						"                 group by contract_id\n" + 
-						"                having count(*) > 1))\n" + 
-						"   and a.transtypecode = 'HV5A-0xx-03'";
+		String querydbbSql = "select a.contract_id, a.pk_aggreedbb\n"
+				+ "  from sim_agreedbb a\n" + " where a.state > 1\n"
+				+ "   and nvl(a.dr, 0) = 0\n" + "   and a.contract_id not in\n"
+				+ "       (select contract_id\n"
+				+ "          from (select count(*), contract_id\n"
+				+ "                  from sim_agreedbb a\n"
+				+ "                 where a.state > 1\n"
+				+ "                   and nvl(a.dr, 0) = 0\n"
+				+ "                 group by contract_id\n"
+				+ "                having count(*) > 1))\n"
+				+ "   and a.transtypecode = 'HV5A-0xx-03'";
 
 		String glsql = "";
 		try {
@@ -565,28 +556,24 @@ public class StereotypesBuybackImpl implements IStereotypesBuyback {
 		String condition = SimReportUtils.getQueryCondition(
 				ReportConst.FUND_B_MARK, conVos, false, false);
 		try {
-			/*String querydbbSql = "select a.pk_securities,a.pk_aggreedbb from sim_agreedbb a where a.state>1 and nvl(a.dr, 0) = 0 and a.pk_org = '"
-					+ SimReportUtils.getOrg(conVos)
-					+ "' and a.pk_glorgbook = '"
-					+ SimReportUtils.getGLBook(conVos)
-					+ "' and a.trade_date > '" + startDate + "'";
-			// querydbbSql = reportUtil.getQuerySql(condition, querydbbSql);
-			List<AgreedbbVO> greedbbVos = (List<AgreedbbVO>) queryservice
-					.executeQuery(querydbbSql, new BeanListProcessor(
-							AgreedbbVO.class));
-			if (greedbbVos != null && greedbbVos.size() > 0) {
-				// 去除重复的pk_securities
-				List<String> pk_securities = vo_unique(greedbbVos);
-				pk_securities = array_unique(pk_securities);
-				glsql += " and a.pk_securities not in ('~',";
-				for (int gl = 0; gl < pk_securities.size(); gl++) {
-					if (gl < pk_securities.size() - 1) {
-						glsql += "'" + pk_securities.get(gl) + "',";
-					} else {
-						glsql += "'" + pk_securities.get(gl) + "')";
-					}
-				}
-			}*/
+			/*
+			 * String querydbbSql =
+			 * "select a.pk_securities,a.pk_aggreedbb from sim_agreedbb a where a.state>1 and nvl(a.dr, 0) = 0 and a.pk_org = '"
+			 * + SimReportUtils.getOrg(conVos) + "' and a.pk_glorgbook = '" +
+			 * SimReportUtils.getGLBook(conVos) + "' and a.trade_date > '" +
+			 * startDate + "'"; // querydbbSql =
+			 * reportUtil.getQuerySql(condition, querydbbSql); List<AgreedbbVO>
+			 * greedbbVos = (List<AgreedbbVO>) queryservice
+			 * .executeQuery(querydbbSql, new BeanListProcessor(
+			 * AgreedbbVO.class)); if (greedbbVos != null && greedbbVos.size() >
+			 * 0) { // 去除重复的pk_securities List<String> pk_securities =
+			 * vo_unique(greedbbVos); pk_securities =
+			 * array_unique(pk_securities); glsql +=
+			 * " and a.pk_securities not in ('~',"; for (int gl = 0; gl <
+			 * pk_securities.size(); gl++) { if (gl < pk_securities.size() - 1)
+			 * { glsql += "'" + pk_securities.get(gl) + "',"; } else { glsql +=
+			 * "'" + pk_securities.get(gl) + "')"; } } }
+			 */
 			// 查询除去所选时间段内发生的证券档案的买入总和
 			String querySql1 = "select  a.pk_securities, sum(a.entrust_num) as innum, sum(a.entrust_sum) as insum "
 					+ " from sim_agreedbb a "
@@ -697,24 +684,31 @@ public class StereotypesBuybackImpl implements IStereotypesBuyback {
 		}
 		return list;
 	}
-	
-	public TradeMarketVO queryLastMarket(String pk_securities,String trade_date,boolean isqc)throws BusinessException{
+
+	public TradeMarketVO queryLastMarket(String pk_securities,
+			String trade_date, boolean isqc) throws BusinessException {
 		TradeMarketVO marketvo = null;
-		if(pk_securities == null || trade_date == null)
+		if (pk_securities == null || trade_date == null)
 			return null;
 		StringBuffer sf = new StringBuffer();
-		sf.append(" select * from sim_trademarket where pk_securities = '"+pk_securities+"' ");
+		sf.append(" select * from sim_trademarket where pk_securities = '"
+				+ pk_securities + "' ");
 		sf.append(" and trade_date =  ");
-		sf.append(" (select isnull(max(trade_date),'"+CostConstant.DEFAULT_DATE+"')  from sim_trademarket where ");
-		if(isqc){
-			sf.append(" isnull(dr, 0) = 0 and trade_date < '"+trade_date+"' ");//期初
-		}else{
-			sf.append(" isnull(dr, 0) = 0 and trade_date <= '"+trade_date+"' ");//期末
+		sf.append(" (select isnull(max(trade_date),'"
+				+ CostConstant.DEFAULT_DATE + "')  from sim_trademarket where ");
+		if (isqc) {
+			sf.append(" isnull(dr, 0) = 0 and trade_date < '" + trade_date
+					+ "' ");// 期初
+		} else {
+			sf.append(" isnull(dr, 0) = 0 and trade_date <= '" + trade_date
+					+ "' ");// 期末
 		}
-		sf.append(" and pk_securities = '"+pk_securities+"') ");
+		sf.append(" and pk_securities = '" + pk_securities + "') ");
 		sf.append(" and isnull(dr, 0) = 0 ");
-		List<TradeMarketVO> list = (List<TradeMarketVO>)new BaseDAO().executeQuery(sf.toString(), new BeanListProcessor(TradeMarketVO.class));
-		if(list != null && list.size() > 0 ){
+		List<TradeMarketVO> list = (List<TradeMarketVO>) new BaseDAO()
+				.executeQuery(sf.toString(), new BeanListProcessor(
+						TradeMarketVO.class));
+		if (list != null && list.size() > 0) {
 			marketvo = list.get(0);
 		}
 		return marketvo;

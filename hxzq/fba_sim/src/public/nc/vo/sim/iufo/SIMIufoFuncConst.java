@@ -32,7 +32,6 @@ public interface SIMIufoFuncConst {
 	public final static String SIM_MRHYJZQM = "SIM_MRHYJZQM";// 买合约价值
 	public final static String SIM_MCHYJZQM = "SIM_MCHYJZQM";// 卖合约价值
 
-
 	/** 2016-1-28 jingqt 国金要求添加新的5个函数 其中新增4个是返回的形式不同 ADD START */
 	/** 期初持有比例函数 */
 	public final static String SIM_QCCYBL = "SIM_QCCYBL";
@@ -53,18 +52,24 @@ public interface SIMIufoFuncConst {
 	/** 成本/净资本占比证券排名（返回PK） */
 	public final static String SIM_CBZBPMPK = "SIM_CBZBPMPK";
 	/** 2016-1-28 jingqt 国金要求添加新的5个函数 ADD END */
-	
+
 	/** 2017-02-14 lihaibo 华西要求添加取约定式购回报表的期末市值 */
 	/** 约定式购回-市值期末金额 */
 	public final static String SIM_HXZQSZQM = "SIM_HXZQSZQM";
 
-	public final static String[] funCodes = new String[] { SIM_ZQQCSL, SIM_ZQQMSL, SIM_ZQQCJE, SIM_ZQQMJE, SIM_ZQSZQC,
-			SIM_ZQSZQM, SIM_ZQGYQC, SIM_ZQGYQM, SIM_ZQCJFS, SIM_ZQXSCB, SIM_QCCYBL, SIM_QMCYBL, SIM_JYRIPYL, SIM_CCZBPMBM,
-			SIM_CCZBPMMC, SIM_CCZBPMPK, SIM_CBZBPMBM, SIM_CBZBPMMC, SIM_CBZBPMPK,SIM_MRHYJZQM,SIM_MCHYJZQM,SIM_HXZQSZQM, };
+	public final static String[] funCodes = new String[] { SIM_ZQQCSL,
+			SIM_ZQQMSL, SIM_ZQQCJE, SIM_ZQQMJE, SIM_ZQSZQC, SIM_ZQSZQM,
+			SIM_ZQGYQC, SIM_ZQGYQM, SIM_ZQCJFS, SIM_ZQXSCB, SIM_QCCYBL,
+			SIM_QMCYBL, SIM_JYRIPYL, SIM_CCZBPMBM, SIM_CCZBPMMC, SIM_CCZBPMPK,
+			SIM_CBZBPMBM, SIM_CBZBPMMC, SIM_CBZBPMPK, SIM_MRHYJZQM,
+			SIM_MCHYJZQM, SIM_HXZQSZQM, };
 
-	public final static String[] funcNames = new String[] { "库存期初数量", "库存期末数量", "库存期初金额", "库存期末金额", "市值期初金额", "市值期末金额", 
-			"公允价值期初金额", "公允价值期末金额", "本期发生成交金额", "本期发生销售成本", "期初持有比例函数", "期末持有比例函数", "交易日期偏移量", "持仓数量/总股本占比证券排名（返回编码）",
-			"持仓数量/总股本占比证券排名（返回名称）", "持仓数量/总股本占比证券排名（返回PK）", "成本/净资本占比证券排名（返回编码）", "成本/净资本占比证券排名（返回名称）", "成本/净资本占比证券排名（返回PK）","买合约价值","卖合约价值","约定式购回-市值期末金额" };
+	public final static String[] funcNames = new String[] { "库存期初数量", "库存期末数量",
+			"库存期初金额", "库存期末金额", "市值期初金额", "市值期末金额", "公允价值期初金额", "公允价值期末金额",
+			"本期发生成交金额", "本期发生销售成本", "期初持有比例函数", "期末持有比例函数", "交易日期偏移量",
+			"持仓数量/总股本占比证券排名（返回编码）", "持仓数量/总股本占比证券排名（返回名称）",
+			"持仓数量/总股本占比证券排名（返回PK）", "成本/净资本占比证券排名（返回编码）", "成本/净资本占比证券排名（返回名称）",
+			"成本/净资本占比证券排名（返回PK）", "买合约价值", "卖合约价值", "约定式购回-市值期末金额" };
 
 	public final static String[] funcDesces = new String[] {
 			"库存期初数量(组织,账薄,期间,期间属性,证券分类,证券档案,资金账号,业务小组,股东账号,分户地点,往来单位,币种,返回币种,是否限售,发生方向,排名,排序方式,净资本,库存组织,资产属性)",
@@ -88,7 +93,7 @@ public interface SIMIufoFuncConst {
 			"成本/净资本占比证券排名（返回PK）（组织,账薄,期间,期间属性,证券分类,证券档案,资金账号,业务小组,股东账号,分户地点,往来单位,币种,返回币种,是否限售,发生方向,排名,排序方式,净资本,库存组织,资产属性）",
 			"买合约价值（组织,账薄,时间,证券档案,资金账号,币种,库存组织）",
 			"买合约价值（组织,账薄,时间,证券档案,资金账号,币种,库存组织）",
-			"约定式购回-市值期末金额(组织,账薄,期间,期间属性,证券分类,证券档案,资金账号,业务小组,股东账号,分户地点,往来单位,币种,返回币种,是否限售,发生方向,排名,排序方式,净资本,库存组织,资产属性)"};
+			"约定式购回-市值期末金额(组织,账薄,期间,期间属性,证券分类,证券档案,资金账号,业务小组,股东账号,分户地点,往来单位,币种,返回币种,是否限售,发生方向,排名,排序方式,净资本,库存组织,资产属性)" };
 
 	// 交易日期偏移量（日期,偏移量）
 	public String[] jyparamNames = { "日期", "偏移量" };
@@ -116,9 +121,11 @@ public interface SIMIufoFuncConst {
 	"库存组织", /** 编码 **/
 	"资产属性" }/** 编码 **/
 	;
-	public String[] paramCodes = { "orgCode", "glbookCode", "period", "periodType", "pk_classify", "pk_securities",
-			"pk_capaccount", "pk_selfsgroup", "pk_partnaccount", "pk_operatesite", "pk_client", "pk_currtype", "pk_returntype",
-			"islimit", "bs", "rank", "ad", "pure_capital", "stocksortcode", "assetspropcode" };
+	public String[] paramCodes = { "orgCode", "glbookCode", "period",
+			"periodType", "pk_classify", "pk_securities", "pk_capaccount",
+			"pk_selfsgroup", "pk_partnaccount", "pk_operatesite", "pk_client",
+			"pk_currtype", "pk_returntype", "islimit", "bs", "rank", "ad",
+			"pure_capital", "stocksortcode", "assetspropcode" };
 	public String[] preiodType = { "年", "月", "日" };
 	public String[] bsType = { "B", "S" };// B代表取买入的成交金额，S代表取卖出的成交金额
 	public String[] sortType = { "A", "D" };// A代表升序，D代表降序

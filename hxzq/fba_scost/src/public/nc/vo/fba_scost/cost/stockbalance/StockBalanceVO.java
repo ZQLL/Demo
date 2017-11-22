@@ -14,10 +14,10 @@ import nc.vo.pub.lang.UFLiteralDate;
 import nc.vo.pubapp.pattern.model.meta.entity.vo.VOMetaFactory;
 
 @SuppressWarnings("serial")
-public class StockBalanceVO extends SuperVO implements ITrade_Data{
-	
-	//实际利率使用，保留
-	private Map<String,UFDouble> stock_map = new HashMap<String,UFDouble>();
+public class StockBalanceVO extends SuperVO implements ITrade_Data {
+
+	// 实际利率使用，保留
+	private Map<String, UFDouble> stock_map = new HashMap<String, UFDouble>();
 
 	/**
 	 * 应收利息
@@ -217,6 +217,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * 
 	 * @return 应收利息
 	 */
+	@Override
 	public UFDouble getAccrual_sum() {
 		return (UFDouble) this.getAttributeValue(StockBalanceVO.ACCRUAL_SUM);
 	}
@@ -227,6 +228,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * @param accrual_sum
 	 *            应收利息
 	 */
+	@Override
 	public void setAccrual_sum(UFDouble accrual_sum) {
 		this.setAttributeValue(StockBalanceVO.ACCRUAL_SUM, accrual_sum);
 	}
@@ -255,8 +257,10 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * 
 	 * @return 限售开始日期
 	 */
+	@Override
 	public UFLiteralDate getBegin_date() {
-		return (UFLiteralDate) this.getAttributeValue(StockBalanceVO.BEGIN_DATE);
+		return (UFLiteralDate) this
+				.getAttributeValue(StockBalanceVO.BEGIN_DATE);
 	}
 
 	/**
@@ -265,6 +269,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * @param begin_date
 	 *            限售开始日期
 	 */
+	@Override
 	public void setBegin_date(UFLiteralDate begin_date) {
 		this.setAttributeValue(StockBalanceVO.BEGIN_DATE, begin_date);
 	}
@@ -312,6 +317,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * 
 	 * @return 限售结束日期
 	 */
+	@Override
 	public UFLiteralDate getEnd_date() {
 		return (UFLiteralDate) this.getAttributeValue(StockBalanceVO.END_DATE);
 	}
@@ -322,6 +328,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * @param end_date
 	 *            限售结束日期
 	 */
+	@Override
 	public void setEnd_date(UFLiteralDate end_date) {
 		this.setAttributeValue(StockBalanceVO.END_DATE, end_date);
 	}
@@ -597,6 +604,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * 
 	 * @return 资产分类
 	 */
+	@Override
 	public String getPk_assetsprop() {
 		return (String) this.getAttributeValue(StockBalanceVO.PK_ASSETSPROP);
 	}
@@ -607,6 +615,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * @param pk_assetsprop
 	 *            资产分类
 	 */
+	@Override
 	public void setPk_assetsprop(String pk_assetsprop) {
 		this.setAttributeValue(StockBalanceVO.PK_ASSETSPROP, pk_assetsprop);
 	}
@@ -616,6 +625,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * 
 	 * @return 单据类型
 	 */
+	@Override
 	public String getPk_billtype() {
 		return (String) this.getAttributeValue(StockBalanceVO.PK_BILLTYPE);
 	}
@@ -626,6 +636,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * @param pk_billtype
 	 *            单据类型
 	 */
+	@Override
 	public void setPk_billtype(String pk_billtype) {
 		this.setAttributeValue(StockBalanceVO.PK_BILLTYPE, pk_billtype);
 	}
@@ -646,7 +657,8 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 *            审核业务分组
 	 */
 	public void setPk_billtypegroup(String pk_billtypegroup) {
-		this.setAttributeValue(StockBalanceVO.PK_BILLTYPEGROUP, pk_billtypegroup);
+		this.setAttributeValue(StockBalanceVO.PK_BILLTYPEGROUP,
+				pk_billtypegroup);
 	}
 
 	/**
@@ -654,6 +666,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * 
 	 * @return 资金账号
 	 */
+	@Override
 	public String getPk_capaccount() {
 		return (String) this.getAttributeValue(StockBalanceVO.PK_CAPACCOUNT);
 	}
@@ -664,6 +677,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * @param pk_capaccount
 	 *            资金账号
 	 */
+	@Override
 	public void setPk_capaccount(String pk_capaccount) {
 		this.setAttributeValue(StockBalanceVO.PK_CAPACCOUNT, pk_capaccount);
 	}
@@ -673,6 +687,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * 
 	 * @return 往来单位
 	 */
+	@Override
 	public String getPk_client() {
 		return (String) this.getAttributeValue(StockBalanceVO.PK_CLIENT);
 	}
@@ -683,6 +698,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * @param pk_client
 	 *            往来单位
 	 */
+	@Override
 	public void setPk_client(String pk_client) {
 		this.setAttributeValue(StockBalanceVO.PK_CLIENT, pk_client);
 	}
@@ -711,6 +727,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * 
 	 * @return 账簿
 	 */
+	@Override
 	public String getPk_glorgbook() {
 		return (String) this.getAttributeValue(StockBalanceVO.PK_GLORGBOOK);
 	}
@@ -721,6 +738,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * @param pk_glorgbook
 	 *            账簿
 	 */
+	@Override
 	public void setPk_glorgbook(String pk_glorgbook) {
 		this.setAttributeValue(StockBalanceVO.PK_GLORGBOOK, pk_glorgbook);
 	}
@@ -730,6 +748,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * 
 	 * @return 集团
 	 */
+	@Override
 	public String getPk_group() {
 		return (String) this.getAttributeValue(StockBalanceVO.PK_GROUP);
 	}
@@ -740,6 +759,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * @param pk_group
 	 *            集团
 	 */
+	@Override
 	public void setPk_group(String pk_group) {
 		this.setAttributeValue(StockBalanceVO.PK_GROUP, pk_group);
 	}
@@ -749,6 +769,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * 
 	 * @return 分户地点
 	 */
+	@Override
 	public String getPk_operatesite() {
 		return (String) this.getAttributeValue(StockBalanceVO.PK_OPERATESITE);
 	}
@@ -759,6 +780,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * @param pk_operatesite
 	 *            分户地点
 	 */
+	@Override
 	public void setPk_operatesite(String pk_operatesite) {
 		this.setAttributeValue(StockBalanceVO.PK_OPERATESITE, pk_operatesite);
 	}
@@ -768,6 +790,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * 
 	 * @return 组织
 	 */
+	@Override
 	public String getPk_org() {
 		return (String) this.getAttributeValue(StockBalanceVO.PK_ORG);
 	}
@@ -778,6 +801,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * @param pk_org
 	 *            组织
 	 */
+	@Override
 	public void setPk_org(String pk_org) {
 		this.setAttributeValue(StockBalanceVO.PK_ORG, pk_org);
 	}
@@ -787,6 +811,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * 
 	 * @return 组织版本
 	 */
+	@Override
 	public String getPk_org_v() {
 		return (String) this.getAttributeValue(StockBalanceVO.PK_ORG_V);
 	}
@@ -797,6 +822,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * @param pk_org_v
 	 *            组织版本
 	 */
+	@Override
 	public void setPk_org_v(String pk_org_v) {
 		this.setAttributeValue(StockBalanceVO.PK_ORG_V, pk_org_v);
 	}
@@ -806,6 +832,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * 
 	 * @return 股东账号
 	 */
+	@Override
 	public String getPk_partnaccount() {
 		return (String) this.getAttributeValue(StockBalanceVO.PK_PARTNACCOUNT);
 	}
@@ -816,6 +843,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * @param pk_partnaccount
 	 *            股东账号
 	 */
+	@Override
 	public void setPk_partnaccount(String pk_partnaccount) {
 		this.setAttributeValue(StockBalanceVO.PK_PARTNACCOUNT, pk_partnaccount);
 	}
@@ -825,6 +853,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * 
 	 * @return 交易证券
 	 */
+	@Override
 	public String getPk_securities() {
 		return (String) this.getAttributeValue(StockBalanceVO.PK_SECURITIES);
 	}
@@ -835,6 +864,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * @param pk_securities
 	 *            交易证券
 	 */
+	@Override
 	public void setPk_securities(String pk_securities) {
 		this.setAttributeValue(StockBalanceVO.PK_SECURITIES, pk_securities);
 	}
@@ -844,6 +874,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * 
 	 * @return 业务小组
 	 */
+	@Override
 	public String getPk_selfsgroup() {
 		return (String) this.getAttributeValue(StockBalanceVO.PK_SELFSGROUP);
 	}
@@ -854,6 +885,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * @param pk_selfsgroup
 	 *            业务小组
 	 */
+	@Override
 	public void setPk_selfsgroup(String pk_selfsgroup) {
 		this.setAttributeValue(StockBalanceVO.PK_SELFSGROUP, pk_selfsgroup);
 	}
@@ -882,6 +914,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * 
 	 * @return 库存组织
 	 */
+	@Override
 	public String getPk_stocksort() {
 		return (String) this.getAttributeValue(StockBalanceVO.PK_STOCKSORT);
 	}
@@ -892,6 +925,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * @param pk_stocksort
 	 *            库存组织
 	 */
+	@Override
 	public void setPk_stocksort(String pk_stocksort) {
 		this.setAttributeValue(StockBalanceVO.PK_STOCKSORT, pk_stocksort);
 	}
@@ -901,6 +935,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * 
 	 * @return 状态
 	 */
+	@Override
 	public Integer getState() {
 		return (Integer) this.getAttributeValue(StockBalanceVO.STATE);
 	}
@@ -911,6 +946,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * @param state
 	 *            状态
 	 */
+	@Override
 	public void setState(Integer state) {
 		this.setAttributeValue(StockBalanceVO.STATE, state);
 	}
@@ -996,6 +1032,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * 
 	 * @return 交易日期
 	 */
+	@Override
 	public UFDate getTrade_date() {
 		return (UFDate) this.getAttributeValue(StockBalanceVO.TRADE_DATE);
 	}
@@ -1006,6 +1043,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	 * @param trade_date
 	 *            交易日期
 	 */
+	@Override
 	public void setTrade_date(UFDate trade_date) {
 		this.setAttributeValue(StockBalanceVO.TRADE_DATE, trade_date);
 	}
@@ -1138,31 +1176,37 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	}
 
 	@Override
+	
 	public IVOMeta getMetaData() {
 		return VOMetaFactory.getInstance().getVOMeta("fba_sim.StockBalanceVO");
 	}
 
 	@Override
+	
 	public UFDouble getBargain_num() {
 		return getStocks_num();
 	}
 
 	@Override
+
 	public void setBargain_num(UFDouble bargain_num) {
-		
+
 	}
 
+	
 	@Override
 	public UFDouble getBargain_sum() {
 		return getStocks_sum();
 	}
 
 	@Override
+	
 	public void setBargain_sum(UFDouble bargain_sum) {
 		// TODO 自动生成的方法存根
-		
+
 	}
 
+	
 	@Override
 	public String getBillno() {
 		// TODO 自动生成的方法存根
@@ -1172,9 +1216,10 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	@Override
 	public void setBillno(String billno) {
 		// TODO 自动生成的方法存根
-		
+
 	}
 
+	
 	@Override
 	public String getBilltypecode() {
 		// TODO 自动生成的方法存根
@@ -1184,9 +1229,10 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	@Override
 	public void setBilltypecode(String billtypecode) {
 		// TODO 自动生成的方法存根
-		
+
 	}
 
+	
 	@Override
 	public UFDouble getFact_sum() {
 		// TODO 自动生成的方法存根
@@ -1194,35 +1240,41 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	}
 
 	@Override
+	
 	public void setFact_sum(UFDouble fact_sum) {
 		// TODO 自动生成的方法存根
-		
+
 	}
 
+	
 	@Override
 	public UFDouble getFairvalue() {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
+	
 	@Override
 	public void setFairvalue(UFDouble fairvalue) {
 		// TODO 自动生成的方法存根
-		
+
 	}
 
+	
 	@Override
 	public UFDouble getInterest() {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
+	
 	@Override
 	public void setInterest(UFDouble interest) {
 		// TODO 自动生成的方法存根
-		
+
 	}
 
+	
 	@Override
 	public String getPk_transtype() {
 		// TODO 自动生成的方法存根
@@ -1232,10 +1284,11 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	@Override
 	public void setPk_transtype(String pk_transtype) {
 		// TODO 自动生成的方法存根
-		
+
 	}
 
 	@Override
+	
 	public String getTranstypecode() {
 		// TODO 自动生成的方法存根
 		return null;
@@ -1244,34 +1297,39 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	@Override
 	public void setTranstypecode(String transtypecode) {
 		// TODO 自动生成的方法存根
-		
+
 	}
 
+	
 	@Override
 	public UFLiteralDate getHr_begin_date() {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
+	
 	@Override
 	public void setHr_begin_date(UFLiteralDate hr_begin_date) {
 		// TODO 自动生成的方法存根
-		
+
 	}
 
 	@Override
+	
 	public UFLiteralDate getHr_end_date() {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
+	
 	@Override
 	public void setHr_end_date(UFLiteralDate hr_end_date) {
 		// TODO 自动生成的方法存根
-		
+
 	}
 
 	@Override
+	
 	public String getHr_pk_assetsprop() {
 		// TODO 自动生成的方法存根
 		return null;
@@ -1280,9 +1338,10 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	@Override
 	public void setHr_pk_assetsprop(String hr_pk_assetsprop) {
 		// TODO 自动生成的方法存根
-		
+
 	}
 
+	
 	@Override
 	public String getHr_pk_capaccount() {
 		// TODO 自动生成的方法存根
@@ -1291,10 +1350,11 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 
 	@Override
 	public void setHr_pk_capaccount(String hr_pk_capaccount) {
-		// TODO 自动生成的方法存根
-		
+		// 
+
 	}
 
+	
 	@Override
 	public String getHr_pk_client() {
 		// TODO 自动生成的方法存根
@@ -1304,10 +1364,11 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	@Override
 	public void setHr_pk_client(String hr_pk_client) {
 		// TODO 自动生成的方法存根
-		
+
 	}
 
 	@Override
+	
 	public String getHr_pk_operatesite() {
 		// TODO 自动生成的方法存根
 		return null;
@@ -1316,9 +1377,10 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	@Override
 	public void setHr_pk_operatesite(String hr_pk_operatesite) {
 		// TODO 自动生成的方法存根
-		
+
 	}
 
+	
 	@Override
 	public String getHr_pk_partnaccount() {
 		// TODO 自动生成的方法存根
@@ -1328,10 +1390,11 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	@Override
 	public void setHr_pk_partnaccount(String hr_pk_partnaccount) {
 		// TODO 自动生成的方法存根
-		
+
 	}
 
 	@Override
+	
 	public String getHr_pk_securities() {
 		return getPk_securities();
 	}
@@ -1341,6 +1404,7 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 		setPk_securities(hr_Pk_securities);
 	}
 
+	
 	@Override
 	public String getHr_pk_selfsgroup() {
 		// TODO 自动生成的方法存根
@@ -1350,9 +1414,10 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	@Override
 	public void setHr_pk_selfsgroup(String hr_pk_selfsgroup) {
 		// TODO 自动生成的方法存根
-		
+
 	}
 
+	
 	@Override
 	public String getHr_pk_stocksort() {
 		// TODO 自动生成的方法存根
@@ -1363,18 +1428,21 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	public void setHr_pk_stocksort(String hr_pk_stocksort) {
 	}
 
+	
 	@Override
 	public UFDouble getHr_bargain_num() {
 		return getBargain_num();
 	}
 
+	
 	@Override
 	public void setHr_bargain_num(UFDouble bargain_num) {
 		setBargain_num(bargain_num);
 	}
-	
+
 	private Integer genway = CostConstant.FORWARD_GENSTATE.ZHUANCHU.getIndex();
 
+	@Override
 	public Integer getGenway() {
 		return genway;
 	}
@@ -1390,5 +1458,5 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data{
 	public void setStock_map(Map<String, UFDouble> stock_map) {
 		this.stock_map = stock_map;
 	}
-	
+
 }

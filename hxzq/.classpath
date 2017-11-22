@@ -12,25 +12,19 @@
 	<classpathentry kind="src" path="cmp/src/public"/>
 	<classpathentry kind="src" path="cmp/src/client"/>
 	<classpathentry kind="src" path="uap/src/client"/>
-	<classpathentry kind="src" path="uap/src/private"/>
-	<classpathentry kind="src" path="erm/src/client"/>
-	<classpathentry kind="src" path="erm/src/private"/>
-	<classpathentry kind="src" path="fba_sabb/src/public"/>
-	<classpathentry kind="src" path="fba_sabb/src/private"/>
-	<classpathentry kind="src" path="fba_smt/src/public"/>
-	<classpathentry kind="src" path="fba_smt/src/private"/>
 	<classpathentry kind="src" path="fba_sim/src/public"/>
 	<classpathentry kind="src" path="fba_sim/src/client"/>
 	<classpathentry kind="src" path="fba_sim/src/private"/>
 	<classpathentry kind="src" path="fba_scost/src/public"/>
 	<classpathentry kind="src" path="fba_scost/src/client"/>
 	<classpathentry kind="src" path="fba_scost/src/private"/>
-	<classpathentry kind="src" path="gl/src/client"/>
-	<classpathentry kind="src" output="hxzq_cd/classes" path="hxzq_cd/resources"/>
-	<classpathentry kind="src" output="hxzq_cd/classes" path="hxzq_cd/src/test"/>
 	<classpathentry kind="src" path="fba_zqjd/src/private"/>
 	<classpathentry kind="src" output="out/resources" path="resources"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/Runtime">
+		<accessrules>
+			<accessrule kind="accessible" pattern="*/**"/>
+		</accessrules>
+	</classpathentry>
 	<classpathentry kind="con" path="nc.uap.mde.library.container/Ant_Library"/>
 	<classpathentry kind="con" path="nc.uap.mde.library.container/Product_Common_Library"/>
 	<classpathentry kind="con" path="nc.uap.mde.library.container/Middleware_Library"/>

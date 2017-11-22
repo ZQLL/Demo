@@ -1,21 +1,16 @@
 package nc.impl.fba_secd.secdimp.pub;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import nc.bs.dao.BaseDAO;
 import nc.bs.dao.DAOException;
 import nc.jdbc.framework.processor.BeanListProcessor;
 import nc.jdbc.framework.processor.ColumnProcessor;
-import nc.vo.fba_scost.cost.trademarket.TradeMarketVO;
 import nc.vo.fba_secd.secdimp.pub.SystemConst;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.SuperVO;
 import nc.vo.pub.VOStatus;
-
+import java.util.*;
 /**
  * 考虑重复，覆盖导入方式，数据处理
  * 
@@ -32,7 +27,8 @@ public class DataImportByImpMode {
 	 * @author qs
 	 * @return rsMap
 	 */
-	public Map<String, List<SuperVO>> compareData(SuperVO[] vos, SuperVO baseVO, String[] queryFldArr, String[] repeatFld,
+	public Map<String, List<SuperVO>> compareData(SuperVO[] vos,
+			SuperVO baseVO, String[] queryFldArr, String[] repeatFld,
 			String[] updateFld, int impmode) throws BusinessException {
 		// 此Map的key存放用于比较的拼接key
 		Map<String, SuperVO> compareKeyMap = new HashMap<String, SuperVO>();
@@ -52,8 +48,8 @@ public class DataImportByImpMode {
 
 		for (int j = 1; j <= i; j++) {
 			StringBuilder sql = new StringBuilder();
-			if(baseVO instanceof nc.vo.fba_sim.simbs.trademarket.TradeMarketVO){
-				
+			if (baseVO instanceof nc.vo.fba_sim.simbs.trademarket.TradeMarketVO) {
+
 				sql.append("select * from ");
 				sql.append("(");
 				sql.append("select rownum r, t.* from ").append("");
@@ -66,8 +62,8 @@ public class DataImportByImpMode {
 				sql.append(COUNT * (j - 1));
 				sql.append("and pk_securities <> '~'");
 				sql.append("and isnull(dr,0)=0");
-			}else{
-				
+			} else {
+
 				sql.append("select * from ");
 				sql.append("(");
 				sql.append("select rownum r, t.* from ").append("");
@@ -80,7 +76,8 @@ public class DataImportByImpMode {
 				sql.append(COUNT * (j - 1));
 				sql.append("and isnull(dr,0)=0");
 			}
-			Collection col2 = (Collection) dao.executeQuery(sql.toString(), new BeanListProcessor(baseVO.getClass()));
+			Collection col2 = (Collection) dao.executeQuery(sql.toString(),
+					new BeanListProcessor(baseVO.getClass()));
 			SuperVO[] dataBaseVOs = (SuperVO[]) col2.toArray(new SuperVO[0]);
 			initCompareKeyMap(dataBaseVOs, compareKeyMap, repeatFld);
 		}
@@ -96,7 +93,7 @@ public class DataImportByImpMode {
 					contractUpdateLst(updateLst, vo, dataBaseVO, updateFld);
 				}
 			} else {
-				//无重复，新增数据
+				// 无重复，新增数据
 				insertLst.add(vo);
 			}
 		}
@@ -112,11 +109,13 @@ public class DataImportByImpMode {
 		countsql.append("select count(*) from ");
 		countsql.append(baseVO.getTableName()).append(" t ");
 		countsql.append("where dr = 0");
-		int count = (Integer) dao.executeQuery(countsql.toString(), new ColumnProcessor());
+		int count = (Integer) dao.executeQuery(countsql.toString(),
+				new ColumnProcessor());
 		return count;
 	}
 
-	private void initCompareKeyMap(SuperVO[] dataBaseVOs, Map<String, SuperVO> compareKeyMap, String[] fieldArr) {
+	private void initCompareKeyMap(SuperVO[] dataBaseVOs,
+			Map<String, SuperVO> compareKeyMap, String[] fieldArr) {
 		int voSize = dataBaseVOs.length;
 		for (int i = 0; i < voSize; i++) {
 			SuperVO vo = dataBaseVOs[i];
@@ -130,8 +129,8 @@ public class DataImportByImpMode {
 		StringBuffer fldValBuf = new StringBuffer();
 		int compareFldSize = fieldArr.length;
 		for (int j = 0; j < compareFldSize; j++) {
-			if(vo.getAttributeValue(fieldArr[j])==null){
-				throw new RuntimeException(fieldArr[j]+"为空");
+			if (vo.getAttributeValue(fieldArr[j]) == null) {
+				throw new RuntimeException(fieldArr[j] + "为空");
 			}
 			fldValBuf.append(vo.getAttributeValue(fieldArr[j]).toString());
 			fldValBuf.append(SystemConst.JOINTAG);
@@ -139,11 +138,13 @@ public class DataImportByImpMode {
 		return fldValBuf.toString();
 	}
 
-	private void contractUpdateLst(List<SuperVO> updateLst, SuperVO vo, SuperVO dataBaseVO, String[] updateFld) {
+	private void contractUpdateLst(List<SuperVO> updateLst, SuperVO vo,
+			SuperVO dataBaseVO, String[] updateFld) {
 		if (updateFld != null && updateFld.length > 0) {
 			int fldLen = updateFld.length;
 			for (int i = 0; i < fldLen; i++) {
-				dataBaseVO.setAttributeValue(updateFld[i], vo.getAttributeValue(updateFld[i]));
+				dataBaseVO.setAttributeValue(updateFld[i],
+						vo.getAttributeValue(updateFld[i]));
 			}
 			updateLst.add(dataBaseVO);
 		} else {

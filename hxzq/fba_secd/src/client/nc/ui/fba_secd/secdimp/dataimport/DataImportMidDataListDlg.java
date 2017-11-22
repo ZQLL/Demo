@@ -1,19 +1,12 @@
 package nc.ui.fba_secd.secdimp.dataimport;
-/**
- * 外部数据导入
- * 
- */
+
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EtchedBorder;
@@ -33,11 +26,11 @@ public class DataImportMidDataListDlg extends UIDialog implements
 		ActionListener {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private BillTabbedPane ivjTabPanel = null;
 
 	private BillScrollPane ivjHeadListTable = null;
-	
+
 	private BillScrollPane ivjBodyListTable = null;
 
 	private UIButton m_OKButton = null;
@@ -45,81 +38,86 @@ public class DataImportMidDataListDlg extends UIDialog implements
 	private UIButton m_CancelButton = null;
 
 	private String[] _headColCodes_cn;
-	
+
 	private String[] _bodyColCodes_cn;
-	
+
 	private String[] _head_sd_fields;
-	
+
 	private String[] _body_sd_fields;
-	
+
 	private Map headTitleMap;
-	
+
 	private Map bodyTitleMap;
 
 	private Vector _head_dataV;
-	
+
 	private Vector _body_dataV;
 
 	public DataImportMidDataListDlg(Container parent) {
 		super(parent);
 	}
 
-	public DataImportMidDataListDlg(Container parent,Map v,Map title,Map hm_info) {
+	public DataImportMidDataListDlg(Container parent, Map v, Map title,
+			Map hm_info) {
 		super(parent);
-		Map<String,List<String>> sd_fields_cn_map = (Map<String, List<String>>) hm_info.get(SystemConst.SD_FIELDS_CN);
+		Map<String, List<String>> sd_fields_cn_map = (Map<String, List<String>>) hm_info
+				.get(SystemConst.SD_FIELDS_CN);
 		List<String> head_fields_cn = sd_fields_cn_map.get(SystemConst.HEAD);
-		_headColCodes_cn = head_fields_cn.toArray(new String[]{});
+		_headColCodes_cn = head_fields_cn.toArray(new String[] {});
 		List<String> body_fields_cn = sd_fields_cn_map.get(SystemConst.BODY);
-		if(body_fields_cn != null){
-			_bodyColCodes_cn = body_fields_cn.toArray(new String[]{});
+		if (body_fields_cn != null) {
+			_bodyColCodes_cn = body_fields_cn.toArray(new String[] {});
 		}
-		
-		Map<String,List<String>> sd_fields_map = (Map<String, List<String>>) hm_info.get(SystemConst.SD_FIELDS);
+
+		Map<String, List<String>> sd_fields_map = (Map<String, List<String>>) hm_info
+				.get(SystemConst.SD_FIELDS);
 		List<String> head_sd_fields = sd_fields_map.get(SystemConst.HEAD);
-		_head_sd_fields = head_sd_fields.toArray(new String[]{});
-		
+		_head_sd_fields = head_sd_fields.toArray(new String[] {});
+
 		List<String> body_sd_fields = sd_fields_map.get(SystemConst.BODY);
-		if(body_sd_fields != null){
-			_body_sd_fields = body_sd_fields.toArray(new String[]{});
+		if (body_sd_fields != null) {
+			_body_sd_fields = body_sd_fields.toArray(new String[] {});
 		}
-		
-		//主表数据
+
+		// 主表数据
 		List headLst = (List) v.get(SystemConst.HEAD);
-		//子表数据
+		// 子表数据
 		List bodyLst = (List) v.get(SystemConst.BODY);
 		Map headTitle = (Map) title.get(SystemConst.HEAD);
 		Map bodyTitle = (Map) title.get(SystemConst.BODY);
-		
+
 		_head_dataV = getVector(headLst);
-		if(bodyLst != null){
+		if (bodyLst != null) {
 			_body_dataV = getVector(bodyLst);
 		}
-		
+
 		headTitleMap = headTitle;
 		bodyTitleMap = bodyTitle;
 		initUI();
 	}
-	private Vector getVector(List list){
-		Vector v=new Vector(list.size());
-		for(int i=0;i<list.size();i++){
+
+	private Vector getVector(List list) {
+		Vector v = new Vector(list.size());
+		for (int i = 0; i < list.size(); i++) {
 			v.add(list.get(i));
 		}
 		return v;
 	}
+
 	private BillTabbedPane getListTable() {
-		if(ivjTabPanel == null){
+		if (ivjTabPanel == null) {
 			ivjTabPanel = new BillTabbedPane();
 			handleHeadTable();
 			ivjTabPanel.insertTab("主表数据", null, ivjHeadListTable, "", 0);
-			//ivjTabPanel.add(ivjHeadListTable);
+			// ivjTabPanel.add(ivjHeadListTable);
 			headleBodyTable();
-			
+
 		}
 		return ivjTabPanel;
 	}
 
 	private void headleBodyTable() {
-		if(_bodyColCodes_cn == null || _bodyColCodes_cn.length == 0){
+		if (_bodyColCodes_cn == null || _bodyColCodes_cn.length == 0) {
 			return;
 		}
 		if (ivjBodyListTable == null) {
@@ -139,11 +137,11 @@ public class DataImportMidDataListDlg extends UIDialog implements
 				BillModel oModel = new BillModel();
 				oModel.setBodyItems(biBodyItems);
 				ivjBodyListTable.setTableModel(oModel);
-				ivjBodyListTable.setRowNOShow(true);				
+				ivjBodyListTable.setRowNOShow(true);
 				ivjBodyListTable.getTable().setSelectionMode(
-				ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+						ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 				ivjBodyListTable.updateUI();
-				
+
 				if (bodyTitleMap != null && bodyTitleMap.size() > 0) {
 					// 设置表数据
 					if (_body_dataV != null) {
@@ -155,27 +153,32 @@ public class DataImportMidDataListDlg extends UIDialog implements
 								for (int i = 0; i < _body_sd_fields.length; i++) {
 									String field = _body_sd_fields[i];
 									if (field.contains(SystemConst.perfix)) {
-										String[] fields = field.split("\\" + SystemConst.perfix);
+										String[] fields = field.split("\\"
+												+ SystemConst.perfix);
 										String temp = "";
 										for (int j = 0; j < fields.length; j++) {
 
-											/****取出 titmap的所有key值 ---liangwei*****/
-											Set keyset=bodyTitleMap.keySet();
-											Iterator it = keyset.iterator(); 
+											/**** 取出 titmap的所有key值 ---liangwei *****/
+											Set keyset = bodyTitleMap.keySet();
+											Iterator it = keyset.iterator();
 											/****************/
-											//对key值做判断转换
-											while(it.hasNext()){
+											// 对key值做判断转换
+											while (it.hasNext()) {
 												String key = (String) it.next();
-												if(key.contains(fields[j])){
-													fields[j]=key;
+												if (key.contains(fields[j])) {
+													fields[j] = key;
 												}
 											}
-											//int col = Integer.parseInt(titmap.get(fields[j]).toString());
+											// int col =
+											// Integer.parseInt(titmap.get(fields[j]).toString());
 											temp += data.get(fields[j]) + "+";
 										}
-										result.add(temp.substring(0, temp.length() - 1));
+										result.add(temp.substring(0,
+												temp.length() - 1));
 									} else {
-										//int col = Integer.parseInt(titmap.get(field + i).toString());
+										// int col =
+										// Integer.parseInt(titmap.get(field +
+										// i).toString());
 										result.add(data.get(field));
 									}
 								}
@@ -185,7 +188,7 @@ public class DataImportMidDataListDlg extends UIDialog implements
 
 						ivjBodyListTable.getTableModel().setDataVector(lresult);
 					}
-				}else{
+				} else {
 					ivjBodyListTable.getTableModel().setDataVector(_body_dataV);
 				}
 			} catch (Exception e) {
@@ -194,8 +197,8 @@ public class DataImportMidDataListDlg extends UIDialog implements
 			}
 		}
 		ivjTabPanel.insertTab("子表数据", null, ivjBodyListTable, "", 1);
-		//ivjTabPanel.add(ivjBodyListTable);
-		
+		// ivjTabPanel.add(ivjBodyListTable);
+
 	}
 
 	private void handleHeadTable() {
@@ -216,11 +219,11 @@ public class DataImportMidDataListDlg extends UIDialog implements
 				BillModel oModel = new BillModel();
 				oModel.setBodyItems(biBodyItems);
 				ivjHeadListTable.setTableModel(oModel);
-				ivjHeadListTable.setRowNOShow(true);				
+				ivjHeadListTable.setRowNOShow(true);
 				ivjHeadListTable.getTable().setSelectionMode(
-				ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+						ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 				ivjHeadListTable.updateUI();
-				
+
 				if (headTitleMap != null && headTitleMap.size() > 0) {
 					// 设置表数据
 					if (_head_dataV != null) {
@@ -232,27 +235,32 @@ public class DataImportMidDataListDlg extends UIDialog implements
 								for (int i = 0; i < _head_sd_fields.length; i++) {
 									String field = _head_sd_fields[i];
 									if (field.contains(SystemConst.perfix)) {
-										String[] fields = field.split("\\" + SystemConst.perfix);
+										String[] fields = field.split("\\"
+												+ SystemConst.perfix);
 										String temp = "";
 										for (int j = 0; j < fields.length; j++) {
 
-											/****取出 titmap的所有key值 ---liangwei*****/
-											Set keyset=headTitleMap.keySet();
-											Iterator it = keyset.iterator(); 
+											/**** 取出 titmap的所有key值 ---liangwei *****/
+											Set keyset = headTitleMap.keySet();
+											Iterator it = keyset.iterator();
 											/****************/
-											//对key值做判断转换
-											while(it.hasNext()){
+											// 对key值做判断转换
+											while (it.hasNext()) {
 												String key = (String) it.next();
-												if(key.contains(fields[j])){
-													fields[j]=key;
+												if (key.contains(fields[j])) {
+													fields[j] = key;
 												}
 											}
-											//int col = Integer.parseInt(titmap.get(fields[j]).toString());
+											// int col =
+											// Integer.parseInt(titmap.get(fields[j]).toString());
 											temp += data.get(fields[j]) + "+";
 										}
-										result.add(temp.substring(0, temp.length() - 1));
+										result.add(temp.substring(0,
+												temp.length() - 1));
 									} else {
-										//int col = Integer.parseInt(titmap.get(field + i).toString());
+										// int col =
+										// Integer.parseInt(titmap.get(field +
+										// i).toString());
 										result.add(data.get(field));
 									}
 								}
@@ -262,7 +270,7 @@ public class DataImportMidDataListDlg extends UIDialog implements
 
 						ivjHeadListTable.getTableModel().setDataVector(lresult);
 					}
-				}else{
+				} else {
 					ivjHeadListTable.getTableModel().setDataVector(_head_dataV);
 				}
 			} catch (Exception e) {

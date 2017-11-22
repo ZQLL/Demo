@@ -1,9 +1,7 @@
 package nc.impl.fba_sim.costingplugin;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import nc.bs.framework.common.NCLocator;
 import nc.itf.fba_scost.cost.pub.TradeDataTool;
@@ -17,7 +15,6 @@ import nc.vo.fba_sim.simtrade.transformtrade.AggTransformtradeVO;
 import nc.vo.fba_sim.simtrade.transformtrade.TransformtradeVO;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.VOStatus;
-import nc.vo.pub.lang.UFDouble;
 import nc.vo.pubapp.pattern.model.entity.bill.IBill;
 import nc.vo.trade.voutils.VOUtil;
 
@@ -34,6 +31,7 @@ public abstract class AbstractTransform extends AbstractPlugin {
 
 	}
 
+	
 	@Override
 	public IBill[] queryData(ICostingTool costingtool) throws BusinessException {
 		IQueryScheme queryscheme = QuerySchemeUtil.createQueryScheme(
@@ -53,6 +51,7 @@ public abstract class AbstractTransform extends AbstractPlugin {
 	 * @author libin
 	 * @date 2012-11-2 ÏÂÎç2:51:32
 	 */
+	@Override
 	public IBill[] updateData(ICostingTool costingtool,
 			TradeDataTool tradedatatool) throws BusinessException {
 		IBill[] ibills = tradedatatool.getData(costingtool
@@ -90,6 +89,7 @@ public abstract class AbstractTransform extends AbstractPlugin {
 	 * @author libin
 	 * @date 2012-11-2 ÏÂÎç2:51:32
 	 */
+	@Override
 	public IBill[] insertData(ICostingTool costingtool,
 			TradeDataTool tradedatatool) throws BusinessException {
 		// IQueryScheme queryscheme =
@@ -101,6 +101,7 @@ public abstract class AbstractTransform extends AbstractPlugin {
 	}
 
 	@Override
+	
 	public void checkBills(ICostingTool costingtool, TradeDataTool tradedatatool)
 			throws Exception {
 		String pk_user = costingtool.getCostParaVO().getCheckParavo()
@@ -137,6 +138,7 @@ public abstract class AbstractTransform extends AbstractPlugin {
 	}
 
 	@Override
+	
 	public void unCheckBills(ICostingTool costingtool,
 			TradeDataTool tradedatatool) throws Exception {
 		String datakey = costingtool.getCurrbilltypegroupvo()

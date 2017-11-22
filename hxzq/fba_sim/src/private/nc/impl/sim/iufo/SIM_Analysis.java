@@ -3,14 +3,13 @@ package nc.impl.sim.iufo;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 import nc.bs.dao.BaseDAO;
 import nc.itf.fba_sec.pub.tools.StringUtil;
 import nc.itf.sim.iufo.IufoQuerySIMVO;
 import nc.jdbc.framework.processor.ResultSetProcessor;
 import nc.vo.pub.BusinessException;
-
+import java.util.*;
 /**
  * 条件分析
  * 
@@ -45,7 +44,7 @@ public class SIM_Analysis {
 		OversightCurrtype(simvo, sf);
 		return sf.toString();
 	}
-	
+
 	/**
 	 * 组装条件
 	 * 
@@ -64,10 +63,9 @@ public class SIM_Analysis {
 		OversightSec(simvo, sf);
 		OversightStocksort(simvo, sf);
 		/** 添加币种的条件 by jingqt */
-		//OversightCurrtype(simvo, sf);
+		// OversightCurrtype(simvo, sf);
 		return sf.toString();
 	}
-
 
 	/**
 	 * 解析证券档案
@@ -88,8 +86,6 @@ public class SIM_Analysis {
 		}
 		return sql;
 	}
-	
-	
 
 	/**
 	 * 解析资金账号
@@ -115,8 +111,6 @@ public class SIM_Analysis {
 		}
 		return sql;
 	}
-	
-	
 
 	/**
 	 * 解析业务小组
@@ -228,7 +222,7 @@ public class SIM_Analysis {
 			String temps[] = simvo.getPk_classify().split("[+]");
 			List<String> tempList = new ArrayList<String>();
 			if (temps != null && temps.length > 0) {
-				for(int i = 0; i < temps.length; i++){
+				for (int i = 0; i < temps.length; i++) {
 					String sql1 = "  select pk_sclassify from sec_sclassify where code  = '"
 							+ temps[i].trim() + "' and isnull(dr,0) = 0 ";
 					String id = queryResult(sql1);
@@ -237,16 +231,15 @@ public class SIM_Analysis {
 					}
 				}
 				if (tempList != null && tempList.size() > 0) {
-					if(tempList.size() == 1){
+					if (tempList.size() == 1) {
 						// 拼装SQL报错：未明确定义列
 						// sql =
 						// " and pk_securities in (select pk_securities from sec_securities where pk_sclassify = '"+id+"' and isnull(dr,0) = 0 ) ";
 						sql = " and a.pk_securities in (select pk_securities from sec_securities where pk_sclassify = '"
 								+ tempList.get(0) + "' and isnull(dr,0) = 0 ) ";
-					}
-					else{
+					} else {
 						String temp1 = "('" + tempList.get(0) + "',";
-						for(int j = 1; j < tempList.size() - 1; j++){
+						for (int j = 1; j < tempList.size() - 1; j++) {
 							temp1 += "'" + tempList.get(j) + "',";
 						}
 						temp1 += "'" + tempList.get(tempList.size() - 1) + "')";
@@ -254,8 +247,7 @@ public class SIM_Analysis {
 								+ temp1 + " and isnull(dr,0) = 0 ) ";
 					}
 					sf.append(sql);
-				}
-				else{
+				} else {
 					sql = " and 1=2 ";
 					sf.append(sql);
 				}
@@ -286,6 +278,7 @@ public class SIM_Analysis {
 		}
 		return sql;
 	}
+
 	/**
 	 * 解析资产属性
 	 */

@@ -27,6 +27,7 @@ import nc.vo.pubapp.pattern.model.entity.bill.IBill;
  * 证券转换 ：一个同买入，一个同卖出，包含成本和利息，资金不变
  */
 public class StockTransform extends AbstractTransform {
+	@Override
 	protected void calculate(ICostingTool costingtool, TransformtradeVO tradevo)
 			throws Exception {
 		PubMethod pm = PubMethod.getInstance();
@@ -96,234 +97,19 @@ public class StockTransform extends AbstractTransform {
 		// 获得剩余数量
 		stocks_num = pm.sub(outstockbalancevo.getStocks_num(),
 				tradevo.getBargain_num());
-		/******根据转出占比计算转出证券的计提未付收益 add by lihbj start*******/
+		/****** 根据转出占比计算转出证券的计提未付收益 add by lihbj start *******/
 		if (hasSameTradeDate(tradevo)) {
 			tradevo.setVdef2(UFDouble.ZERO_DBL.toString());
 		} else {
 			UFDouble sum_jzwfsy = new UFDouble(0);
-			if(!outstockbalancevo.getStocks_num().equals(new UFDouble(0))){
-				Double bl = tradevo.getBargain_num().div(outstockbalancevo.getStocks_num()).toDouble();
-				sum_jzwfsy = sumJZWFSY(tradevo).multiply(bl).setScale(2, UFDouble.ROUND_HALF_UP);
+			if (!outstockbalancevo.getStocks_num().equals(new UFDouble(0))) {
+				Double bl = tradevo.getBargain_num()
+						.div(outstockbalancevo.getStocks_num()).toDouble();
+				sum_jzwfsy = sumJZWFSY(tradevo).multiply(bl).setScale(2,
+						UFDouble.ROUND_HALF_UP);
 			}
 			tradevo.setVdef2(sum_jzwfsy.toString());
 		}
-		/******根据转出占比计算转出证券的计提未付收益 add by lihbj end*******/
-		// 判断转出是否合理
-		if (stocks_num.compareTo(new UFDouble(0)) < 0) {
-			costingtool.handleException(tradevo, null, SystemConst.error[1]);
-		}
-		if (stocks_num.compareTo(new UFDouble(0)) == 0) {// 卖空
-			// 如果剩余数量为0 代表全部卖出 转出金额为库存金额
-			stocks_sum = outstockbalancevo.getStocks_sum();
-		} else {// 销售成本
-			// 如果转出合理 计算转出金额
-			if (isFirstPrice) {// 先计算单价
-				stocks_sum = pm.div(outstockbalancevo.getStocks_sum(),
-						outstockbalancevo.getStocks_num());
-				stocks_sum = pm.multiply(stocks_sum, tradevo.getBargain_num());
-			} else {
-				stocks_sum = pm.multiply(outstockbalancevo.getStocks_sum(),
-						tradevo.getBargain_num());
-				stocks_sum = pm.div(stocks_sum,
-						outstockbalancevo.getStocks_num());
-			}
-			stocks_sum = pm.setScale(stocks_sum, true, true);
-		}
-		UFDouble taxOutCost = costingtool.getTaxOutcost(queryvo, costingtool,
-				tradevo.getBargain_num());
-		tradevo.setTaxexpense(taxOutCost);
-		/**
-		 * 证券转换记录审核时转出金额有值则不需回写否则回写：转出金额=库存金额/库存数量*转出数量，原逻辑没有加判断都直接回写
-		 * 
-		 * @author cjh
-		 * @date 2015-12-07 09：55
-		 */
-		if (tradevo.getBargain_sum() == null
-				|| tradevo.getBargain_sum().compareTo(new UFDouble(0)) <= 0) {
-			tradevo.setBargain_sum(stocks_sum);
-			tradevo.setAttributeValue("bargain_sum_his", null);
-		} else {
-			tradevo.setAttributeValue("bargain_sum_his",
-					tradevo.getBargain_sum());
-		}
-		// tradevo.setBargain_sum(stocks_sum);
-
-		/**
-		 * 证券交易记录审核时转入金额有值则不需回写否则回写,原逻辑没有加判断都直接回写
-		 * 
-		 * @author cjh
-		 * @date 2015-12-07 09：55
-		 */
-		if (tradevo.getBargain_sum2() == null
-				|| tradevo.getBargain_sum2().compareTo(new UFDouble(0)) <= 0) {
-			tradevo.setBargain_sum2(tradevo.getBargain_sum());
-			tradevo.setAttributeValue("bargain_sum2_his", null);
-		} else {
-			tradevo.setAttributeValue("bargain_sum2_his",
-					tradevo.getBargain_sum2());
-			// tradevo.setBargain_sum2(tradevo.getBargain_sum());
-		}
-		// tradevo.setBargain_sum2(stocks_sum);
-		tradevo.setSellcost(stocks_sum);
-		outstockbalancevo.setStocks_num(stocks_num);
-		outstockbalancevo.setStocks_sum(pm.sub(
-				outstockbalancevo.getStocks_sum(), stocks_sum));
-		outstockbalancevo.setStocks_tax(pm.sub(
-				outstockbalancevo.getStocks_tax(), taxOutCost));
-		// 更新转出库存
-		balanceTool.updateStockbalanceVO(queryvo, outstockbalancevo);
-		// 获得转入的库存
-		String hrkey = getCombinesKey(tradevo, keys, true);
-		/**
-		 * 此处拼接key必须加上业务组
-		 */
-		hrkey = costingtool.getCurrbilltypegroupvo().getPk_billtypegroup()
-				+ hrkey;
-		hrkey = hrkey + tradevo.getPk_securities2();
-		queryvo.setKey(hrkey);
-		queryvo.setPk_assetsprop(tradevo.getHr_pk_assetsprop());
-		queryvo.setPk_stocksort(tradevo.getHr_pk_stocksort());
-		StockBalanceVO instockbalancevo = balanceTool.getStockbalanceVO(
-				queryvo, costingtool);
-		if (instockbalancevo == null) {
-			instockbalancevo = balanceTool.getStockbalanceVOByVO(tradevo,
-					costingtool);
-			instockbalancevo.setPk_securities(tradevo.getPk_securities2());
-		}
-		// 获得转入的数量
-		stocks_num = pm.add(instockbalancevo.getStocks_num(),
-				tradevo.getBargain_num2());
-		// 获得转入的金额
-		stocks_sum = pm.add(instockbalancevo.getStocks_sum(),
-				tradevo.getBargain_sum2());
-		// 保存转入信息
-		instockbalancevo.setStocks_num(stocks_num);
-		instockbalancevo.setStocks_sum(pm.setScale(stocks_sum, true, true));
-		instockbalancevo.setStocks_tax(pm.add(instockbalancevo.getStocks_tax(),
-				taxOutCost));
-		// 更新转入的库存
-		balanceTool.updateStockbalanceVO(queryvo, instockbalancevo);
-		// 处理利息余额
-		// BondBalanceBO.getInstance().handleBondBalanceByBillType(costingtool,
-		// this.getBilltype(), tradevo, SystemConst.ActionType_Audit);
-
-		// 存取应收利息---
-		costcalc.saveInterestDistill(costingtool, tradevo);
-		// 保存公允价值---
-		costcalc.saveFairValueDistill(costingtool, tradevo);
-		// 实际利率
-		RealratePlugin check = new RealratePlugin();
-		if (check.isRealTradevo(tradevo.getPk_glorgbook())) {
-			ICalcPluginMaintain mail = (ICalcPluginMaintain) NCLocator
-					.getInstance().lookup(ICalcPluginMaintain.class);
-			mail.ztgPlugindeal(outstockbalancevo, tradevo);
-		}
-	}
-	protected void calculate(ICostingTool costingtool, TransformtradeVO tradevo,UFDouble allstock,int count,List<UFDouble> midvdeflist,List<TransformtradeVO> alllist)
-			throws Exception {
-		PubMethod pm = PubMethod.getInstance();
-		boolean isFirstPrice = costingtool.getCostParaVO().getFirstPrice();
-		String trade_date = costingtool.getCurrdate();
-		ICostBalanceTool balanceTool = costingtool.getBalancetool();
-		String[] keys = new String[costingtool.getCostParaVO().getCostplanvo()
-				.getCostFieldArray().length - 1];
-		for (int i = 0; i < keys.length; i++) {
-			keys[i] = costingtool.getCostParaVO().getCostplanvo()
-					.getCostFieldArray()[i];
-		}
-		String hckey = getCombinesKey(tradevo, keys, false);
-		/**
-		 * 此处拼接key必须加上业务组
-		 */
-		hckey = costingtool.getCurrbilltypegroupvo().getPk_billtypegroup()
-				+ hckey;
-		hckey = hckey + tradevo.getPk_securities();
-		BanlanceQueryKeyVO queryvo = new BanlanceQueryKeyVO();
-		queryvo.setKey(hckey);
-		queryvo.setPk_assetsprop(tradevo.getHc_pk_assetsprop());
-		queryvo.setPk_stocksort(tradevo.getHc_pk_stocksort());
-		queryvo.setTrade_date(trade_date);
-		// 库存余额表
-		StockBalanceVO outstockbalancevo = balanceTool.getStockbalanceVO(
-				queryvo, costingtool);
-		if (outstockbalancevo == null) {
-			costingtool.handleException(tradevo, null, SystemConst.error[0]);
-			return;
-		}
-
-		// zpm 实际利率 增加开始，位置不要动
-		if (outstockbalancevo.getStock_map().get(
-				tradevo.getTrade_date().toLocalString()) == null) {
-			outstockbalancevo.getStock_map().put(
-					tradevo.getTrade_date().toLocalString(),
-					outstockbalancevo.getStocks_num());
-		}
-
-		// 计算结转应收利息
-		UFDouble lx = costcalc.forwardInterestDistill(costingtool,
-				outstockbalancevo, tradevo);
-		tradevo.setInterest(lx);
-		// 计算结转公允价值
-		UFDouble fv = costcalc.forwardFairValueDistill(costingtool,
-				outstockbalancevo, tradevo);
-		tradevo.setFairvalue(fv);
-		//
-		// 库存数量
-		UFDouble stocks_num = outstockbalancevo.getStocks_num();
-		// 库存金额
-		UFDouble stocks_sum = outstockbalancevo.getStocks_sum();
-		/**
-		 * 转入数量增加字段原转入数量（bargain_num2_his）记录原来的转入数量，弃审时用来还原
-		 * 
-		 * @author cjh
-		 * @date 2015-12-08
-		 */
-		tradevo.setAttributeValue("bargain_num2_his", tradevo.getBargain_num2());
-		if (tradevo.getBargain_num2() == null
-				|| tradevo.getBargain_num2().compareTo(new UFDouble(0)) == 0) {
-
-			tradevo.setBargain_num2(tradevo.getBargain_num());// 如果转入数量为空，那么转入数量等于转出数量
-		}
-
-		// 获得剩余数量
-		stocks_num = pm.sub(outstockbalancevo.getStocks_num(),
-				tradevo.getBargain_num());
-		/****** 根据转出占比计算转出证券的计提未付收益 add by lihbj start *******/
-		UFDouble sum_jzwfsy = null;
-		UFDouble per_jzwfsy = null;
-		int allt = 0;
-		if (hasSameTradeDate(tradevo)) {
-			tradevo.setVdef2(UFDouble.ZERO_DBL.toString());
-		} else {
-			allt = alllist.size();	
-			TransformtradeVO[] alltftvo = new TransformtradeVO[allt];
-				
-			for (int i = 0; i < allt; i++) {
-				alltftvo[i] = alllist.get(i);
-			}
-				
-			UFDouble ZCall = new UFDouble(0);
-			for(int i = 0; i<allt;i++){
-				ZCall = ZCall.add(alltftvo[i].getBargain_num());
-			}
-			alltftvo[0].setBargain_num(ZCall);
-			Double b2 = ZCall
-					.div(allstock).toDouble();
-			sum_jzwfsy = sumJZWFSY(alltftvo[0]).multiply(b2).setScale(2,
-					UFDouble.ROUND_HALF_UP);
-			if(count == allt-1){
-				for(int i = 0; i<allt-1;i++){
-					sum_jzwfsy = sum_jzwfsy.sub(new UFDouble(midvdeflist.get(i).toString()));
-					per_jzwfsy = sum_jzwfsy;
-				}
-			}else{
-				per_jzwfsy = tradevo.getBargain_num().div(ZCall).multiply(sum_jzwfsy).setScale(2,
-						UFDouble.ROUND_HALF_UP);
-				midvdeflist.add(per_jzwfsy);
-			}
-			tradevo.setVdef2(per_jzwfsy.toString());
-		}
-		//交易日期当日的转出数据审核完成之后，count，allstock复位
 		/****** 根据转出占比计算转出证券的计提未付收益 add by lihbj end *******/
 		// 判断转出是否合理
 		if (stocks_num.compareTo(new UFDouble(0)) < 0) {
@@ -431,13 +217,15 @@ public class StockTransform extends AbstractTransform {
 		// 实际利率
 		RealratePlugin check = new RealratePlugin();
 		if (check.isRealTradevo(tradevo.getPk_glorgbook())) {
-			ICalcPluginMaintain mail = (ICalcPluginMaintain) NCLocator
-					.getInstance().lookup(ICalcPluginMaintain.class);
+			ICalcPluginMaintain mail = NCLocator.getInstance().lookup(
+					ICalcPluginMaintain.class);
 			mail.ztgPlugindeal(outstockbalancevo, tradevo);
 		}
 	}
-	
-	protected UFDouble calculatelaststock(ICostingTool costingtool, TransformtradeVO tradevo)
+
+	protected void calculate(ICostingTool costingtool,
+			TransformtradeVO tradevo, UFDouble allstock, int count,
+			List<UFDouble> midvdeflist, List<TransformtradeVO> alllist)
 			throws Exception {
 		PubMethod pm = PubMethod.getInstance();
 		boolean isFirstPrice = costingtool.getCostParaVO().getFirstPrice();
@@ -464,7 +252,226 @@ public class StockTransform extends AbstractTransform {
 		// 库存余额表
 		StockBalanceVO outstockbalancevo = balanceTool.getStockbalanceVO(
 				queryvo, costingtool);
-		
+		if (outstockbalancevo == null) {
+			costingtool.handleException(tradevo, null, SystemConst.error[0]);
+			return;
+		}
+
+		// zpm 实际利率 增加开始，位置不要动
+		if (outstockbalancevo.getStock_map().get(
+				tradevo.getTrade_date().toLocalString()) == null) {
+			outstockbalancevo.getStock_map().put(
+					tradevo.getTrade_date().toLocalString(),
+					outstockbalancevo.getStocks_num());
+		}
+
+		// 计算结转应收利息
+		UFDouble lx = costcalc.forwardInterestDistill(costingtool,
+				outstockbalancevo, tradevo);
+		tradevo.setInterest(lx);
+		// 计算结转公允价值
+		UFDouble fv = costcalc.forwardFairValueDistill(costingtool,
+				outstockbalancevo, tradevo);
+		tradevo.setFairvalue(fv);
+		//
+		// 库存数量
+		UFDouble stocks_num = outstockbalancevo.getStocks_num();
+		// 库存金额
+		UFDouble stocks_sum = outstockbalancevo.getStocks_sum();
+		/**
+		 * 转入数量增加字段原转入数量（bargain_num2_his）记录原来的转入数量，弃审时用来还原
+		 * 
+		 * @author cjh
+		 * @date 2015-12-08
+		 */
+		tradevo.setAttributeValue("bargain_num2_his", tradevo.getBargain_num2());
+		if (tradevo.getBargain_num2() == null
+				|| tradevo.getBargain_num2().compareTo(new UFDouble(0)) == 0) {
+
+			tradevo.setBargain_num2(tradevo.getBargain_num());// 如果转入数量为空，那么转入数量等于转出数量
+		}
+
+		// 获得剩余数量
+		stocks_num = pm.sub(outstockbalancevo.getStocks_num(),
+				tradevo.getBargain_num());
+		/****** 根据转出占比计算转出证券的计提未付收益 add by lihbj start *******/
+		UFDouble sum_jzwfsy = null;
+		UFDouble per_jzwfsy = null;
+		int allt = 0;
+		if (hasSameTradeDate(tradevo)) {
+			tradevo.setVdef2(UFDouble.ZERO_DBL.toString());
+		} else {
+			allt = alllist.size();
+			TransformtradeVO[] alltftvo = new TransformtradeVO[allt];
+
+			for (int i = 0; i < allt; i++) {
+				alltftvo[i] = alllist.get(i);
+			}
+
+			UFDouble ZCall = new UFDouble(0);
+			for (int i = 0; i < allt; i++) {
+				ZCall = ZCall.add(alltftvo[i].getBargain_num());
+			}
+			alltftvo[0].setBargain_num(ZCall);
+			Double b2 = ZCall.div(allstock).toDouble();
+			sum_jzwfsy = sumJZWFSY(alltftvo[0]).multiply(b2).setScale(2,
+					UFDouble.ROUND_HALF_UP);
+			if (count == allt - 1) {
+				for (int i = 0; i < allt - 1; i++) {
+					sum_jzwfsy = sum_jzwfsy.sub(new UFDouble(midvdeflist.get(i)
+							.toString()));
+					per_jzwfsy = sum_jzwfsy;
+				}
+			} else {
+				per_jzwfsy = tradevo.getBargain_num().div(ZCall)
+						.multiply(sum_jzwfsy)
+						.setScale(2, UFDouble.ROUND_HALF_UP);
+				midvdeflist.add(per_jzwfsy);
+			}
+			tradevo.setVdef2(per_jzwfsy.toString());
+		}
+		// 交易日期当日的转出数据审核完成之后，count，allstock复位
+		/****** 根据转出占比计算转出证券的计提未付收益 add by lihbj end *******/
+		// 判断转出是否合理
+		if (stocks_num.compareTo(new UFDouble(0)) < 0) {
+			costingtool.handleException(tradevo, null, SystemConst.error[1]);
+		}
+		if (stocks_num.compareTo(new UFDouble(0)) == 0) {// 卖空
+			// 如果剩余数量为0 代表全部卖出 转出金额为库存金额
+			stocks_sum = outstockbalancevo.getStocks_sum();
+		} else {// 销售成本
+			// 如果转出合理 计算转出金额
+			if (isFirstPrice) {// 先计算单价
+				stocks_sum = pm.div(outstockbalancevo.getStocks_sum(),
+						outstockbalancevo.getStocks_num());
+				stocks_sum = pm.multiply(stocks_sum, tradevo.getBargain_num());
+			} else {
+				stocks_sum = pm.multiply(outstockbalancevo.getStocks_sum(),
+						tradevo.getBargain_num());
+				stocks_sum = pm.div(stocks_sum,
+						outstockbalancevo.getStocks_num());
+			}
+			stocks_sum = pm.setScale(stocks_sum, true, true);
+		}
+		UFDouble taxOutCost = costingtool.getTaxOutcost(queryvo, costingtool,
+				tradevo.getBargain_num());
+		tradevo.setTaxexpense(taxOutCost);
+		/**
+		 * 证券转换记录审核时转出金额有值则不需回写否则回写：转出金额=库存金额/库存数量*转出数量，原逻辑没有加判断都直接回写
+		 * 
+		 * @author cjh
+		 * @date 2015-12-07 09：55
+		 */
+		if (tradevo.getBargain_sum() == null
+				|| tradevo.getBargain_sum().compareTo(new UFDouble(0)) <= 0) {
+			tradevo.setBargain_sum(stocks_sum);
+			tradevo.setAttributeValue("bargain_sum_his", null);
+		} else {
+			tradevo.setAttributeValue("bargain_sum_his",
+					tradevo.getBargain_sum());
+		}
+		// tradevo.setBargain_sum(stocks_sum);
+
+		/**
+		 * 证券交易记录审核时转入金额有值则不需回写否则回写,原逻辑没有加判断都直接回写
+		 * 
+		 * @author cjh
+		 * @date 2015-12-07 09：55
+		 */
+		if (tradevo.getBargain_sum2() == null
+				|| tradevo.getBargain_sum2().compareTo(new UFDouble(0)) <= 0) {
+			tradevo.setBargain_sum2(tradevo.getBargain_sum());
+			tradevo.setAttributeValue("bargain_sum2_his", null);
+		} else {
+			tradevo.setAttributeValue("bargain_sum2_his",
+					tradevo.getBargain_sum2());
+			// tradevo.setBargain_sum2(tradevo.getBargain_sum());
+		}
+		// tradevo.setBargain_sum2(stocks_sum);
+		tradevo.setSellcost(stocks_sum);
+		outstockbalancevo.setStocks_num(stocks_num);
+		outstockbalancevo.setStocks_sum(pm.sub(
+				outstockbalancevo.getStocks_sum(), stocks_sum));
+		outstockbalancevo.setStocks_tax(pm.sub(
+				outstockbalancevo.getStocks_tax(), taxOutCost));
+		// 更新转出库存
+		balanceTool.updateStockbalanceVO(queryvo, outstockbalancevo);
+		// 获得转入的库存
+		String hrkey = getCombinesKey(tradevo, keys, true);
+		/**
+		 * 此处拼接key必须加上业务组
+		 */
+		hrkey = costingtool.getCurrbilltypegroupvo().getPk_billtypegroup()
+				+ hrkey;
+		hrkey = hrkey + tradevo.getPk_securities2();
+		queryvo.setKey(hrkey);
+		queryvo.setPk_assetsprop(tradevo.getHr_pk_assetsprop());
+		queryvo.setPk_stocksort(tradevo.getHr_pk_stocksort());
+		StockBalanceVO instockbalancevo = balanceTool.getStockbalanceVO(
+				queryvo, costingtool);
+		if (instockbalancevo == null) {
+			instockbalancevo = balanceTool.getStockbalanceVOByVO(tradevo,
+					costingtool);
+			instockbalancevo.setPk_securities(tradevo.getPk_securities2());
+		}
+		// 获得转入的数量
+		stocks_num = pm.add(instockbalancevo.getStocks_num(),
+				tradevo.getBargain_num2());
+		// 获得转入的金额
+		stocks_sum = pm.add(instockbalancevo.getStocks_sum(),
+				tradevo.getBargain_sum2());
+		// 保存转入信息
+		instockbalancevo.setStocks_num(stocks_num);
+		instockbalancevo.setStocks_sum(pm.setScale(stocks_sum, true, true));
+		instockbalancevo.setStocks_tax(pm.add(instockbalancevo.getStocks_tax(),
+				taxOutCost));
+		// 更新转入的库存
+		balanceTool.updateStockbalanceVO(queryvo, instockbalancevo);
+		// 处理利息余额
+		// BondBalanceBO.getInstance().handleBondBalanceByBillType(costingtool,
+		// this.getBilltype(), tradevo, SystemConst.ActionType_Audit);
+
+		// 存取应收利息---
+		costcalc.saveInterestDistill(costingtool, tradevo);
+		// 保存公允价值---
+		costcalc.saveFairValueDistill(costingtool, tradevo);
+		// 实际利率
+		RealratePlugin check = new RealratePlugin();
+		if (check.isRealTradevo(tradevo.getPk_glorgbook())) {
+			ICalcPluginMaintain mail = NCLocator.getInstance().lookup(
+					ICalcPluginMaintain.class);
+			mail.ztgPlugindeal(outstockbalancevo, tradevo);
+		}
+	}
+
+	protected UFDouble calculatelaststock(ICostingTool costingtool,
+			TransformtradeVO tradevo) throws Exception {
+		PubMethod pm = PubMethod.getInstance();
+		boolean isFirstPrice = costingtool.getCostParaVO().getFirstPrice();
+		String trade_date = costingtool.getCurrdate();
+		ICostBalanceTool balanceTool = costingtool.getBalancetool();
+		String[] keys = new String[costingtool.getCostParaVO().getCostplanvo()
+				.getCostFieldArray().length - 1];
+		for (int i = 0; i < keys.length; i++) {
+			keys[i] = costingtool.getCostParaVO().getCostplanvo()
+					.getCostFieldArray()[i];
+		}
+		String hckey = getCombinesKey(tradevo, keys, false);
+		/**
+		 * 此处拼接key必须加上业务组
+		 */
+		hckey = costingtool.getCurrbilltypegroupvo().getPk_billtypegroup()
+				+ hckey;
+		hckey = hckey + tradevo.getPk_securities();
+		BanlanceQueryKeyVO queryvo = new BanlanceQueryKeyVO();
+		queryvo.setKey(hckey);
+		queryvo.setPk_assetsprop(tradevo.getHc_pk_assetsprop());
+		queryvo.setPk_stocksort(tradevo.getHc_pk_stocksort());
+		queryvo.setTrade_date(trade_date);
+		// 库存余额表
+		StockBalanceVO outstockbalancevo = balanceTool.getStockbalanceVO(
+				queryvo, costingtool);
+
 		if (outstockbalancevo == null) {
 			costingtool.handleException(tradevo, null, SystemConst.error[0]);
 			return new UFDouble(0);
@@ -477,22 +484,23 @@ public class StockTransform extends AbstractTransform {
 					tradevo.getTrade_date().toLocalString(),
 					outstockbalancevo.getStocks_num());
 		}
-		return  outstockbalancevo.getStocks_num();
+		return outstockbalancevo.getStocks_num();
 	}
 
 	/*
-	 * 判断交易日期当天所有存在的转出交易证券记录
-	 *  * 
+	 * 判断交易日期当天所有存在的转出交易证券记录 *
+	 * 
 	 * @author zq
 	 * 
 	 * @param tradevo
 	 */
-	
+
 	@SuppressWarnings("unchecked")
-	private List<TransformtradeVO> selectAllTransformtradeVO(TransformtradeVO tradevo) {
+	private List<TransformtradeVO> selectAllTransformtradeVO(
+			TransformtradeVO tradevo) {
 		List<TransformtradeVO> list = new ArrayList<TransformtradeVO>();
 		String sql = "select *\n" + "  from sim_transformtrade a\n"
-				+ " where nvl(dr, 0) = 0\n"+"and trade_date=?\n"
+				+ " where nvl(dr, 0) = 0\n" + "and trade_date=?\n"
 				+ "   and pk_org = ?\n" + "   and hc_pk_assetsprop = ?\n"
 				+ "   and hc_pk_capaccount = ?\n"
 				+ "   and hc_pk_stocksort = ?\n" + "   and pk_securities = ?";
@@ -505,7 +513,8 @@ public class StockTransform extends AbstractTransform {
 		para.addParam(tradevo.getPk_securities());
 		BaseDAO dao = new BaseDAO();
 		try {
-			 list = (List<TransformtradeVO>) dao.executeQuery(sql, para, new BeanListProcessor(TransformtradeVO.class));
+			list = (List<TransformtradeVO>) dao.executeQuery(sql, para,
+					new BeanListProcessor(TransformtradeVO.class));
 		} catch (DAOException e) {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
@@ -514,11 +523,10 @@ public class StockTransform extends AbstractTransform {
 
 	}
 
-	
-	
 	/**
 	 * 默认审核 业务有特殊需求的话需要重写
 	 */
+	@Override
 	public void checkBills(ICostingTool costingtool, TradeDataTool tradedatatool)
 			throws Exception {
 		// 处理单据上的应收利息、转出利息
@@ -546,18 +554,19 @@ public class StockTransform extends AbstractTransform {
 				}
 				// vo.setPk_stocksort(vo.getHr_pk_stocksort());// 转入库存2
 				// vo.setPk_assetsprop(vo.getHr_pk_assetsprop());// 转入库存2
-				List<TransformtradeVO> alllist = selectAllTransformtradeVO(fathervo);//找到交易当天所有转出记录
+				List<TransformtradeVO> alllist = selectAllTransformtradeVO(fathervo);// 找到交易当天所有转出记录
 				int allt = alllist.size();
-				if(allt>1){
-					if(fathervo.getBillno().equals(alllist.get(0).getBillno())){
+				if (allt > 1) {
+					if (fathervo.getBillno().equals(alllist.get(0).getBillno())) {
 						allstock = calculatelaststock(costingtool, fathervo);
 					}
-					calculate(costingtool, fathervo,allstock,count,midvdeflist,alllist);
+					calculate(costingtool, fathervo, allstock, count,
+							midvdeflist, alllist);
 					count++;
-				}else if(allt<=1){
+				} else if (allt <= 1) {
 					calculate(costingtool, fathervo);
 				}
-				if(count == alllist.size()){
+				if (count == alllist.size()) {
 					count = 0;
 					allstock = new UFDouble(0);
 					midvdeflist.clear();
@@ -572,6 +581,7 @@ public class StockTransform extends AbstractTransform {
 	}
 
 	@Override
+	
 	protected void calculateWhenUnCheck(ICostingTool costingtool,
 			TransformtradeVO tradevo) throws Exception {
 		String pk_group = costingtool.getCostParaVO().getCheckParavo()
@@ -608,8 +618,8 @@ public class StockTransform extends AbstractTransform {
 		// 实际利率
 		RealratePlugin check = new RealratePlugin();
 		if (check.isRealTradevo(tradevo.getPk_glorgbook())) {
-			ICalcPluginMaintain mail = (ICalcPluginMaintain) NCLocator
-					.getInstance().lookup(ICalcPluginMaintain.class);
+			ICalcPluginMaintain mail = NCLocator.getInstance().lookup(
+					ICalcPluginMaintain.class);
 			mail.unZtgPlugindeal(tradevo, pk_group, pk_org, tradedate);
 		}
 	}

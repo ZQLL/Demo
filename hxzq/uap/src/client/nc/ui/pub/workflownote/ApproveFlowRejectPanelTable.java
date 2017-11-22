@@ -42,7 +42,8 @@ import nc.vo.uap.pf.WorkitemPrintDataOfBill;
 import nc.vo.wfengine.definition.WorkflowTypeEnum;
 import nc.vo.workflow.admin.WorkflowManageContext;
 
-public class ApproveFlowRejectPanelTable extends UIPanel implements MouseListener {
+public class ApproveFlowRejectPanelTable extends UIPanel implements
+		MouseListener {
 	/**
 	 * 
 	 */
@@ -60,21 +61,22 @@ public class ApproveFlowRejectPanelTable extends UIPanel implements MouseListene
 	private int m_iWorkflowtype;
 	/** 当前Panel的UI容器 */
 	private Component m_container;
-	
-	public ApproveFlowRejectPanelTable(Component container,WorkflowManageContext context){
+
+	public ApproveFlowRejectPanelTable(Component container,
+			WorkflowManageContext context) {
 		m_container = container;
 		billType = context.getBillType();
 		billId = context.getBillId();
 		m_iWorkflowtype = context.getFlowType();
 		initUI();
-		
-		
-		if (WorkflowTypeEnum.Approveflow.getIntValue() == m_iWorkflowtype||WorkflowTypeEnum.SubApproveflow.getIntValue() == m_iWorkflowtype) {
+
+		if (WorkflowTypeEnum.Approveflow.getIntValue() == m_iWorkflowtype
+				|| WorkflowTypeEnum.SubApproveflow.getIntValue() == m_iWorkflowtype) {
 			initByApproveflow();
 		} else {
 			initByWorkflow();
 		}
-		
+
 		// 设置批语列的渲染器
 		TableColumn noteColumn = getTableState().getColumn(
 				NCLangRes.getInstance().getStrByID("pfworkflow",
@@ -82,12 +84,12 @@ public class ApproveFlowRejectPanelTable extends UIPanel implements MouseListene
 		noteColumn.setCellRenderer(new FlowQryTableCellRenderer());
 		noteColumn.setCellEditor(new CEditor());
 	}
-	
-	private void initUI(){
+
+	private void initUI() {
 		this.setLayout(new BorderLayout());
 		this.add(getTablePnState());
 	}
-	
+
 	class CEditor extends AbstractCellEditor implements TableCellEditor {
 
 		@Override
@@ -105,7 +107,7 @@ public class ApproveFlowRejectPanelTable extends UIPanel implements MouseListene
 		}
 
 	}
-	
+
 	/**
 	 * 初始化 审批流处理情况
 	 */
@@ -120,7 +122,7 @@ public class ApproveFlowRejectPanelTable extends UIPanel implements MouseListene
 		// 填充到表模型
 		populateWithWorkitems(fsTM);
 	}
-	
+
 	/**
 	 * 初始化 工作流处理情况
 	 */
@@ -135,7 +137,7 @@ public class ApproveFlowRejectPanelTable extends UIPanel implements MouseListene
 		// 填充到表模型
 		populateWithWorkitems(fsTM);
 	}
-	
+
 	private UITablePane getTablePnState() {
 		if (ivjTablePnState == null) {
 			ivjTablePnState = new UITablePane();
@@ -150,7 +152,7 @@ public class ApproveFlowRejectPanelTable extends UIPanel implements MouseListene
 		}
 		return ivjTablePnState;
 	}
-	
+
 	/**
 	 * 获得表格
 	 */
@@ -158,49 +160,50 @@ public class ApproveFlowRejectPanelTable extends UIPanel implements MouseListene
 		return getTablePnState().getTable();
 
 	}
-	
+
 	private PfOperationNotifier notifier = new PfOperationNotifier(this);
-	
+
 	private void queryWorkflowItems() {
 		// 查询该单据的历史工作项处理信息
 		// 包括已经处理完成的 或尚未处理的工作项
 		try {
-			adminVO = NCLocator.getInstance().lookup(IPFWorkflowQry.class)
-					.queryWorkitemForAdmin(billType, billId, WorkflowTypeEnum.Workflow.getIntValue());
-			
+			adminVO = NCLocator
+					.getInstance()
+					.lookup(IPFWorkflowQry.class)
+					.queryWorkitemForAdmin(billType, billId,
+							WorkflowTypeEnum.Workflow.getIntValue());
+
 		} catch (BusinessException e) {
 			Logger.error(e.getMessage(), e);
-			notifier.showError(
-				NCLangRes.getInstance().getStrByID(
-						"pfworkflow",
-						"UPPpfworkflow-000505")/* 查询该单据的审批历史信息出现异常： */
-							+ e.getMessage()
-					);
+			notifier.showError(NCLangRes.getInstance().getStrByID("pfworkflow",
+					"UPPpfworkflow-000505")/* 查询该单据的审批历史信息出现异常： */
+					+ e.getMessage());
 		}
 	}
-	
+
 	private void queryApproveItems() {
 		// 查询该单据的历史审批信息
 		// 包括已经审批完成的 或尚未审批的工作项
 		try {
-			adminVO = NCLocator.getInstance().lookup(IPFWorkflowQry.class)
-			.queryWorkitemForAdmin(billType, billId, WorkflowTypeEnum.Approveflow.getIntValue());
-			
+			adminVO = NCLocator
+					.getInstance()
+					.lookup(IPFWorkflowQry.class)
+					.queryWorkitemForAdmin(billType, billId,
+							WorkflowTypeEnum.Approveflow.getIntValue());
+
 			fillNoteWithAttachment();
 		} catch (BusinessException e) {
 			Logger.error(e.getMessage(), e);
-			notifier.showError(
-				NCLangRes.getInstance().getStrByID(
-						"pfworkflow",
-						"UPPpfworkflow-000022")/* 查询该单据的历史工作流处理信息出现异常： */
-							+ e.getMessage()
-					);
+			notifier.showError(NCLangRes.getInstance().getStrByID("pfworkflow",
+					"UPPpfworkflow-000022")/* 查询该单据的历史工作流处理信息出现异常： */
+					+ e.getMessage());
 		}
 	}
-	
+
 	private void fillNoteWithAttachment() {
 		WorkflownoteVO[] noteVOs = adminVO.getWorkflowNotes();
-		Map<String, List<WorkflownoteAttVO>> attMap = adminVO.getWorkflowNoteAttVOs();
+		Map<String, List<WorkflownoteAttVO>> attMap = adminVO
+				.getWorkflowNoteAttVOs();
 
 		if (noteVOs == null || noteVOs.length == 0) {
 			return;
@@ -231,13 +234,12 @@ public class ApproveFlowRejectPanelTable extends UIPanel implements MouseListene
 		}
 	}
 
-	
 	/**
 	 * 将工作项填充到表模型
 	 */
 	private void populateWithWorkitems(VOTableModel fsTM) {
 		WorkflownoteVO[] noteVOs = adminVO.getWorkflowNotes();
-		
+
 		if (noteVOs == null || noteVOs.length < 1)
 			return;
 
@@ -248,8 +250,8 @@ public class ApproveFlowRejectPanelTable extends UIPanel implements MouseListene
 		fsTM.addVO(noteVOs);
 
 	}
-	
-	public void onPrint(){
+
+	public void onPrint() {
 
 		WorkflownoteVO[] noteVOs = adminVO.getWorkflowNotes();
 
@@ -263,7 +265,7 @@ public class ApproveFlowRejectPanelTable extends UIPanel implements MouseListene
 		if (m_container instanceof FlowStateDlg)
 			((FlowStateDlg) m_container).dispose();
 	}
-	
+
 	/**
 	 * 使用打印模板打印
 	 * 
@@ -290,12 +292,13 @@ public class ApproveFlowRejectPanelTable extends UIPanel implements MouseListene
 
 		pe.preview();
 	}
-	
-	public void onActivitySelected(String activityId){
-		Integer[] rows = ((ApproveItemTableModel)getTableState().getModel()).getRowNumberOfActivity(activityId);
-		
+
+	public void onActivitySelected(String activityId) {
+		Integer[] rows = ((ApproveItemTableModel) getTableState().getModel())
+				.getRowNumberOfActivity(activityId);
+
 		ListSelectionModel lsm = getTableState().getSelectionModel();
-		
+
 		lsm.clearSelection();
 		for (Integer i : rows) {
 			lsm.addSelectionInterval(i, i);
@@ -303,8 +306,7 @@ public class ApproveFlowRejectPanelTable extends UIPanel implements MouseListene
 		// add by lihaibo 选择流程图后 改为 -1
 		lsm.setAnchorSelectionIndex(-1);
 	}
-	
-	
+
 	/**
 	 * 根据审批信息表格中的数据填充打印数据源
 	 * 
@@ -317,10 +319,10 @@ public class ApproveFlowRejectPanelTable extends UIPanel implements MouseListene
 		// 以便适配WorkitemPrintDataOfBill的新构造器
 		// @see IPFWorkflowQry.getApproveWorkitemPrintDs()
 		HashMap<String, Object[]> hmDatas = new HashMap<String, Object[]>();
-		
+
 		WorkflownoteVO[] noteVOs = adminVO.getWorkflowNotes();
 
-		VOTableModel ftm = (VOTableModel) getTableState().getModel();//获取表格
+		VOTableModel ftm = (VOTableModel) getTableState().getModel();// 获取表格
 
 		int rowCount = ftm.getRowCount();
 
@@ -444,30 +446,30 @@ public class ApproveFlowRejectPanelTable extends UIPanel implements MouseListene
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		int i = 0;
-		int t = i+1;
+		int t = i + 1;
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
 		// TODO 自动生成的方法存根
-		
+
 	}
 
 	@Override
 	public void mouseExited(MouseEvent arg0) {
 		// TODO 自动生成的方法存根
-		
+
 	}
 
 	@Override
 	public void mousePressed(MouseEvent arg0) {
 		// TODO 自动生成的方法存根
-		
+
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
 		// TODO 自动生成的方法存根
-		
+
 	}
 }

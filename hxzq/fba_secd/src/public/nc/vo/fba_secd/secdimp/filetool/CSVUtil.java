@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 import nc.bs.logging.Logger;
-
 /*******************************************************************************
  * CSV¹¤¾ßÀà Ö÷Òª¹¦ÄÜ£º 1. ¶ÁÐ´CSV
  * 
@@ -19,14 +18,14 @@ import nc.bs.logging.Logger;
  * @version 1.0
  ******************************************************************************/
 public class CSVUtil {
-	public static List<String> readHeadKey(File file) throws IOException  {
-		List<String> list=new ArrayList<String>();
+	public static List<String> readHeadKey(File file) throws IOException {
+		List<String> list = new ArrayList<String>();
 		ExcelCSVParser parser = null;
 		FileInputStream inputStream = null;
 		try {
-			 inputStream=new FileInputStream(file);
-			 parser = new ExcelCSVParser(new InputStreamReader(inputStream,
-																				"ISO-8859-1"));
+			inputStream = new FileInputStream(file);
+			parser = new ExcelCSVParser(new InputStreamReader(inputStream,
+					"ISO-8859-1"));
 			String[] t;
 			String headkey;
 			while ((t = parser.getLine()) != null) {
@@ -42,7 +41,7 @@ public class CSVUtil {
 		} catch (IOException e) {
 			Logger.error(e.getMessage());
 			throw e;
-		} finally{
+		} finally {
 			parser.close();
 			inputStream.close();
 		}
@@ -54,15 +53,15 @@ public class CSVUtil {
 		ExcelCSVParser parser = null;
 		FileInputStream inputStream = null;
 		try {
-			 inputStream=new FileInputStream(file);
-			 parser = new ExcelCSVParser(new InputStreamReader(inputStream,
-																				"ISO-8859-1"));
+			inputStream = new FileInputStream(file);
+			parser = new ExcelCSVParser(new InputStreamReader(inputStream,
+					"ISO-8859-1"));
 			String[] t;
 			List<String> listData;
 			String temp;
 			while ((t = parser.getLine()) != null) {
 				listData = new ArrayList<String>();
-				Integer length=t.length;
+				Integer length = t.length;
 				for (int i = 0; i < length; i++) {
 					temp = convertISOToGBK(t[i]);
 					if (temp != null) {
@@ -77,8 +76,8 @@ public class CSVUtil {
 		} catch (IOException e) {
 			Logger.error(e.getMessage());
 			throw e;
-		}finally{
-	
+		} finally {
+
 			parser.close();
 		}
 		return list;
@@ -87,11 +86,13 @@ public class CSVUtil {
 	/**
 	 * ½«ISO±àÂë¸ñÊ½µÄ×Ö·û´®×ª»»³ÉGBK±àÂë×Ö·û´®
 	 * 
-	 * @param str ÓÃISO±àÂëµÄ×Ö·û´®
+	 * @param str
+	 *            ÓÃISO±àÂëµÄ×Ö·û´®
 	 * @return GBK±àÂëµÄ×Ö·û´®
-	 * @throws UnsupportedEncodingException 
+	 * @throws UnsupportedEncodingException
 	 */
-	private static String convertISOToGBK(String str) throws UnsupportedEncodingException {
+	private static String convertISOToGBK(String str)
+			throws UnsupportedEncodingException {
 		String convertedStr = null;
 		convertedStr = new String(str.getBytes("ISO-8859-1"), "GBK");
 		return convertedStr;
@@ -104,8 +105,9 @@ public class CSVUtil {
 			hsHeadKey = new HashMap<String, Integer>();
 			int iSize = listCell.size();
 			for (int i = 0; i < iSize; i++) {
-				if (listCell.get(i) != null){
-					String keyVal = StringHdlUtil.handlerKey(listCell.get(i).toLowerCase());
+				if (listCell.get(i) != null) {
+					String keyVal = StringHdlUtil.handlerKey(listCell.get(i)
+							.toLowerCase());
 					hsHeadKey.put(keyVal, Integer.valueOf(i));
 				}
 			}
@@ -113,13 +115,13 @@ public class CSVUtil {
 		return hsHeadKey;
 	}
 
-	public static String getData(String colName, Map<String, Integer> hsHeadKey,
-			List<String> listCell) {
+	public static String getData(String colName,
+			Map<String, Integer> hsHeadKey, List<String> listCell) {
 		Integer iIndex = hsHeadKey.get(colName.toLowerCase());
 		if (iIndex != null && listCell.size() > iIndex.intValue())
 			return listCell.get(iIndex.intValue());
 		else
 			return null;
 	}
-	
+
 }

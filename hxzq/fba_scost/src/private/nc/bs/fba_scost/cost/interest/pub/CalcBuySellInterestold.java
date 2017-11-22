@@ -4,13 +4,11 @@ import nc.bs.logging.Logger;
 import nc.vo.fba_scost.cost.interest.AggInterest;
 import nc.vo.fba_scost.cost.interest.Interest;
 import nc.vo.fba_scost.cost.interest.Rateperiod;
-import nc.vo.fba_scost.cost.pub.CostConstant;
 import nc.vo.fba_scost.cost.pub.SysInitCache;
 import nc.vo.fba_scost.cost.pub.SystemConst;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.lang.UFDate;
 import nc.vo.pub.lang.UFDouble;
-import nc.vo.pub.para.SysInitVO;
 import nc.vo.trade.voutils.SafeCompute;
 
 /**
@@ -36,7 +34,7 @@ public class CalcBuySellInterestold {
 			return null;
 		AggInterest agginfo = info.queryInterestsetInfo(pk_securities);
 		Interest headvo = agginfo.getParent();
-		Rateperiod[] ratevos = (Rateperiod[]) agginfo.getChildrenVO();
+		Rateperiod[] ratevos = agginfo.getChildrenVO();
 		Rateperiod vo = InterestTools.getContainsDate(ratevos, trade_date);
 		if (vo == null) {
 			throw new BusinessException("Ö¤È¯µµ°¸£º"
@@ -68,7 +66,7 @@ public class CalcBuySellInterestold {
 			return null;
 		AggInterest agginfo = info.queryInterestsetInfo(pk_securities);
 		Interest headvo = agginfo.getParent();
-		Rateperiod[] ratevos = (Rateperiod[]) agginfo.getChildrenVO();
+		Rateperiod[] ratevos = agginfo.getChildrenVO();
 		Rateperiod vo = InterestTools.getContainsDate(ratevos, trade_date);
 		UFDouble day = new UFDouble(trade_date.asBegin().getDaysAfter(
 				vo.getStart_day().asBegin()) + 1);

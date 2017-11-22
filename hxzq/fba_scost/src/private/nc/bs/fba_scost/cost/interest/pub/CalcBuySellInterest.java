@@ -44,10 +44,10 @@ public class CalcBuySellInterest {
 		lx = lx.setScale(2, 4);
 		return lx;
 	}
-	
-	/*修改 by zq
-	 * 出现未知错误---日期为0，被除数为0的情况
-	 * */
+
+	/*
+	 * 修改 by zq 出现未知错误---日期为0，被除数为0的情况
+	 */
 	public UFDouble calcInterestTradedate(UFDouble bargain_num,
 			String pk_securities, UFDate trade_date, String pk_org)
 			throws BusinessException {
@@ -65,64 +65,63 @@ public class CalcBuySellInterest {
 		Interest headvo = agginfo.getParent();
 		Rateperiod[] ratevos = agginfo.getChildrenVO();
 		Rateperiod vo = InterestTools.getContainsDate(ratevos, trade_date);
-		if(vo == null){
+		if (vo == null) {
 			return new UFDouble(365);
-		}
-		else{
-		UFDouble day = new UFDouble(trade_date.asBegin().getDaysAfter(
-				vo.getStart_day().asBegin()) + 1);
+		} else {
+			UFDouble day = new UFDouble(trade_date.asBegin().getDaysAfter(
+					vo.getStart_day().asBegin()) + 1);
 
-		UFDouble days = UFDouble.ZERO_DBL;
-		UFDouble termlx = UFDouble.ZERO_DBL;
-		UFDouble lx = UFDouble.ZERO_DBL;
+			UFDouble days = UFDouble.ZERO_DBL;
+			UFDouble termlx = UFDouble.ZERO_DBL;
+			UFDouble lx = UFDouble.ZERO_DBL;
 
-		UFDate startDay = vo.getStart_day();
-		UFDate endDay = vo.getEnd_day();
+			UFDate startDay = vo.getStart_day();
+			UFDate endDay = vo.getEnd_day();
 
-		UFDouble percentAccount = UFDouble.ZERO_DBL;
-		for (Rateperiod ratevo : ratevos) {
-			if (ratevo.getPk_rateperiod().equalsIgnoreCase(
-					vo.getPk_rateperiod())) {
-				break;
+			UFDouble percentAccount = UFDouble.ZERO_DBL;
+			for (Rateperiod ratevo : ratevos) {
+				if (ratevo.getPk_rateperiod().equalsIgnoreCase(
+						vo.getPk_rateperiod())) {
+					break;
+				}
+				if (ratevo.getPaypercent() != null) {
+					percentAccount = percentAccount.add(ratevo.getPaypercent());
+				}
 			}
-			if (ratevo.getPaypercent() != null) {
-				percentAccount = percentAccount.add(ratevo.getPaypercent());
-			}
-		}
-		bargain_num = bargain_num.multiply(UFDouble.ONE_DBL.sub(percentAccount
-				.div(100.0D)));
-		if ("02".equals(headvo.getPaytype())) {
-			for (int i = startDay.getYear(); i <= endDay.getYear(); i++) {
-				if (UFDate.isLeapYear(i)) {
+			bargain_num = bargain_num.multiply(UFDouble.ONE_DBL
+					.sub(percentAccount.div(100.0D)));
+			if ("02".equals(headvo.getPaytype())) {
+				for (int i = startDay.getYear(); i <= endDay.getYear(); i++) {
+					if (UFDate.isLeapYear(i)) {
+						days = new UFDouble(366);
+					} else {
+						days = new UFDouble(365);
+					}
+				}
+			} else if (startDay.getYear() == endDay.getYear()) {
+				if (UFDate.isLeapYear(startDay.getYear())) {
 					days = new UFDouble(366);
 				} else {
 					days = new UFDouble(365);
 				}
-			}
-		} else if (startDay.getYear() == endDay.getYear()) {
-			if (UFDate.isLeapYear(startDay.getYear())) {
+			} else if ((UFDate.isLeapYear(startDay.getYear()))
+					&& (startDay.getMonth() < 3)) {
+				days = new UFDouble(366);
+			} else if ((UFDate.isLeapYear(endDay.getYear()))
+					&& (endDay.getMonth() > 2)) {
 				days = new UFDouble(366);
 			} else {
 				days = new UFDouble(365);
 			}
-		} else if ((UFDate.isLeapYear(startDay.getYear()))
-				&& (startDay.getMonth() < 3)) {
-			days = new UFDouble(366);
-		} else if ((UFDate.isLeapYear(endDay.getYear()))
-				&& (endDay.getMonth() > 2)) {
-			days = new UFDouble(366);
-		} else {
-			days = new UFDouble(365);
-		}
-		if (getPaystyle(pk_org).equals("按付息周期")) {
-			termlx = InterestTools.calcLxByTerm(bargain_num, headvo, ratevos,
-					vo);
-		} else {
-			termlx = SafeCompute.multiply(bargain_num, vo.getYear_rate());
-		}
-		lx = SafeCompute.div(SafeCompute.multiply(termlx, day), days);
-		lx = lx.setScale(2, 4);
-		return lx;
+			if (getPaystyle(pk_org).equals("按付息周期")) {
+				termlx = InterestTools.calcLxByTerm(bargain_num, headvo,
+						ratevos, vo);
+			} else {
+				termlx = SafeCompute.multiply(bargain_num, vo.getYear_rate());
+			}
+			lx = SafeCompute.div(SafeCompute.multiply(termlx, day), days);
+			lx = lx.setScale(2, 4);
+			return lx;
 		}
 	}
 

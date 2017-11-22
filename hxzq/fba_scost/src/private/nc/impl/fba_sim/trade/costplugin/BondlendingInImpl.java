@@ -18,31 +18,41 @@ public class BondlendingInImpl extends AbstractZqjdTrade {
 
 	private ZqjdStockBalanceTool stockBalanceTool = null;
 
+	
 	@Override
-	protected void calculateWhenCheck(ICostingTool costingtool, ZqjdVO tradevo) throws Exception {
+	protected void calculateWhenCheck(ICostingTool costingtool, ZqjdVO tradevo)
+			throws Exception {
 		// 补充默认值
-//		tradevo = DefaultValTool.setDefaultVal(tradevo);
+		// tradevo = DefaultValTool.setDefaultVal(tradevo);
 
-		 BanlanceQueryKeyVO queryKeyVO = getStockBalanceTool().createQryBalanceVO(costingtool, tradevo);
+		BanlanceQueryKeyVO queryKeyVO = getStockBalanceTool()
+				.createQryBalanceVO(costingtool, tradevo);
 		// 查询库存
-		StockBalanceVO stockBalanceVO = getStockBalanceTool().qryStockBalnce(queryKeyVO, costingtool, tradevo);
+		StockBalanceVO stockBalanceVO = getStockBalanceTool().qryStockBalnce(
+				queryKeyVO, costingtool, tradevo);
 		// 处理库存 增加T
 		UFDouble befStockNum = stockBalanceVO.getStocks_num();
 		UFDouble befStockSum = stockBalanceVO.getStocks_sum();
-		stockBalanceVO.setStocks_num(SafeCompute.add(befStockNum, tradevo.getBargain_num()));
-		stockBalanceVO.setStocks_sum(SafeCompute.add(befStockSum, tradevo.getBargain_sum()));
+		stockBalanceVO.setStocks_num(SafeCompute.add(befStockNum,
+				tradevo.getBargain_num()));
+		stockBalanceVO.setStocks_sum(SafeCompute.add(befStockSum,
+				tradevo.getBargain_sum()));
 		// 更新库存
-		getStockBalanceTool().updateStockBalace(queryKeyVO, costingtool, stockBalanceVO);
+		getStockBalanceTool().updateStockBalace(queryKeyVO, costingtool,
+				stockBalanceVO);
 	}
 
+	
 	@Override
-	protected void calculateWhenUnCheck(ICostingTool costingtool, ZqjdVO tradevo) throws Exception {
+	protected void calculateWhenUnCheck(ICostingTool costingtool, ZqjdVO tradevo)
+			throws Exception {
 
 		// 说明：更新库存逻辑，已集中弃审总逻辑里面
 		// @see
 		// 类：BillCheckByGroupImpl
 		// 方法：uncheckOneGroup_RequiresNew
-		// 行：PrivateMethod.getInstance().getBaseDAO().deleteByClause(StockBalanceVO.class, sqlwhere);
+		// 行：PrivateMethod.getInstance().getBaseDAO().deleteByClause(StockBalanceVO.class,
+		// sqlwhere);
 
 	}
 

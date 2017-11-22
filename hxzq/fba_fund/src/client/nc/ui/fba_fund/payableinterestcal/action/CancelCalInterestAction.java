@@ -35,11 +35,13 @@ public class CancelCalInterestAction extends NCAction {
 	public void doAction(ActionEvent e) throws Exception {
 		LoginContext context = getModel().getContext();
 		UFDate trade_date = getModel().getTrade_date();
-		IPayableinterestcalMaintain interest = NCLocator.getInstance().lookup(IPayableinterestcalMaintain.class);
+		IPayableinterestcalMaintain interest = NCLocator.getInstance().lookup(
+				IPayableinterestcalMaintain.class);
 		// 取消计提
 		interest.cancelCal(context, trade_date);
 		getModel().initModel(null);// 清空界面
-		MessageDialog.showHintDlg(this.getModel().getContext().getEntranceUI(), "提示", "取消计提完成！");
+		MessageDialog.showHintDlg(this.getModel().getContext().getEntranceUI(),
+				"提示", "取消计提完成！");
 	}
 
 	public CalBillTableModel getModel() {

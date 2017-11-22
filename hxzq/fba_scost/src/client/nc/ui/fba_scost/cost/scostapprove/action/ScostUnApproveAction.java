@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import nc.bs.framework.common.NCLocator;
 import nc.bs.logging.Logger;
 import nc.itf.fba_scost.cost.billcheck.IBillCheckService;
-import nc.itf.fba_scost.cost.billcheck.IBillMakeJTD;
 import nc.ui.fba_scost.cost.scostapprove.ace.view.ScostapproveTableModel;
 import nc.ui.fba_scost.cost.scostapprove.panel.WaitDlg;
 import nc.ui.pub.beans.MessageDialog;
@@ -95,17 +94,21 @@ public class ScostUnApproveAction extends NCAction {
 
 		waitDlg = new WaitDlg(this.model.getContext().getEntranceUI());
 		new Thread() {
+			@Override
 			public void run() {
 				String temp_e = null;
 				String isSuccess = null;
 				try {
-					//調用放在后台，此处不进行调用了
-//					//zq
-//					//通过前台参数来判断是否调用后台方法使已审核的借入单产生的计提单进行删除
-//					IBillMakeJTD bmj = NCLocator.getInstance().lookup(IBillMakeJTD.class);
-//					if (bmj.getBooleanFromInitcode(checkParaVO.getPk_glorgbook(), "Zqjd02")) {
-//						bmj.DeleteJTD(checkParaVO);
-//					}
+					// 調用放在后台，此处不进行调用了
+					// //zq
+					// //通过前台参数来判断是否调用后台方法使已审核的借入单产生的计提单进行删除
+					// IBillMakeJTD bmj =
+					// NCLocator.getInstance().lookup(IBillMakeJTD.class);
+					// if
+					// (bmj.getBooleanFromInitcode(checkParaVO.getPk_glorgbook(),
+					// "Zqjd02")) {
+					// bmj.DeleteJTD(checkParaVO);
+					// }
 					IBillCheckService ibillcheckservice = NCLocator
 							.getInstance().lookup(IBillCheckService.class);
 					isSuccess = ibillcheckservice.unCheckBill(checkParaVO);

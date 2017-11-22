@@ -54,12 +54,12 @@ public class SecInvestDailyRepVO extends SuperVO {
 	private UFDouble fairValueChange = new UFDouble(0.0);
 
 	/** JINGQT 2015年7月15日 证券投资经营日报的增加公允价值变动列 公允价值变动=‘期末结存期末市值’-‘期末结存金额’； ADD END */
-	
-	//期初市值 add by lihaibo 2017-05-08
+
+	// 期初市值 add by lihaibo 2017-05-08
 	private UFDouble first_marketSum = new UFDouble(0);
-	//份额分红 add by lihaibo 2017-06-13
+	// 份额分红 add by lihaibo 2017-06-13
 	private UFDouble fefh = new UFDouble(0);
-	
+
 	public UFDouble getFefh() {
 		return fefh;
 	}
@@ -317,17 +317,20 @@ public class SecInvestDailyRepVO extends SuperVO {
 	}
 
 	@Override
+	
 	public String getPKFieldName() {
 
 		return null;
 	}
 
+	
 	@Override
 	public String getParentPKFieldName() {
 
 		return null;
 	}
 
+	
 	@Override
 	public String getTableName() {
 

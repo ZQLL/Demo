@@ -1,9 +1,6 @@
 package nc.impl.fba_zqjd.trade.report;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import nc.bs.dao.BaseDAO;
 import nc.bs.logging.Logger;
@@ -23,9 +20,8 @@ import nc.vo.pub.lang.UFDateTime;
 import nc.vo.pub.lang.UFDouble;
 import nc.vo.pubapp.report.ReportQueryResult;
 
-
 import com.ufida.dataset.IContext;
-
+import java.util.*;
 /**
  * 证券交易库存变动报表
  * 
@@ -41,33 +37,35 @@ public class StockChangeImpl implements IStockChange {
 			"start_bow_num", "start_sell_num", "start_debt", "now_bow",
 			"now_rtn", "now_sell_num", "now_sell_sum", "now_buy_num",
 			"now_buy_sum", "now_debt", "rec_interest", "turn_interest",
-			"end_bow_num", "end_sell_num", "end_debt","begin_date","end_date"};
-	
+			"end_bow_num", "end_sell_num", "end_debt", "begin_date", "end_date" };
+
 	BaseDAO baseDAO = new BaseDAO();
-	//结果集合
+	// 结果集合
 	List<StockChangeVO> lastResult = new ArrayList<StockChangeVO>();
-	//期初融入
+	// 期初融入
 	private ArrayList<ZqjdVO> bowResult = null;
-	//期初融入归还
+	// 期初融入归还
 	private ArrayList<ZqjdVO> bowResultRtn = null;
-	//期初卖出
+	// 期初卖出
 	private ArrayList<ZqjdVO> sellResult = null;
-	//期初买入
+	// 期初买入
 	private ArrayList<ZqjdVO> buyResult = null;
-	//本期融入
+	// 本期融入
 	private ArrayList<ZqjdVO> nowBowResult = null;
-	//本期融入归还
+	// 本期融入归还
 	private ArrayList<ZqjdVO> nowRtnResult = null;
-	//本期卖出数量和金额
+	// 本期卖出数量和金额
 	private ArrayList<ZqjdVO> nowSellResult = null;
-	//本期买入数量和金额
+	// 本期买入数量和金额
 	private ArrayList<ZqjdVO> nowBuyResult = null;
-	//本期负债金额
+	// 本期负债金额
 	private ArrayList<ZqjdVO> nowCostResult = null;
-	//期间收到兑付利息
+	// 期间收到兑付利息
 	private ArrayList<ZqjdVO> nowRecResult = null;
-	//期间转付兑付利息
+	// 期间转付兑付利息
 	private ArrayList<ZqjdVO> nowTurnResult = null;
+
+	
 	@Override
 	public ReportQueryResult queryDetailData(IContext context)
 			throws BusinessException {
@@ -84,35 +82,36 @@ public class StockChangeImpl implements IStockChange {
 			SmartContext smct = new SmartContext(context);
 			String beginDateStr = (String) smct.getParameterValue("beginDate");
 			String endDateStr = (String) smct.getParameterValue("endDate");
-			
+
 			getBeginStockBow(beginDateStr);// 期初融入数量
 			getBeginSellNum(beginDateStr);// 期初卖出数量
 			for (StockChangeVO scvo : lastResult) {
 				if (scvo.getStart_sell_num() != null) {
-					scvo.setStart_debt(scvo.getStart_sell_num().multiply(100));//期初负债金额
+					scvo.setStart_debt(scvo.getStart_sell_num().multiply(100));// 期初负债金额
 				}
 			}
 			getNowBowNum(beginDateStr, endDateStr);// 本期融入数量
 			getNowRtnNum(beginDateStr, endDateStr);// 本期融入归还
-			getNowSell(beginDateStr,endDateStr);// 本期卖出数量和卖出金额
-			getNowBuy(beginDateStr,endDateStr);// 本期买入数量和买入金额
-			getNowDebt(beginDateStr,endDateStr);// 本期买入负债成本-->期间买入的销售成本合计
-			getNowInterest(beginDateStr,endDateStr);// 期间收到兑付利息和转付兑付利息
-			
-			//lastResult = StockChangeReportTool.fullWithZero(lastResult);//数值字段填充
-			
+			getNowSell(beginDateStr, endDateStr);// 本期卖出数量和卖出金额
+			getNowBuy(beginDateStr, endDateStr);// 本期买入数量和买入金额
+			getNowDebt(beginDateStr, endDateStr);// 本期买入负债成本-->期间买入的销售成本合计
+			getNowInterest(beginDateStr, endDateStr);// 期间收到兑付利息和转付兑付利息
+
+			// lastResult =
+			// StockChangeReportTool.fullWithZero(lastResult);//数值字段填充
+
 			getEndResult();// 期末融入数量 卖出数量 负债金额
-			
+
 		} catch (Exception e) {
 			Logger.error(e.getMessage(), e);
 		}
 		MetaData metaData = getMetaData();
-		StockChangeReportTool.setColType(metaData);//设置数值类型元数据字段
+		StockChangeReportTool.setColType(metaData);// 设置数值类型元数据字段
 		DataSet dataSet = convertVOToArray(metaData, lastResult);
 		return dataSet;
 
 	}
-	
+
 	/**
 	 * 期末库存计算
 	 */
@@ -172,8 +171,10 @@ public class StockChangeImpl implements IStockChange {
 			Logger.error(e.getMessage(), e);
 		}
 	}
+
 	/**
 	 * 查询证券交易表，计算本期买入负债成本（期间买入的销售成本合计）
+	 * 
 	 * @param beginDateStr
 	 * @param endDateStr
 	 */
@@ -202,6 +203,7 @@ public class StockChangeImpl implements IStockChange {
 
 	/**
 	 * 查询证券交易表，计算本期买入数量和金额
+	 * 
 	 * @param beginDateStr
 	 * @param endDateStr
 	 */
@@ -210,15 +212,16 @@ public class StockChangeImpl implements IStockChange {
 		try {
 			String sql_buyNum_now = StockChangeReportTool.getNowBuySql(
 					beginDateStr, endDateStr);
-			nowBuyResult = (ArrayList<ZqjdVO>) baseDAO
-					.executeQuery(sql_buyNum_now, new BeanListProcessor(
-							ZqjdVO.class));
+			nowBuyResult = (ArrayList<ZqjdVO>) baseDAO.executeQuery(
+					sql_buyNum_now, new BeanListProcessor(ZqjdVO.class));
 			if (isNotNull(nowBuyResult)) {// 本期买入不为空
 				for (StockChangeVO scvo : lastResult) {
 					for (ZqjdVO zqjdTallyVO : nowBuyResult) {
 						if (isEquals(zqjdTallyVO, scvo)) {
-							scvo.setNow_buy_num(zqjdTallyVO.getBargain_num());// 本期买入数量 bargain_num
-							scvo.setNow_buy_sum(zqjdTallyVO.getBargain_sum());// 本期买入金额 bargain_sum(买入单的实际收付字段)
+							scvo.setNow_buy_num(zqjdTallyVO.getBargain_num());// 本期买入数量
+																				// bargain_num
+							scvo.setNow_buy_sum(zqjdTallyVO.getBargain_sum());// 本期买入金额
+																				// bargain_sum(买入单的实际收付字段)
 						}
 					}
 				}
@@ -228,8 +231,10 @@ public class StockChangeImpl implements IStockChange {
 			Logger.error(e.getMessage(), e);
 		}
 	}
+
 	/**
 	 * 查询证券交易表，计算本期卖出数量和卖出金额
+	 * 
 	 * @param beginDateStr
 	 * @param endDateStr
 	 */
@@ -238,15 +243,16 @@ public class StockChangeImpl implements IStockChange {
 		try {
 			String sql_sellNum_now = StockChangeReportTool.getNowSellSql(
 					beginDateStr, endDateStr);
-			nowSellResult = (ArrayList<ZqjdVO>) baseDAO
-					.executeQuery(sql_sellNum_now, new BeanListProcessor(
-							ZqjdVO.class));
+			nowSellResult = (ArrayList<ZqjdVO>) baseDAO.executeQuery(
+					sql_sellNum_now, new BeanListProcessor(ZqjdVO.class));
 			if (isNotNull(nowSellResult)) {// 本期卖出不为空
 				for (StockChangeVO scvo : lastResult) {
 					for (ZqjdVO zqjdTallyVO : nowSellResult) {
 						if (isEquals(zqjdTallyVO, scvo)) {
-							scvo.setNow_sell_num(zqjdTallyVO.getBargain_num());// 本期卖出数量 bargain_num
-							scvo.setNow_sell_sum(zqjdTallyVO.getBargain_sum());// 本期卖出金额 bargain_sum
+							scvo.setNow_sell_num(zqjdTallyVO.getBargain_num());// 本期卖出数量
+																				// bargain_num
+							scvo.setNow_sell_sum(zqjdTallyVO.getBargain_sum());// 本期卖出金额
+																				// bargain_sum
 						}
 					}
 				}
@@ -258,6 +264,7 @@ public class StockChangeImpl implements IStockChange {
 
 	/**
 	 * 计算期初融入数量
+	 * 
 	 * @param beginDateStr
 	 */
 	@SuppressWarnings("unchecked")
@@ -305,8 +312,10 @@ public class StockChangeImpl implements IStockChange {
 			Logger.error(e.getMessage(), e);
 		}
 	}
+
 	/**
 	 * 计算期初卖出数量
+	 * 
 	 * @param beginDateStr
 	 */
 	@SuppressWarnings("unchecked")
@@ -362,8 +371,10 @@ public class StockChangeImpl implements IStockChange {
 		}
 
 	}
+
 	/**
 	 * 计算本期融入数量
+	 * 
 	 * @param beginDateStr
 	 * @param endDateStr
 	 */
@@ -376,7 +387,7 @@ public class StockChangeImpl implements IStockChange {
 			nowBowResult = (ArrayList<ZqjdVO>) baseDAO.executeQuery(
 					sql_bow_now, new BeanListProcessor(ZqjdVO.class));
 			List<StockChangeVO> tempList = new ArrayList<StockChangeVO>();
-			
+
 			for (ZqjdVO zqjdVO : nowBowResult) {// 转换为StockChangeVOList
 				StockChangeVO scvo = new StockChangeVO();
 				scvo.setPk_group(zqjdVO.getPk_group());
@@ -398,7 +409,8 @@ public class StockChangeImpl implements IStockChange {
 				for (ZqjdVO zqvo : nowBowResult) {
 					for (StockChangeVO scvo : lastResult) {
 						if (isEquals(zqvo, scvo)) {// 是否包含当前结果集的证券
-							scvo.setNow_bow(zqvo.getBargain_num());// 包含当前证券 设置本期融入数量
+							scvo.setNow_bow(zqvo.getBargain_num());// 包含当前证券
+																	// 设置本期融入数量
 						}
 					}
 				}
@@ -407,8 +419,10 @@ public class StockChangeImpl implements IStockChange {
 			Logger.error(e.getMessage(), e);
 		}
 	}
+
 	/**
 	 * 计算本期融入归还
+	 * 
 	 * @param beginDateStr
 	 * @param endDateStr
 	 */
@@ -426,67 +440,61 @@ public class StockChangeImpl implements IStockChange {
 				for (ZqjdVO zqvo : nowRtnResult) {
 					for (StockChangeVO scvo : lastResult) {
 						if (isEquals(zqvo, scvo)) {// 是否包含当前结果集的证券
-							scvo.setNow_rtn(zqvo.getBargain_num());// 包含当前证券  设置本期融入归还数量
-																	
+							scvo.setNow_rtn(zqvo.getBargain_num());// 包含当前证券
+																	// 设置本期融入归还数量
+
 						}
 					}
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			Logger.error(e.getMessage(), e);
 		}
 	}
-	
+
 	/**
-	 * 判断两个VO的维度字段是否相同
-	 * 1.集团  pk_group
-	 * 2.组织  pk_org
-	 * 3.库存组织 pk_stocksort
-	 * 4.资金账号 pk_capaccount
-	 * 5.证券主键 pk_securities
-	 * ps:资产属性判断在sql语句中进行 此处不再判断
+	 * 判断两个VO的维度字段是否相同 1.集团 pk_group 2.组织 pk_org 3.库存组织 pk_stocksort 4.资金账号
+	 * pk_capaccount 5.证券主键 pk_securities ps:资产属性判断在sql语句中进行 此处不再判断
+	 * 
 	 * @return true 相同 false 不同
 	 */
-	private Boolean isEquals(ZqjdVO vo1,StockChangeVO vo2){
+	private Boolean isEquals(ZqjdVO vo1, StockChangeVO vo2) {
 		if (vo1.getPk_securities().equals(vo2.getPk_securities())
 				&& vo1.getPk_org().equals(vo2.getPk_org())
 				&& vo1.getPk_stocksort().equals(vo2.getPk_stocksort())
 				&& vo1.getPk_capaccount().equals(vo2.getPk_capaccount())
-				&& vo1.getPk_group().equals(vo2.getPk_group()))
-		{
-			return true;//相同
+				&& vo1.getPk_group().equals(vo2.getPk_group())) {
+			return true;// 相同
 		}
-		return false;//不同
+		return false;// 不同
 	}
+
 	private boolean isEquals(ZqjdVO vo1, ZqjdVO vo2) {
 		if (vo1.getPk_securities().equals(vo2.getPk_securities())
 				&& vo1.getPk_org().equals(vo2.getPk_org())
 				&& vo1.getPk_stocksort().equals(vo2.getPk_stocksort())
 				&& vo1.getPk_capaccount().equals(vo2.getPk_capaccount())
-				&& vo1.getPk_group().equals(vo2.getPk_group()))
-		{
-			return true;//相同
+				&& vo1.getPk_group().equals(vo2.getPk_group())) {
+			return true;// 相同
 		}
-		return false;//不同
+		return false;// 不同
 	}
-	
+
 	@SuppressWarnings("unused")
 	private boolean isEquals(ZqjdTallyVO vo1, StockChangeVO vo2) {
 		if (vo1.getPk_securities().equals(vo2.getPk_securities())
 				&& vo1.getPk_org().equals(vo2.getPk_org())
 				&& vo1.getPk_stocksort().equals(vo2.getPk_stocksort())
 				&& vo1.getPk_capaccount().equals(vo2.getPk_capaccount())
-				&& vo1.getPk_group().equals(vo2.getPk_group()))
-		{
-			return true;//相同
+				&& vo1.getPk_group().equals(vo2.getPk_group())) {
+			return true;// 相同
 		}
-		return false;//不同
+		return false;// 不同
 	}
-
 
 	/**
 	 * 集合非空判断
+	 * 
 	 * @param arrayList
 	 * @return false空 true非空
 	 */
@@ -500,6 +508,7 @@ public class StockChangeImpl implements IStockChange {
 
 	/**
 	 * 根据VO字段 向元数据添加字段
+	 * 
 	 * @return
 	 */
 	public MetaData getMetaData() {
@@ -515,41 +524,42 @@ public class StockChangeImpl implements IStockChange {
 	/**
 	 * @param metaData
 	 * @param vos
-	 * @return 
-	 * 填充数据集 返回结果集
+	 * @return 填充数据集 返回结果集
 	 */
-	public DataSet convertVOToArray(MetaData metaData,
-			List<StockChangeVO> vos) {
+	public DataSet convertVOToArray(MetaData metaData, List<StockChangeVO> vos) {
 		Field[] mfields = metaData.getFields();
 		Object[][] results = new Object[vos.size()][];
 		Class<StockChangeVO> cls = StockChangeVO.class;
 		java.lang.reflect.Field[] rfields = cls.getDeclaredFields();
 		try {
-			
+
 			for (int i = 0; i < vos.size(); i++) {
 				Object[] row = new Object[mfields.length];
 				for (int j = 0; j < mfields.length; j++) {
 					for (java.lang.reflect.Field rfield : rfields) {
 						rfield.setAccessible(true);
 						if (mfields[j].getFldname().equals(rfield.getName())) {
-							if (rfield.getType().getName().equals(UFDateTime.class.getName())) {//日期类型
-								row[j] = (UFDateTime)rfield.get(vos.get(i));
-							}else if (rfield.getType().getName().equals(UFDouble.class.getName())) {//UFDouble
-								//UFDouble ud = new UFDouble();
-								UFDouble temp = (UFDouble) rfield.get(vos.get(i));
+							if (rfield.getType().getName()
+									.equals(UFDateTime.class.getName())) {// 日期类型
+								row[j] = (UFDateTime) rfield.get(vos.get(i));
+							} else if (rfield.getType().getName()
+									.equals(UFDouble.class.getName())) {// UFDouble
+								// UFDouble ud = new UFDouble();
+								UFDouble temp = (UFDouble) rfield.get(vos
+										.get(i));
 								row[j] = temp;
-							} else {//字符串
+							} else {// 字符串
 								row[j] = rfield.get(vos.get(i));
 							}
 						}
 					}
-					
-//				row[j] = vos.get(i).getAttributeValue(fields[j].getFldname());
+
+					// row[j] =
+					// vos.get(i).getAttributeValue(fields[j].getFldname());
 				}
 				results[i] = row;
 			}
-		} 
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		DataSet dataSet = new DataSet();

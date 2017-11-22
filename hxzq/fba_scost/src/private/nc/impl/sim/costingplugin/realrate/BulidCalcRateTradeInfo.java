@@ -93,7 +93,8 @@ public class BulidCalcRateTradeInfo {
 			info.setInterestadjust_sell(tradevo.getInterestadjust_sell());// 利息调整
 																			// -
 			if (tradevo.getInterestdate() != null) {
-				info.setInterestdate(tradevo.getInterestdate().toUFLiteralDate(ICalendar.BASE_TIMEZONE));
+				info.setInterestdate(tradevo.getInterestdate().toUFLiteralDate(
+						ICalendar.BASE_TIMEZONE));
 			}
 		} else if (ActualrateConst.TSC5.equals(tradevo.getTranstypecode())) {
 			info.setInterest_sell(tradevo.getInterest_sell());// 应收利息 -
@@ -103,12 +104,14 @@ public class BulidCalcRateTradeInfo {
 		info.setNdef3(null);
 		info.setNdef4(null);
 		info.setNdef5(null);
-		info.setTrade_date(tradevo.getTrade_date().toUFLiteralDate(ICalendar.BASE_TIMEZONE));
+		info.setTrade_date(tradevo.getTrade_date().toUFLiteralDate(
+				ICalendar.BASE_TIMEZONE));
 		info.setAttributeValue("dr", 0);
 		return info;
 	}
 
-	public ActualRateBillInfo bulidTransfromInfo(TransformtradeVO tradevo, String flag) {
+	public ActualRateBillInfo bulidTransfromInfo(TransformtradeVO tradevo,
+			String flag) {
 		ActualRateBillInfo info = new ActualRateBillInfo();
 		info.setBill_code(tradevo.getBillno());
 		info.setPk_group(tradevo.getPk_group());
@@ -134,7 +137,8 @@ public class BulidCalcRateTradeInfo {
 			//
 			info.setPk_busitype(tradevo.getPk_busitype());// 业务类型
 			info.setTranstypecode(ActualrateConst.TOUT);// 单据类型
-			info.setInterestdate(tradevo.getInterestdate().toUFLiteralDate(ICalendar.BASE_TIMEZONE));
+			info.setInterestdate(tradevo.getInterestdate().toUFLiteralDate(
+					ICalendar.BASE_TIMEZONE));
 		} else if (ActualrateConst.TIN.equals(flag)) {
 			info.setPk_assetsprop(tradevo.getHr_pk_assetsprop());
 			info.setPk_stocksort(tradevo.getHr_pk_stocksort());
@@ -162,7 +166,8 @@ public class BulidCalcRateTradeInfo {
 		info.setNdef3(null);
 		info.setNdef4(null);
 		info.setNdef5(null);
-		info.setTrade_date(tradevo.getTrade_date().toUFLiteralDate(ICalendar.BASE_TIMEZONE));
+		info.setTrade_date(tradevo.getTrade_date().toUFLiteralDate(
+				ICalendar.BASE_TIMEZONE));
 		info.setAttributeValue("dr", 0);
 		return info;
 	}
@@ -171,10 +176,14 @@ public class BulidCalcRateTradeInfo {
 		boolean isfalg = false;
 		QueryPubInfo info = new QueryPubInfo();
 		SecuritiesVO v1 = info.querySecuritiesVO(vo.getPk_securities());
-		String value = info.queryParavalue(vo.getPk_glorgbook(), ActualrateConst.PARAM_REAL);// 是否启用实际利率
-		if ("Y".equals(value) && v1.getIf_accrual() != null && v1.getIf_accrual().booleanValue()) {
-			if (ActualrateConst.PROPERTY_ATTRIBUTE2.equals(vo.getPk_assetsprop())
-					|| ActualrateConst.PROPERTY_ATTRIBUTE3.equals(vo.getPk_assetsprop()))
+		String value = info.queryParavalue(vo.getPk_glorgbook(),
+				ActualrateConst.PARAM_REAL);// 是否启用实际利率
+		if ("Y".equals(value) && v1.getIf_accrual() != null
+				&& v1.getIf_accrual().booleanValue()) {
+			if (ActualrateConst.PROPERTY_ATTRIBUTE2.equals(vo
+					.getPk_assetsprop())
+					|| ActualrateConst.PROPERTY_ATTRIBUTE3.equals(vo
+							.getPk_assetsprop()))
 				isfalg = true;
 		}
 		return isfalg;
@@ -184,11 +193,15 @@ public class BulidCalcRateTradeInfo {
 		boolean isfalg = false;
 		QueryPubInfo info = new QueryPubInfo();
 		SecuritiesVO v1 = info.querySecuritiesVO(vo.getPk_securities());
-		String value = info.queryParavalue(vo.getPk_glorgbook(), ActualrateConst.PARAM_REAL);// 是否启用实际利率
-		if ("Y".equals(value) && v1.getIf_accrual() != null && v1.getIf_accrual().booleanValue()) {
+		String value = info.queryParavalue(vo.getPk_glorgbook(),
+				ActualrateConst.PARAM_REAL);// 是否启用实际利率
+		if ("Y".equals(value) && v1.getIf_accrual() != null
+				&& v1.getIf_accrual().booleanValue()) {
 			// 可供出售金融资产、持有至到期金融资产 采用实际利率算法
-			if (ActualrateConst.PROPERTY_ATTRIBUTE2.equals(vo.getPk_assetsprop())
-					|| ActualrateConst.PROPERTY_ATTRIBUTE3.equals(vo.getPk_assetsprop()))
+			if (ActualrateConst.PROPERTY_ATTRIBUTE2.equals(vo
+					.getPk_assetsprop())
+					|| ActualrateConst.PROPERTY_ATTRIBUTE3.equals(vo
+							.getPk_assetsprop()))
 				isfalg = true;
 		}
 		return isfalg;
@@ -198,10 +211,14 @@ public class BulidCalcRateTradeInfo {
 		boolean isfalg = false;
 		QueryPubInfo info = new QueryPubInfo();
 		SecuritiesVO v1 = info.querySecuritiesVO(vo.getPk_securities());
-		String value = info.queryParavalue(vo.getPk_glorgbook(), ActualrateConst.PARAM_REAL);// 是否启用实际利率
-		if ("Y".equals(value) && v1.getIf_accrual() != null && v1.getIf_accrual().booleanValue()) {
-			if (ActualrateConst.PROPERTY_ATTRIBUTE2.equals(vo.getPk_assetsprop())
-					|| ActualrateConst.PROPERTY_ATTRIBUTE3.equals(vo.getPk_assetsprop()))
+		String value = info.queryParavalue(vo.getPk_glorgbook(),
+				ActualrateConst.PARAM_REAL);// 是否启用实际利率
+		if ("Y".equals(value) && v1.getIf_accrual() != null
+				&& v1.getIf_accrual().booleanValue()) {
+			if (ActualrateConst.PROPERTY_ATTRIBUTE2.equals(vo
+					.getPk_assetsprop())
+					|| ActualrateConst.PROPERTY_ATTRIBUTE3.equals(vo
+							.getPk_assetsprop()))
 				isfalg = true;
 		}
 		return isfalg;
@@ -211,10 +228,14 @@ public class BulidCalcRateTradeInfo {
 		boolean isfalg = false;
 		QueryPubInfo info = new QueryPubInfo();
 		SecuritiesVO v1 = info.querySecuritiesVO(vo.getPk_securities());
-		String value = info.queryParavalue(vo.getPk_glorgbook(), ActualrateConst.PARAM_REAL);// 是否启用实际利率
-		if ("Y".equals(value) && v1.getIf_accrual() != null && v1.getIf_accrual().booleanValue()) {
-			if (ActualrateConst.PROPERTY_ATTRIBUTE2.equals(vo.getHc_pk_assetsprop())
-					|| ActualrateConst.PROPERTY_ATTRIBUTE3.equals(vo.getHc_pk_assetsprop()))
+		String value = info.queryParavalue(vo.getPk_glorgbook(),
+				ActualrateConst.PARAM_REAL);// 是否启用实际利率
+		if ("Y".equals(value) && v1.getIf_accrual() != null
+				&& v1.getIf_accrual().booleanValue()) {
+			if (ActualrateConst.PROPERTY_ATTRIBUTE2.equals(vo
+					.getHc_pk_assetsprop())
+					|| ActualrateConst.PROPERTY_ATTRIBUTE3.equals(vo
+							.getHc_pk_assetsprop()))
 				isfalg = true;
 		}
 		return isfalg;
@@ -234,18 +255,22 @@ public class BulidCalcRateTradeInfo {
 		dao.insertVOArray(vos);
 	}
 
-	public void delete(String pk_group, String pk_org, String tradedate) throws DAOException {
+	public void delete(String pk_group, String pk_org, String tradedate)
+			throws DAOException {
 		if (pk_group == null || pk_org == null || tradedate == null)
 			return;
 		BaseDAO dao = new BaseDAO();
-		dao.deleteByClause(ActualRateBillInfo.class, " trade_date >= '" + tradedate + "' and pk_group = '" + pk_group
+		dao.deleteByClause(ActualRateBillInfo.class, " trade_date >= '"
+				+ tradedate + "' and pk_group = '" + pk_group
 				+ "' and pk_org = '" + pk_org + "' ");
 	}
 
-	public void delete(String pk_group, String pk_org, String tradedate, String billtypecode) throws DAOException {
+	public void delete(String pk_group, String pk_org, String tradedate,
+			String billtypecode) throws DAOException {
 		if (pk_group == null || pk_org == null || tradedate == null)
 			return;
-		String where = " transtypecode = '" + billtypecode + "' and trade_date >= '" + tradedate + "' and pk_group = '"
+		String where = " transtypecode = '" + billtypecode
+				+ "' and trade_date >= '" + tradedate + "' and pk_group = '"
 				+ pk_group + "' and pk_org = '" + pk_org + "' ";
 		BaseDAO dao = new BaseDAO();
 		dao.deleteByClause(ActualRateBillInfo.class, where);

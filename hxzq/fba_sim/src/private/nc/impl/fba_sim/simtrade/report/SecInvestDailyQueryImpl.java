@@ -1,15 +1,7 @@
 package nc.impl.fba_sim.simtrade.report;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Vector;
-
-import org.apache.commons.lang.StringUtils;
 
 import nc.bs.dao.BaseDAO;
 import nc.bs.dao.DAOException;
@@ -37,7 +29,6 @@ import nc.vo.fba_sim.pub.SimINFOPubMethod;
 import nc.vo.fba_sim.simbs.checkplan.CheckplanVO;
 import nc.vo.fba_sim.simtrade.report.SecInvestDailyRepVO;
 import nc.vo.fba_sim.simtrade.report.SecInvestDailyViewMeta;
-import nc.vo.fba_sim.simtrade.stocktrade.StocktradeVO;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.freereport.ReportDataVO;
 import nc.vo.pub.lang.UFDate;
@@ -46,6 +37,8 @@ import nc.vo.pub.query.ConditionVO;
 import nc.vo.pubapp.report.ReportQueryConUtil;
 import nc.vo.pubapp.report.ReportQueryResult;
 import nc.vo.trade.voutils.VOUtil;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.ufida.dataset.IContext;
 import com.ufida.report.anareport.FreeReportContextKey;
@@ -228,98 +221,97 @@ public class SecInvestDailyQueryImpl implements ISecInvestDailyQuery {
 			repVo.setEndPrice(PubMethod.getInstance().divCal(repVo.getEndSum(),
 					repVo.getEndNum()));
 			String pk_securities = repVo.getPk_securities();
-			
-			//期初市值
+
+			// 期初市值
 			try {
 				UFDouble first_marketPrice = SimINFOPubMethod.getInstance()
 						.getClosePrice(startDate.toString().substring(0, 10),
 								repVo.getPk_securities());
 				UFDouble first_marketSum = pm.multiply(first_marketPrice,
 						repVo.getFirstNum());
-				first_marketSum = first_marketSum.setScale(2, UFDouble.ROUND_HALF_UP);
+				first_marketSum = first_marketSum.setScale(2,
+						UFDouble.ROUND_HALF_UP);
 				repVo.setFirst_marketSum(first_marketSum);
-				
-				
+
 			} catch (Exception e) {
 				Logger.error(e);
 			}
-			
-			//查份额分红数据,并按维度设置份额分红数据 add by lihaibo start 2017-06-13
+
+			// 查份额分红数据,并按维度设置份额分红数据 add by lihaibo start 2017-06-13
 			try {
 				String querySql = this.getfefhsql();
 				if (StringUtils.isBlank(querySql)) {
 					continue;
 				}
 				ReportSqlUtil reportUtil = ReportSqlUtil.getInstance();
-				IUAPQueryBS queryservice = (IUAPQueryBS) NCLocator.getInstance()
-						.lookup(IUAPQueryBS.class.getName());
+				IUAPQueryBS queryservice = (IUAPQueryBS) NCLocator
+						.getInstance().lookup(IUAPQueryBS.class.getName());
 				String condition = SimReportUtils.getQueryCondition(
 						ReportConst.FUND_B_MARK, conVos, false, false);
 				querySql = reportUtil.getQuerySql(condition, querySql);
-				querySql += 
-						" group by a.pk_org,\n" +
-								"       a.pk_group,\n" + 
-								"       a.pk_glorgbook,\n" + 
-								"       a.pk_assetsprop,\n" + 
-								"       a.pk_capaccount,\n" + 
-								"       a.pk_securities";
+				querySql += " group by a.pk_org,\n" + "       a.pk_group,\n"
+						+ "       a.pk_glorgbook,\n"
+						+ "       a.pk_assetsprop,\n"
+						+ "       a.pk_capaccount,\n"
+						+ "       a.pk_securities";
 				@SuppressWarnings("unchecked")
 				List<SecInvestDailyRepVO> fefhVos = (List<SecInvestDailyRepVO>) queryservice
 						.executeQuery(querySql, new BeanListProcessor(
 								SecInvestDailyRepVO.class));
 				if (fefhVos != null && fefhVos.size() > 0) {
 					for (SecInvestDailyRepVO fefhVo : fefhVos) {
-						if (fefhVo.getPk_assetsprop().equals(repVo.getPk_assetsprop()) && 
-								fefhVo.getPk_capaccount().equals(repVo.getPk_capaccount()) && 
-								fefhVo.getPk_securities().equals(repVo.getPk_securities())) {
-								repVo.setFefh(fefhVo.getFefh());
-								break;
+						if (fefhVo.getPk_assetsprop().equals(
+								repVo.getPk_assetsprop())
+								&& fefhVo.getPk_capaccount().equals(
+										repVo.getPk_capaccount())
+								&& fefhVo.getPk_securities().equals(
+										repVo.getPk_securities())) {
+							repVo.setFefh(fefhVo.getFefh());
+							break;
 						}
 					}
 				}
-				/*//加上计提的未付收益
-				String querySql_jtwfsy = this.getfefhsql_jtwfsy();
-				querySql_jtwfsy = reportUtil.getQuerySql(condition, querySql_jtwfsy);
-				querySql_jtwfsy += 
-						" group by a.pk_org,\n" +
-								"       a.pk_group,\n" + 
-								"       a.pk_glorgbook,\n" + 
-								"       a.pk_assetsprop,\n" + 
-								"       a.pk_capaccount,\n" + 
-								"       a.pk_securities";
-				List<SecInvestDailyRepVO> fefhVos_jtwfsy = (List<SecInvestDailyRepVO>) queryservice
-						.executeQuery(querySql_jtwfsy, new BeanListProcessor(
-								SecInvestDailyRepVO.class));
-				if (fefhVos_jtwfsy != null && fefhVos_jtwfsy.size() > 0) {
-					for (SecInvestDailyRepVO fefhVo : fefhVos_jtwfsy) {
-						if (fefhVo.getPk_assetsprop().equals(repVo.getPk_assetsprop()) && 
-								fefhVo.getPk_capaccount().equals(repVo.getPk_capaccount()) && 
-								fefhVo.getPk_securities().equals(repVo.getPk_securities())) {
-								repVo.setFefh(repVo.getFefh().add(fefhVo.getFefh()));
-								break;
-						}
-					}
-				}*/
+				/*
+				 * //加上计提的未付收益 String querySql_jtwfsy =
+				 * this.getfefhsql_jtwfsy(); querySql_jtwfsy =
+				 * reportUtil.getQuerySql(condition, querySql_jtwfsy);
+				 * querySql_jtwfsy += " group by a.pk_org,\n" +
+				 * "       a.pk_group,\n" + "       a.pk_glorgbook,\n" +
+				 * "       a.pk_assetsprop,\n" + "       a.pk_capaccount,\n" +
+				 * "       a.pk_securities"; List<SecInvestDailyRepVO>
+				 * fefhVos_jtwfsy = (List<SecInvestDailyRepVO>) queryservice
+				 * .executeQuery(querySql_jtwfsy, new BeanListProcessor(
+				 * SecInvestDailyRepVO.class)); if (fefhVos_jtwfsy != null &&
+				 * fefhVos_jtwfsy.size() > 0) { for (SecInvestDailyRepVO fefhVo
+				 * : fefhVos_jtwfsy) { if
+				 * (fefhVo.getPk_assetsprop().equals(repVo.getPk_assetsprop())
+				 * && fefhVo.getPk_capaccount().equals(repVo.getPk_capaccount())
+				 * &&
+				 * fefhVo.getPk_securities().equals(repVo.getPk_securities())) {
+				 * repVo.setFefh(repVo.getFefh().add(fefhVo.getFefh())); break;
+				 * } } }
+				 */
 			} catch (Exception e) {
 				Logger.error(e);
 			}
-			//计算转入证券-转出证券vdef2
+			// 计算转入证券-转出证券vdef2
 			UFDouble tatal_wfsy = sumWFSY(repVo, startDate, new UFDate(endDate));
-			UFDouble tatal_vdef4 = sumVDEF4(repVo, startDate, new UFDate(endDate));
+			UFDouble tatal_vdef4 = sumVDEF4(repVo, startDate, new UFDate(
+					endDate));
 			repVo.setFefh(pm.add(repVo.getFefh(), tatal_vdef4.add(tatal_wfsy)));
-			/***********end*********/
+			/*********** end *********/
 			// 算市值，公允价值，浮动盈亏，股本等
 			if (repVo.getEndNum() != null && !repVo.getEndNum().equals(zero)) {
 				try {
 					repVo.setMarketPrice(SimINFOPubMethod.getInstance()
 							.getClosePrice(endDate.substring(0, 10),
 									repVo.getPk_securities()));
-					//四舍五入保留两位小数
+					// 四舍五入保留两位小数
 					UFDouble marketSum = pm.multiply(repVo.getMarketPrice(),
 							repVo.getEndNum());
 					marketSum = marketSum.setScale(2, UFDouble.ROUND_HALF_UP);
 					repVo.setMarketSum(marketSum);
-					
+
 					/**
 					 * YangJie 2014-07-10 截止当天计提了 就取当天市值 截止当天不计提 就去最近一次计提 的
 					 * 加转入的减转出的
@@ -397,8 +389,7 @@ public class SecInvestDailyQueryImpl implements ISecInvestDailyQuery {
 				List<ReportDataVO> reportVos = (List<ReportDataVO>) queryservice
 						.executeQuery(querySql, new BeanListProcessor(
 								ReportDataVO.class));
-				
-				
+
 				resultDatas.addAll(reportVos);
 			} catch (Exception e) {
 				throw new BusinessException("明细查询错误!" + e.getMessage());
@@ -482,7 +473,7 @@ public class SecInvestDailyQueryImpl implements ISecInvestDailyQuery {
 		 * JINGQT 2015年8月19日 证券投资经营日报的增加公允价值变动列 公允价值变动=‘期末结存期末市值’-‘期末结存金额’； ADD
 		 * START
 		 */
-//		rprtvo.setFairValueChange(datavo.getFairValueChange());
+		// rprtvo.setFairValueChange(datavo.getFairValueChange());
 		/**
 		 * JINGQT 2015年8月19日 证券投资经营日报的增加公允价值变动列 公允价值变动=‘期末结存期末市值’-‘期末结存金额’； ADD
 		 * END
@@ -513,88 +504,74 @@ public class SecInvestDailyQueryImpl implements ISecInvestDailyQuery {
 		list.toArray(fields);
 		return new MetaData(fields);
 	}
-	
-	//查询份额分红sql
+
+	// 查询份额分红sql
 	private String getfefhsql() {
-		String sql = 
-				"select a.pk_org,\n" +
-						"       a.pk_group,\n" + 
-						"       a.pk_glorgbook,\n" + 
-						"       a.pk_assetsprop,\n" + 
-						"       a.pk_capaccount,\n" + 
-						"       a.pk_securities,\n" + 
-						"       sum(round(a.bargain_sum,2)) fefh"+
-						"  from sim_stocktrade a\n" + 
-						" inner join sec_securities b\n" + 
-						"    on a.pk_securities = b.pk_securities\n" + 
-						" inner join sec_busitype c\n" + 
-						"    on a.pk_busitype = c.pk_busitype\n" + 
-						"   and nvl(c.dr, 0) = 0\n" + 
-						" where a.state > 1\n" + 
-						"   and nvl(a.dr, 0) = 0\n" + 
-						"   and c.code in ('104','0184','205')\n" ;
-						//"   and a.transtypecode = 'HV3A-0xx-05'";
+		String sql = "select a.pk_org,\n" + "       a.pk_group,\n"
+				+ "       a.pk_glorgbook,\n" + "       a.pk_assetsprop,\n"
+				+ "       a.pk_capaccount,\n" + "       a.pk_securities,\n"
+				+ "       sum(round(a.bargain_sum,2)) fefh"
+				+ "  from sim_stocktrade a\n"
+				+ " inner join sec_securities b\n"
+				+ "    on a.pk_securities = b.pk_securities\n"
+				+ " inner join sec_busitype c\n"
+				+ "    on a.pk_busitype = c.pk_busitype\n"
+				+ "   and nvl(c.dr, 0) = 0\n" + " where a.state > 1\n"
+				+ "   and nvl(a.dr, 0) = 0\n"
+				+ "   and c.code in ('104','0184','205')\n";
+		// "   and a.transtypecode = 'HV3A-0xx-05'";
 		return sql;
 	}
-	
-	//查询计提未付收益sql
+
+	// 查询计提未付收益sql
 	private String getfefhsql_jtwfsy() {
-		String sql = 
-				"select a.pk_org,\n" +
-						"       a.pk_group,\n" + 
-						"       a.pk_glorgbook,\n" + 
-						"       a.pk_assetsprop,\n" + 
-						"       a.pk_capaccount,\n" + 
-						"       a.pk_securities,\n" + 
-						"       sum(round(a.bargain_sum,2)) fefh"+
-						"  from sim_stocktrade a\n" + 
-						" inner join sec_securities b\n" + 
-						"    on a.pk_securities = b.pk_securities\n" + 
-						" inner join sec_busitype c\n" + 
-						"    on a.pk_busitype = c.pk_busitype\n" + 
-						"   and nvl(c.dr, 0) = 0\n" + 
-						" where a.state > 1\n" + 
-						"   and nvl(a.dr, 0) = 0\n" + 
-						"   and c.code in ('206','106')\n"+
-						"   and a.transtypecode = 'HV3A-0xx-14'";
+		String sql = "select a.pk_org,\n" + "       a.pk_group,\n"
+				+ "       a.pk_glorgbook,\n" + "       a.pk_assetsprop,\n"
+				+ "       a.pk_capaccount,\n" + "       a.pk_securities,\n"
+				+ "       sum(round(a.bargain_sum,2)) fefh"
+				+ "  from sim_stocktrade a\n"
+				+ " inner join sec_securities b\n"
+				+ "    on a.pk_securities = b.pk_securities\n"
+				+ " inner join sec_busitype c\n"
+				+ "    on a.pk_busitype = c.pk_busitype\n"
+				+ "   and nvl(c.dr, 0) = 0\n" + " where a.state > 1\n"
+				+ "   and nvl(a.dr, 0) = 0\n"
+				+ "   and c.code in ('206','106')\n"
+				+ "   and a.transtypecode = 'HV3A-0xx-14'";
 		return sql;
 	}
-	
+
 	/**
-	 * 计算 转换转入-转换转出
-	 * 转换转入（转入证券对应的VDEF2）
-		转换转出（转出证券对应的VDEF2）
+	 * 计算 转换转入-转换转出 转换转入（转入证券对应的VDEF2） 转换转出（转出证券对应的VDEF2）
+	 * 
 	 * @author lihbj
 	 * @return
 	 */
-	private UFDouble sumJZWFSY(SecInvestDailyRepVO repVo, UFDate start_date, UFDate end_date) {
+	private UFDouble sumJZWFSY(SecInvestDailyRepVO repVo, UFDate start_date,
+			UFDate end_date) {
 		UFDouble total_wfsy = UFDouble.ZERO_DBL;
-		//转出证券
-		String sql = 
-				"select to_char(nvl(sum(case\n" +
-						"                         when a.vdef2 is null then\n" + 
-						"                          0\n" + 
-						"                         when a.vdef2 = '~' then\n" + 
-						"                          0\n" + 
-						"                         else\n" + 
-						"                          to_number(a.vdef2)\n" + 
-						"                       end),\n" + 
-						"                   0)) total_zc\n" + 
-						"  from sim_transformtrade a\n" + 
-						" inner join sec_securities b\n" + 
-						"    on a.pk_securities = b.pk_securities\n" + 
-						" inner join sec_billtype c\n" + 
-						"    on a.transtypecode = c.pk_billtypecode\n" + 
-						"   and nvl(c.dr, 0) = 0\n" + 
-						" where a.state > 1\n" + 
-						"   and nvl(a.dr, 0) = 0\n" + 
-						"   and a.transtypecode = 'HV3F-0xx-01'\n" + 
-						"   and a.trade_date > ?\n" + 
-						"   and a.trade_date < ?\n" + 
-						"   and a.pk_securities = ?\n" + 
-						"   and a.hc_pk_assetsprop = ?\n" + 
-						"   and a.hc_pk_capaccount = ?\n" + 
-						"   and a.pk_org = ?";
+		// 转出证券
+		String sql = "select to_char(nvl(sum(case\n"
+				+ "                         when a.vdef2 is null then\n"
+				+ "                          0\n"
+				+ "                         when a.vdef2 = '~' then\n"
+				+ "                          0\n"
+				+ "                         else\n"
+				+ "                          to_number(a.vdef2)\n"
+				+ "                       end),\n"
+				+ "                   0)) total_zc\n"
+				+ "  from sim_transformtrade a\n"
+				+ " inner join sec_securities b\n"
+				+ "    on a.pk_securities = b.pk_securities\n"
+				+ " inner join sec_billtype c\n"
+				+ "    on a.transtypecode = c.pk_billtypecode\n"
+				+ "   and nvl(c.dr, 0) = 0\n" + " where a.state > 1\n"
+				+ "   and nvl(a.dr, 0) = 0\n"
+				+ "   and a.transtypecode = 'HV3F-0xx-01'\n"
+				+ "   and a.trade_date > ?\n" + "   and a.trade_date < ?\n"
+				+ "   and a.pk_securities = ?\n"
+				+ "   and a.hc_pk_assetsprop = ?\n"
+				+ "   and a.hc_pk_capaccount = ?\n" + "   and a.pk_org = ?";
 		SQLParameter para = new SQLParameter();
 		para.addParam(start_date.toString());
 		para.addParam(end_date.getDateAfter(1).toString());
@@ -603,36 +580,33 @@ public class SecInvestDailyQueryImpl implements ISecInvestDailyQuery {
 		para.addParam(repVo.getPk_capaccount());
 		para.addParam(repVo.getPk_org());
 		try {
-			String total = (String) new BaseDAO().executeQuery(sql, para, new ColumnProcessor());
+			String total = (String) new BaseDAO().executeQuery(sql, para,
+					new ColumnProcessor());
 			total_wfsy = new UFDouble(total);
 		} catch (DAOException e) {
 			e.printStackTrace();
 		}
-		String sql_zr = 
-				"select to_char(nvl(sum(case\n" +
-						"                         when a.vdef2 is null then\n" + 
-						"                          0\n" + 
-						"                         when a.vdef2 = '~' then\n" + 
-						"                          0\n" + 
-						"                         else\n" + 
-						"                          to_number(a.vdef2)\n" + 
-						"                       end),\n" + 
-						"                   0)) total_zr\n" + 
-						"  from sim_transformtrade a\n" + 
-						" inner join sec_securities b\n" + 
-						"    on a.pk_securities = b.pk_securities\n" + 
-						" inner join sec_billtype c\n" + 
-						"    on a.transtypecode = c.pk_billtypecode\n" + 
-						"   and nvl(c.dr, 0) = 0\n" + 
-						" where a.state > 1\n" + 
-						"   and nvl(a.dr, 0) = 0\n" + 
-						"   and a.transtypecode = 'HV3F-0xx-01'\n" + 
-						"   and a.trade_date > ?\n" + 
-						"   and a.trade_date < ?\n" + 
-						"   and a.pk_securities2 = ?\n" + 
-						"   and a.hr_pk_assetsprop = ?\n" + 
-						"   and a.hr_pk_capaccount = ?\n" + 
-						"   and a.pk_org = ?";
+		String sql_zr = "select to_char(nvl(sum(case\n"
+				+ "                         when a.vdef2 is null then\n"
+				+ "                          0\n"
+				+ "                         when a.vdef2 = '~' then\n"
+				+ "                          0\n"
+				+ "                         else\n"
+				+ "                          to_number(a.vdef2)\n"
+				+ "                       end),\n"
+				+ "                   0)) total_zr\n"
+				+ "  from sim_transformtrade a\n"
+				+ " inner join sec_securities b\n"
+				+ "    on a.pk_securities = b.pk_securities\n"
+				+ " inner join sec_billtype c\n"
+				+ "    on a.transtypecode = c.pk_billtypecode\n"
+				+ "   and nvl(c.dr, 0) = 0\n" + " where a.state > 1\n"
+				+ "   and nvl(a.dr, 0) = 0\n"
+				+ "   and a.transtypecode = 'HV3F-0xx-01'\n"
+				+ "   and a.trade_date > ?\n" + "   and a.trade_date < ?\n"
+				+ "   and a.pk_securities2 = ?\n"
+				+ "   and a.hr_pk_assetsprop = ?\n"
+				+ "   and a.hr_pk_capaccount = ?\n" + "   and a.pk_org = ?";
 		para.clearParams();
 		para.addParam(start_date.toString());
 		para.addParam(end_date.getDateAfter(1).toString());
@@ -641,116 +615,116 @@ public class SecInvestDailyQueryImpl implements ISecInvestDailyQuery {
 		para.addParam(repVo.getPk_capaccount());
 		para.addParam(repVo.getPk_org());
 		try {
-			String total_zr = (String) new BaseDAO().executeQuery(sql_zr, para, new ColumnProcessor());
+			String total_zr = (String) new BaseDAO().executeQuery(sql_zr, para,
+					new ColumnProcessor());
 			total_wfsy = new UFDouble(total_zr).sub(total_wfsy);
 		} catch (DAOException e) {
 			e.printStackTrace();
 		}
 		return total_wfsy;
 	}
-	
+
 	/**
 	 * 计算 份额分红交易类型总的计提未付收益
+	 * 
 	 * @author lihbj
 	 * @return
 	 */
 	@SuppressWarnings("unused")
-	private UFDouble sumVDEF3(SecInvestDailyRepVO repVo, UFDate start_date, UFDate end_date) {
+	private UFDouble sumVDEF3(SecInvestDailyRepVO repVo, UFDate start_date,
+			UFDate end_date) {
 		UFDouble total_wfsy = UFDouble.ZERO_DBL;
-		String sql = 
-				"select to_char(nvl(sum(case\n" +
-						"                         when a.vdef3 is null then\n" + 
-						"                          0\n" + 
-						"                         when a.vdef3 = '~' then\n" + 
-						"                          0\n" + 
-						"                         else\n" + 
-						"                          to_number(a.vdef3)\n" + 
-						"                       end),\n" + 
-						"                   0)) total_zc\n" + 
-						"  from sim_stocktrade a\n" + 
-						" inner join sec_securities b\n" + 
-						"    on a.pk_securities = b.pk_securities\n" + 
-						" inner join sec_billtype c\n" + 
-						"    on a.transtypecode = c.pk_billtypecode\n" + 
-						"   and nvl(c.dr, 0) = 0\n" + 
-						" where a.state > 1\n" + 
-						"   and nvl(a.dr, 0) = 0\n" + 
-						"   and a.transtypecode = 'HV3A-0xx-05'\n" + 
-						"   and a.trade_date > ?\n" + 
-						"   and a.trade_date < ?\n" + 
-						"   and a.pk_securities = ?\n" + 
-						"   and a.pk_assetsprop = ?\n" + 
-						"   and a.pk_capaccount = ?\n" + 
-						"   and a.pk_org = ?";
+		String sql = "select to_char(nvl(sum(case\n"
+				+ "                         when a.vdef3 is null then\n"
+				+ "                          0\n"
+				+ "                         when a.vdef3 = '~' then\n"
+				+ "                          0\n"
+				+ "                         else\n"
+				+ "                          to_number(a.vdef3)\n"
+				+ "                       end),\n"
+				+ "                   0)) total_zc\n"
+				+ "  from sim_stocktrade a\n"
+				+ " inner join sec_securities b\n"
+				+ "    on a.pk_securities = b.pk_securities\n"
+				+ " inner join sec_billtype c\n"
+				+ "    on a.transtypecode = c.pk_billtypecode\n"
+				+ "   and nvl(c.dr, 0) = 0\n" + " where a.state > 1\n"
+				+ "   and nvl(a.dr, 0) = 0\n"
+				+ "   and a.transtypecode = 'HV3A-0xx-05'\n"
+				+ "   and a.trade_date > ?\n" + "   and a.trade_date < ?\n"
+				+ "   and a.pk_securities = ?\n"
+				+ "   and a.pk_assetsprop = ?\n"
+				+ "   and a.pk_capaccount = ?\n" + "   and a.pk_org = ?";
 		SQLParameter para = new SQLParameter();
 		para.addParam(start_date.toString());
 		para.addParam(end_date.toString());
-		
+
 		para.addParam(repVo.getPk_securities());
 		para.addParam(repVo.getPk_assetsprop());
 		para.addParam(repVo.getPk_capaccount());
 		para.addParam(repVo.getPk_org());
 		try {
-			String total = (String) new BaseDAO().executeQuery(sql, para, new ColumnProcessor());
+			String total = (String) new BaseDAO().executeQuery(sql, para,
+					new ColumnProcessor());
 			total_wfsy = new UFDouble(total);
 		} catch (DAOException e) {
 			e.printStackTrace();
 		}
 		return total_wfsy;
 	}
-	
+
 	/**
 	 * 计算 证券卖出记录交易类型总的应收股利
+	 * 
 	 * @author lihbj
 	 * @return
 	 */
-	private UFDouble sumVDEF4(SecInvestDailyRepVO repVo, UFDate start_date, UFDate end_date) {
+	private UFDouble sumVDEF4(SecInvestDailyRepVO repVo, UFDate start_date,
+			UFDate end_date) {
 		UFDouble total_wfsy = UFDouble.ZERO_DBL;
-		String sql = 
-				"select to_char(nvl(sum(case\n" +
-						"                         when a.vdef4 is null then\n" + 
-						"                          0\n" + 
-						"                         when a.vdef4 = '~' then\n" + 
-						"                          0\n" + 
-						"                         else\n" + 
-						"                          to_number(a.vdef4)\n" + 
-						"                       end),\n" + 
-						"                   0)) total_zc\n" + 
-						"  from sim_stocktrade a\n" + 
-						" inner join sec_securities b\n" + 
-						"    on a.pk_securities = b.pk_securities\n" + 
-						" inner join sec_busitype c\n" + 
-						"    on a.pk_busitype = c.pk_busitype\n" + 
-						"   and nvl(c.dr, 0) = 0\n" + 
-						" where a.state > 1\n" + 
-						"   and nvl(a.dr, 0) = 0\n" + 
-						"   and a.transtypecode = 'HV3A-0xx-02'\n" + 
-						"   and c.code in ('202','103','0182','0122')\n" + 
-						"   and a.trade_date > ?\n" + 
-						"   and a.trade_date < ?\n" + 
-						"   and a.pk_securities = ?\n" + 
-						"   and a.pk_assetsprop = ?\n" + 
-						"   and a.pk_capaccount = ?\n" + 
-						"   and a.pk_org = ?";
+		String sql = "select to_char(nvl(sum(case\n"
+				+ "                         when a.vdef4 is null then\n"
+				+ "                          0\n"
+				+ "                         when a.vdef4 = '~' then\n"
+				+ "                          0\n"
+				+ "                         else\n"
+				+ "                          to_number(a.vdef4)\n"
+				+ "                       end),\n"
+				+ "                   0)) total_zc\n"
+				+ "  from sim_stocktrade a\n"
+				+ " inner join sec_securities b\n"
+				+ "    on a.pk_securities = b.pk_securities\n"
+				+ " inner join sec_busitype c\n"
+				+ "    on a.pk_busitype = c.pk_busitype\n"
+				+ "   and nvl(c.dr, 0) = 0\n" + " where a.state > 1\n"
+				+ "   and nvl(a.dr, 0) = 0\n"
+				+ "   and a.transtypecode = 'HV3A-0xx-02'\n"
+				+ "   and c.code in ('202','103','0182','0122')\n"
+				+ "   and a.trade_date > ?\n" + "   and a.trade_date < ?\n"
+				+ "   and a.pk_securities = ?\n"
+				+ "   and a.pk_assetsprop = ?\n"
+				+ "   and a.pk_capaccount = ?\n" + "   and a.pk_org = ?";
 		SQLParameter para = new SQLParameter();
 		para.addParam(start_date.toString());
 		para.addParam(end_date.getDateAfter(1).toString());
-		
+
 		para.addParam(repVo.getPk_securities());
 		para.addParam(repVo.getPk_assetsprop());
 		para.addParam(repVo.getPk_capaccount());
 		para.addParam(repVo.getPk_org());
 		try {
-			String total = (String) new BaseDAO().executeQuery(sql, para, new ColumnProcessor());
+			String total = (String) new BaseDAO().executeQuery(sql, para,
+					new ColumnProcessor());
 			total_wfsy = new UFDouble(total);
 		} catch (DAOException e) {
 			e.printStackTrace();
 		}
 		return total_wfsy;
 	}
-	
+
 	/**
 	 * 计算上一次份额分红或者证券卖出记录之后，所有计提未付收益相加
+	 * 
 	 * @author lihbj
 	 * @return
 	 */
@@ -766,24 +740,24 @@ public class SecInvestDailyQueryImpl implements ISecInvestDailyQuery {
 	 * @param end_date
 	 * @return
 	 */
-	private UFDouble sumWFSY(SecInvestDailyRepVO repVo, UFDate start_date, UFDate end_date) {
+	private UFDouble sumWFSY(SecInvestDailyRepVO repVo, UFDate start_date,
+			UFDate end_date) {
 		UFDate startDate = start_date;
 		UFDouble sum_jzwfsy = UFDouble.ZERO_DBL;
-		UFDate lastFefh = new UFDate();//上一次份额分红日期
-		UFDate lastZqmc = new UFDate();//上一次证券卖出记录日期
-		//首先找到该支券上一次的份额分红交易时间
-		String fefh = 
-				"select nvl(max(a.trade_date), '2000-01-01 15:15:08') trade_date\n" + 
-				"                         from sim_stocktrade a\n" + 
-				"                        where nvl(a.dr, 0) = 0\n" + 
-				"                          and a.trade_date < ?\n" + 
-				"                          and a.transtypecode = 'HV3A-0xx-05'\n" + 
-				"                          and a.state > 1\n" + 
-				"                          and a.pk_org = ?\n" + 
-				"                          and a.pk_assetsprop = ?\n" + 
-				"                          and a.pk_capaccount = ?\n" + 
-				"                          and a.pk_stocksort = ?\n" + 
-				"                          and a.pk_securities = ?";
+		UFDate lastFefh = new UFDate();// 上一次份额分红日期
+		UFDate lastZqmc = new UFDate();// 上一次证券卖出记录日期
+		// 首先找到该支券上一次的份额分红交易时间
+		String fefh = "select nvl(max(a.trade_date), '2000-01-01 15:15:08') trade_date\n"
+				+ "                         from sim_stocktrade a\n"
+				+ "                        where nvl(a.dr, 0) = 0\n"
+				+ "                          and a.trade_date < ?\n"
+				+ "                          and a.transtypecode = 'HV3A-0xx-05'\n"
+				+ "                          and a.state > 1\n"
+				+ "                          and a.pk_org = ?\n"
+				+ "                          and a.pk_assetsprop = ?\n"
+				+ "                          and a.pk_capaccount = ?\n"
+				+ "                          and a.pk_stocksort = ?\n"
+				+ "                          and a.pk_securities = ?";
 		SQLParameter para = new SQLParameter();
 		para.addParam(end_date.getDateAfter(1).toString());
 		para.addParam(repVo.getPk_org());
@@ -792,28 +766,28 @@ public class SecInvestDailyQueryImpl implements ISecInvestDailyQuery {
 		para.addParam(repVo.getPk_stocksort());
 		para.addParam(repVo.getPk_securities());
 		try {
-			String last_fefh = (String) new BaseDAO().executeQuery(fefh, para, new ColumnProcessor());
+			String last_fefh = (String) new BaseDAO().executeQuery(fefh, para,
+					new ColumnProcessor());
 			lastFefh = new UFDate(last_fefh);
 		} catch (DAOException e) {
 			e.printStackTrace();
 		}
 		// 找到上一次证券卖出记录的交易日期
-		String mcjl = 
-				"select nvl(max(a.trade_date), '2000-01-01 15:15:08') trade_date\n" + 
-				" from sim_stocktrade a\n" + 
-				" inner join sec_busitype c\n" + 
-				"    on a.pk_busitype = c.pk_busitype\n" + 
-				"   and nvl(c.dr, 0) = 0\n" + 
-				" where nvl(a.dr, 0) = 0\n" + 
-				" and a.trade_date < ?\n" + 
-				" and a.transtypecode = 'HV3A-0xx-02'\n" + 
-				" and c.code in ('202','103')\n" + 
-				" and a.state > 1\n" + 
-				" and a.pk_org = ?\n" + 
-				" and a.pk_assetsprop = ?\n" + 
-				" and a.pk_capaccount = ?\n" + 
-				" and a.pk_stocksort = ?\n" + 
-				" and a.pk_securities = ?";
+		String mcjl = "select nvl(max(a.trade_date), '2000-01-01 15:15:08') trade_date\n"
+				+ " from sim_stocktrade a\n"
+				+ " inner join sec_busitype c\n"
+				+ "    on a.pk_busitype = c.pk_busitype\n"
+				+ "   and nvl(c.dr, 0) = 0\n"
+				+ " where nvl(a.dr, 0) = 0\n"
+				+ " and a.trade_date < ?\n"
+				+ " and a.transtypecode = 'HV3A-0xx-02'\n"
+				+ " and c.code in ('202','103')\n"
+				+ " and a.state > 1\n"
+				+ " and a.pk_org = ?\n"
+				+ " and a.pk_assetsprop = ?\n"
+				+ " and a.pk_capaccount = ?\n"
+				+ " and a.pk_stocksort = ?\n"
+				+ " and a.pk_securities = ?";
 		para.clearParams();
 		para.addParam(end_date.getDateAfter(1).toString());
 		para.addParam(repVo.getPk_org());
@@ -822,12 +796,13 @@ public class SecInvestDailyQueryImpl implements ISecInvestDailyQuery {
 		para.addParam(repVo.getPk_stocksort());
 		para.addParam(repVo.getPk_securities());
 		try {
-			String last_zqmc = (String) new BaseDAO().executeQuery(mcjl, para, new ColumnProcessor());
+			String last_zqmc = (String) new BaseDAO().executeQuery(mcjl, para,
+					new ColumnProcessor());
 			lastZqmc = new UFDate(last_zqmc);
 		} catch (DAOException e) {
 			e.printStackTrace();
 		}
-		//取最近的一个交易日期
+		// 取最近的一个交易日期
 		if (lastFefh.compareTo(lastZqmc) >= 0) {
 			start_date = lastFefh;
 		} else {
@@ -835,24 +810,18 @@ public class SecInvestDailyQueryImpl implements ISecInvestDailyQuery {
 		}
 		// 改为直接取最后一次的份额分红日期 ，不动以前代码
 		start_date = lastFefh;
-		
-		String sql = 
-				"select to_char(nvl(sum(a.bargain_sum), 0))\n" +
-						"  from sim_stocktrade a\n" + 
-						" inner join sec_busitype b\n" + 
-						"    on a.pk_busitype = b.pk_busitype\n" + 
-						" where nvl(a.dr, 0) = 0\n" + 
-						"   and nvl(b.dr, 0) = 0\n" + 
-						"   and a.trade_date > ?\n" + 
-						"   and a.trade_date < ?\n" + 
-						"   and b.code in ('206','106')\n" + 
-						"   and a.transtypecode = 'HV3A-0xx-14'\n" + 
-						"   and a.state > 1\n" + 
-						"   and a.pk_org = ?\n" + 
-						"   and a.pk_assetsprop = ?\n" + 
-						"   and a.pk_capaccount = ?\n" + 
-						"   and a.pk_stocksort = ?\n" + 
-						"   and a.pk_securities = ?";
+
+		String sql = "select to_char(nvl(sum(a.bargain_sum), 0))\n"
+				+ "  from sim_stocktrade a\n" + " inner join sec_busitype b\n"
+				+ "    on a.pk_busitype = b.pk_busitype\n"
+				+ " where nvl(a.dr, 0) = 0\n" + "   and nvl(b.dr, 0) = 0\n"
+				+ "   and a.trade_date > ?\n" + "   and a.trade_date < ?\n"
+				+ "   and b.code in ('206','106')\n"
+				+ "   and a.transtypecode = 'HV3A-0xx-14'\n"
+				+ "   and a.state > 1\n" + "   and a.pk_org = ?\n"
+				+ "   and a.pk_assetsprop = ?\n"
+				+ "   and a.pk_capaccount = ?\n"
+				+ "   and a.pk_stocksort = ?\n" + "   and a.pk_securities = ?";
 		para.clearParams();
 		para.addParam(startDate.toString());
 		para.addParam(end_date.getDateAfter(1).toString());
@@ -862,62 +831,63 @@ public class SecInvestDailyQueryImpl implements ISecInvestDailyQuery {
 		para.addParam(repVo.getPk_stocksort());
 		para.addParam(repVo.getPk_securities());
 		try {
-			//最后一次份额分红 需要改为累计
+			// 最后一次份额分红 需要改为累计
 			Double total = 0.0;
-			Vector tt = (Vector)new BaseDAO().executeQuery(sql, para, new VectorProcessor());
-			if(tt!=null){
-				for(int x = 0;x<tt.size();x++){
-					total += Double.valueOf(((Vector)tt.get(x)).get(0).toString());
+			Vector tt = (Vector) new BaseDAO().executeQuery(sql, para,
+					new VectorProcessor());
+			if (tt != null) {
+				for (int x = 0; x < tt.size(); x++) {
+					total += Double.valueOf(((Vector) tt.get(x)).get(0)
+							.toString());
 				}
 			}
 			sum_jzwfsy = new UFDouble(total);
 		} catch (DAOException e) {
 			e.printStackTrace();
 		}
-		
+
 		// 最后一次赎回+份额分红 vdef3 需要改为累计
 		/*
 		 * @author zq
-		 * */
-		String sql_sh = 
-				"select a.vdef3"+
-						"  from sim_stocktrade a\n" + 
-						" inner join sec_securities b\n" + 
-						"    on a.pk_securities = b.pk_securities\n" + 
-						" inner join sec_busitype c\n" + 
-						"    on a.pk_busitype = c.pk_busitype\n" + 
-						"   and nvl(c.dr, 0) = 0\n" + 
-						" where a.state > 1\n" + 
-						"   and nvl(a.dr, 0) = 0\n and a.vdef3 <> '~'" + 
-						"   and a.transtypecode in ('HV3A-0xx-02','HV3A-0xx-05')\n" + 
-						"   and c.code in ('104','0184','205','202','103','0182','0122')\n" + 
-						"   and a.trade_date > ?\n" + 
-						"   and a.trade_date < ?\n" + 
-						"   and a.pk_securities = ?\n" + 
-						"   and a.pk_assetsprop = ?\n" + 
-						"   and a.pk_capaccount = ?\n" + 
-						"   and a.pk_org = ?";
+		 */
+		String sql_sh = "select a.vdef3"
+				+ "  from sim_stocktrade a\n"
+				+ " inner join sec_securities b\n"
+				+ "    on a.pk_securities = b.pk_securities\n"
+				+ " inner join sec_busitype c\n"
+				+ "    on a.pk_busitype = c.pk_busitype\n"
+				+ "   and nvl(c.dr, 0) = 0\n"
+				+ " where a.state > 1\n"
+				+ "   and nvl(a.dr, 0) = 0\n and a.vdef3 <> '~'"
+				+ "   and a.transtypecode in ('HV3A-0xx-02','HV3A-0xx-05')\n"
+				+ "   and c.code in ('104','0184','205','202','103','0182','0122')\n"
+				+ "   and a.trade_date > ?\n" + "   and a.trade_date < ?\n"
+				+ "   and a.pk_securities = ?\n"
+				+ "   and a.pk_assetsprop = ?\n"
+				+ "   and a.pk_capaccount = ?\n" + "   and a.pk_org = ?";
 		para.clearParams();
 		para.addParam(startDate.toString());
 		para.addParam(end_date.getDateAfter(1).toString());
-		
+
 		para.addParam(repVo.getPk_securities());
 		para.addParam(repVo.getPk_assetsprop());
 		para.addParam(repVo.getPk_capaccount());
 		para.addParam(repVo.getPk_org());
 		try {
 			Double total = 0.0;
-			Vector tt = (Vector)new BaseDAO().executeQuery(sql_sh, para, new VectorProcessor());
-			if(tt.size()!=0){
-				for(int x = 0;x<tt.size();x++){
-					total += Double.valueOf(((Vector)tt.get(x)).get(0).toString());
+			Vector tt = (Vector) new BaseDAO().executeQuery(sql_sh, para,
+					new VectorProcessor());
+			if (tt.size() != 0) {
+				for (int x = 0; x < tt.size(); x++) {
+					total += Double.valueOf(((Vector) tt.get(x)).get(0)
+							.toString());
 				}
 			}
 			sum_jzwfsy = sum_jzwfsy.sub(new UFDouble(total));
 		} catch (DAOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return sum_jzwfsy;
 	}
 

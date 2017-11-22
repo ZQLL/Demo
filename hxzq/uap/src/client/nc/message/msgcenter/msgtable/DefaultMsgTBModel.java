@@ -1,14 +1,8 @@
 package nc.message.msgcenter.msgtable;
 
-import nc.bs.logging.Logger;
-import nc.message.msgtype.vo.MsgTypeCache;
-import nc.message.msgtype.vo.MsgTypeVO;
 import nc.message.vo.MessageVO;
 import nc.message.vo.NCMessage;
-import nc.ui.format.NCFormater;
 import nc.ui.ml.NCLangRes;
-import nc.vo.pub.format.FormatResult;
-import nc.vo.pub.format.exception.FormatException;
 import nc.vo.sm.UserVO;
 import nc.vo.uap.rbac.util.RbacCacheUtil;
 
@@ -34,7 +28,7 @@ public class DefaultMsgTBModel extends AbstractMsgTBModel {
 	// NCLangRes.getInstance().getStrByID("ncmessage", "msgboxres-000020") /*
 	// 消息类型 */};
 
-	//update by lihaibo
+	// update by lihaibo
 	private String[] colNames = {
 			"",
 			NCLangRes.getInstance().getStrByID("ncmessage", "msgboxres-000042")/* 状态 */,
@@ -57,6 +51,7 @@ public class DefaultMsgTBModel extends AbstractMsgTBModel {
 		return colNames.length;
 	}
 
+	@Override
 	public String getColumnName(int column) {
 		return colNames[column];
 	}
@@ -64,6 +59,7 @@ public class DefaultMsgTBModel extends AbstractMsgTBModel {
 	/**
 	 * update by lihaibo
 	 */
+	
 	@Override
 	public Object getValueAt(int row, int column) {
 
@@ -83,7 +79,7 @@ public class DefaultMsgTBModel extends AbstractMsgTBModel {
 			return Boolean.valueOf(state);
 		case 2:
 			return msgvo.getSubject();
-//			return msgvo.getPriority();
+			// return msgvo.getPriority();
 		case 3:
 			if (msgvo.getSender().trim().length() == 20) {
 				UserVO uvo = RbacCacheUtil.getUserByID(msgvo.getSender());
@@ -91,31 +87,31 @@ public class DefaultMsgTBModel extends AbstractMsgTBModel {
 			} else {
 				return msgvo.getSender();
 			}
-//			int attach = msg.getAttachmentSetting().getAttachments().length;
-//			return attach > 0 ? Boolean.TRUE : Boolean.FALSE;
-//		case 4:
-//			return msgvo.getSubject();
-//		case 5:
-//			if (msgvo.getSender().trim().length() == 20) {
-//				UserVO uvo = RbacCacheUtil.getUserByID(msgvo.getSender());
-//				return DispMultiLangUtil.getUserName(uvo);
-//			} else {
-//				return msgvo.getSender();
-//			}
-//		case 6:
-//			try {
-//				FormatResult result = NCFormater.formatDateTime(msgvo
-//						.getSendtime());
-//				return result.getValue();
-//			} catch (FormatException e) {
-//				Logger.error(msgvo, e);
-//				return msgvo.getSendtime().toLocalString();
-//			}
-//
-//		case 7:
-//			MsgTypeVO typevo = MsgTypeCache.getInstance().getMsgTypeByCode(
-//					msgvo.getMsgsourcetype());
-//			return typevo == null ? "" : typevo.getDispName();
+			// int attach = msg.getAttachmentSetting().getAttachments().length;
+			// return attach > 0 ? Boolean.TRUE : Boolean.FALSE;
+			// case 4:
+			// return msgvo.getSubject();
+			// case 5:
+			// if (msgvo.getSender().trim().length() == 20) {
+			// UserVO uvo = RbacCacheUtil.getUserByID(msgvo.getSender());
+			// return DispMultiLangUtil.getUserName(uvo);
+			// } else {
+			// return msgvo.getSender();
+			// }
+			// case 6:
+			// try {
+			// FormatResult result = NCFormater.formatDateTime(msgvo
+			// .getSendtime());
+			// return result.getValue();
+			// } catch (FormatException e) {
+			// Logger.error(msgvo, e);
+			// return msgvo.getSendtime().toLocalString();
+			// }
+			//
+			// case 7:
+			// MsgTypeVO typevo = MsgTypeCache.getInstance().getMsgTypeByCode(
+			// msgvo.getMsgsourcetype());
+			// return typevo == null ? "" : typevo.getDispName();
 		}
 		return super.getValueAt(row, column);
 	}

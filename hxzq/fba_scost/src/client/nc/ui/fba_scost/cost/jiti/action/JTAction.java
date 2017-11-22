@@ -23,9 +23,9 @@ public class JTAction extends NCAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 5495624610887668337L;
-	
+
 	private InterestTableModel model = null;
-	
+
 	private BatchBillTable editor = null;
 
 	public JTAction() {
@@ -38,52 +38,58 @@ public class JTAction extends NCAction {
 	public void doAction(ActionEvent e) throws Exception {
 		LoginContext context = getModel().getContext();
 		UFDate trade_date = getModel().getTrade_date();
-		if(trade_date == null){
+		if (trade_date == null) {
 			throw new BusinessException("请选择应收利息计提日期!  ");
 		}
-		BannerDialog dialog = new BannerDialog(getModel().getContext().getEntranceUI());
+		BannerDialog dialog = new BannerDialog(getModel().getContext()
+				.getEntranceUI());
 		dialog.setName("InterestJt");
 		dialog.setTitle("应收利息计提");
 		dialog.setEndText("应收利息计提，耗时操作中，请稍候...");
 		dialog.start();
-		Thread runThread = new SimulateThread(dialog,context,trade_date);
+		Thread runThread = new SimulateThread(dialog, context, trade_date);
 		runThread.start();
 	}
-	
-	class SimulateThread extends Thread{
-		
+
+	class SimulateThread extends Thread {
+
 		private BannerDialog dialog;
-		
+
 		private LoginContext context;
-		
+
 		private UFDate trade_date;
 
-		public SimulateThread(BannerDialog dialog,LoginContext context,UFDate trade_date) {
+		public SimulateThread(BannerDialog dialog, LoginContext context,
+				UFDate trade_date) {
 			this.dialog = dialog;
 			this.context = context;
 			this.trade_date = trade_date;
 		}
-		
-		public void run(){
+
+		@Override
+		public void run() {
 			try {
-				InterestdistillMaintain interest = NCLocator.getInstance().lookup(InterestdistillMaintain.class);
-				InterestdistillVO[] distillvos =  interest.distill(context, trade_date);
-				if(distillvos != null && distillvos.length > 0){
-//					getModel().initModel(distillvos);
-					getModel().initModel(null);//清空界面
-					getModel().addLines(distillvos);//增行
+				InterestdistillMaintain interest = NCLocator.getInstance()
+						.lookup(InterestdistillMaintain.class);
+				InterestdistillVO[] distillvos = interest.distill(context,
+						trade_date);
+				if (distillvos != null && distillvos.length > 0) {
+					// getModel().initModel(distillvos);
+					getModel().initModel(null);// 清空界面
+					getModel().addLines(distillvos);// 增行
 					getModel().setUiState(UIState.EDIT);
 				}
-			}catch(Exception e){
+			} catch (Exception e) {
 				Logger.info(e);
-				MessageDialog.showErrorDlg(getModel().getContext().getEntranceUI(), "错误", e.getMessage());
-			}finally{
-				if(dialog != null)
+				MessageDialog.showErrorDlg(getModel().getContext()
+						.getEntranceUI(), "错误", e.getMessage());
+			} finally {
+				if (dialog != null)
 					this.dialog.end();
 			}
 		}
 	}
-	
+
 	public InterestTableModel getModel() {
 		return model;
 	}

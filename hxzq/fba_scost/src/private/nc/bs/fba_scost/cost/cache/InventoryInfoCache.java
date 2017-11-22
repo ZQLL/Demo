@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import nc.bs.logging.Logger;
@@ -36,8 +36,10 @@ public class InventoryInfoCache implements IScostCheckCache {
 	private ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, InventoryInfoVO>>>> inventoryInfoCacheMap = null;
 	private CostParaVO costParaVO = null;
 
+	
 	@Override
-	public Map<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, InventoryInfoVO>>>> getCache(ICostingTool costingtool) throws BusinessException {
+	public Map<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, InventoryInfoVO>>>> getCache(
+			ICostingTool costingtool) throws BusinessException {
 		if (inventoryInfoCacheMap == null) {
 			this.costParaVO = costingtool.getCostParaVO();
 			initInventoryInfoCache(costingtool);
@@ -47,9 +49,12 @@ public class InventoryInfoCache implements IScostCheckCache {
 		return inventoryInfoCacheMap;
 	}
 
+	
 	@Override
-	public void updateCache(BanlanceQueryKeyVO sbqkVO, SuperVO vo) throws BusinessException {
-		InventoryInfoVO inventoryInfoVO = (InventoryInfoVO) VODeepCloneUtil.deepClone(vo);
+	public void updateCache(BanlanceQueryKeyVO sbqkVO, SuperVO vo)
+			throws BusinessException {
+		InventoryInfoVO inventoryInfoVO = (InventoryInfoVO) VODeepCloneUtil
+				.deepClone(vo);
 		inventoryInfoVO.setAttributeValue("dr", 0);
 		inventoryInfoVO.setIsnew(true);
 		String pk_stocksort = sbqkVO.getPk_stocksort();
@@ -67,17 +72,21 @@ public class InventoryInfoCache implements IScostCheckCache {
 			ConcurrentHashMap<String, ConcurrentHashMap<String, InventoryInfoVO>> map = new ConcurrentHashMap<String, ConcurrentHashMap<String, InventoryInfoVO>>();
 			map.put(pk_stocksort, childmap);
 			inventoryInfoCacheMap.get(trade_date).put(pk_assetsprop, map);
-		} else if (inventoryInfoCacheMap.get(trade_date).get(pk_assetsprop).get(pk_stocksort) == null) {
+		} else if (inventoryInfoCacheMap.get(trade_date).get(pk_assetsprop)
+				.get(pk_stocksort) == null) {
 			ConcurrentHashMap<String, InventoryInfoVO> childmap = new ConcurrentHashMap<String, InventoryInfoVO>();
 			childmap.put(key, inventoryInfoVO);
-			inventoryInfoCacheMap.get(trade_date).get(pk_assetsprop).put(pk_stocksort, childmap);
+			inventoryInfoCacheMap.get(trade_date).get(pk_assetsprop)
+					.put(pk_stocksort, childmap);
 		} else {
-			inventoryInfoCacheMap.get(trade_date).get(pk_assetsprop).get(pk_stocksort).put(key, inventoryInfoVO);
+			inventoryInfoCacheMap.get(trade_date).get(pk_assetsprop)
+					.get(pk_stocksort).put(key, inventoryInfoVO);
 		}
 
 	}
 
 	@Override
+	
 	public void clearCache() {
 		if (inventoryInfoCacheMap != null) {
 			inventoryInfoCacheMap.clear();
@@ -91,24 +100,30 @@ public class InventoryInfoCache implements IScostCheckCache {
 	 * @date 2012-9-10 下午3:58:30
 	 */
 	@SuppressWarnings("unchecked")
-	private void initInventoryInfoCache(ICostingTool costingtool) throws BusinessException {
+	private void initInventoryInfoCache(ICostingTool costingtool)
+			throws BusinessException {
 		/**
 		 * 判定是否初始化缓存 true 初始化缓存 false 利用昨日缓存初始化下日缓存并清掉前日缓存
 		 */
 		String trade_date = costingtool.getCurrdate();
 		if (costingtool.getIsinit()) {
 			if (inventoryInfoCacheMap != null) {
-				List<InventoryInfoVO> list = (List<InventoryInfoVO>) PrivateMethod.getInstance().getBaseDAO()
-						.executeQuery(getSql(costingtool), new BeanListProcessor(InventoryInfoVO.class));
+				List<InventoryInfoVO> list = (List<InventoryInfoVO>) PrivateMethod
+						.getInstance()
+						.getBaseDAO()
+						.executeQuery(getSql(costingtool),
+								new BeanListProcessor(InventoryInfoVO.class));
 				if (list != null && list.size() > 0) {
 					// 按金融资产属性分组
 					String[] hashkey = new String[1];
 					hashkey[0] = "pk_assetsprop";
-					Map<String, List<InventoryInfoVO>> tradedatemap = PubMethod.getInstance().hashlizeObjects(list, hashkey);
+					Map<String, List<InventoryInfoVO>> tradedatemap = PubMethod
+							.getInstance().hashlizeObjects(list, hashkey);
 					// 按库存组织分组
 					hashkey[0] = "pk_stocksort";
 					List<InventoryInfoVO> assetsproplist = null;// 某金融资产属性所有库存
-					Iterator<Entry<String, List<InventoryInfoVO>>> iter = tradedatemap.entrySet().iterator();
+					Iterator<Entry<String, List<InventoryInfoVO>>> iter = tradedatemap
+							.entrySet().iterator();
 					Entry<String, List<InventoryInfoVO>> entry;
 					String key;
 					Map<String, List<InventoryInfoVO>> tradedatemap2 = null;// 某金融资产属性库存按库存组织分组
@@ -120,39 +135,56 @@ public class InventoryInfoCache implements IScostCheckCache {
 						entry = iter.next();
 						key = entry.getKey();
 						assetsproplist = tradedatemap.get(key);
-						tradedatemap2 = PubMethod.getInstance().hashlizeObjects(assetsproplist, hashkey);
+						tradedatemap2 = PubMethod.getInstance()
+								.hashlizeObjects(assetsproplist, hashkey);
 						// keyset2 = tradedatemap2.keySet();
 						iter2 = tradedatemap2.entrySet().iterator();
 
 						while (iter2.hasNext()) {// 遍历库存组织
 							entry2 = iter2.next();
 							key2 = entry2.getKey();
-							tradevomap = (ConcurrentHashMap<String, InventoryInfoVO>) PubMethod.getInstance().hashlizeObject(
-									tradedatemap2.get(key2),
-									PubMethod.getInstance().getCostArrayWithBilltypeGroup(costParaVO.getCostplanvo().getFundCostFieldArray()));// 按分组字段分组
-							if (inventoryInfoCacheMap.get(trade_date).get(key).get(key2) == null) {
-								inventoryInfoCacheMap.get(trade_date).get(key).put(key2, tradevomap);
+							tradevomap = (ConcurrentHashMap<String, InventoryInfoVO>) PubMethod
+									.getInstance()
+									.hashlizeObject(
+											tradedatemap2.get(key2),
+											PubMethod
+													.getInstance()
+													.getCostArrayWithBilltypeGroup(
+															costParaVO
+																	.getCostplanvo()
+																	.getFundCostFieldArray()));// 按分组字段分组
+							if (inventoryInfoCacheMap.get(trade_date).get(key)
+									.get(key2) == null) {
+								inventoryInfoCacheMap.get(trade_date).get(key)
+										.put(key2, tradevomap);
 							} else {
-								inventoryInfoCacheMap.get(trade_date).get(key).get(key2).putAll(tradevomap);
+								inventoryInfoCacheMap.get(trade_date).get(key)
+										.get(key2).putAll(tradevomap);
 							}
 						}
 					}
 				}
 			} else {
 				inventoryInfoCacheMap = new ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, InventoryInfoVO>>>>();
-				inventoryInfoCacheMap.put(trade_date,
-						new ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, InventoryInfoVO>>>());
-				List<InventoryInfoVO> list = (List<InventoryInfoVO>) PrivateMethod.getInstance().getBaseDAO()
-						.executeQuery(getSql(costingtool), new BeanListProcessor(InventoryInfoVO.class));
+				inventoryInfoCacheMap
+						.put(trade_date,
+								new ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, InventoryInfoVO>>>());
+				List<InventoryInfoVO> list = (List<InventoryInfoVO>) PrivateMethod
+						.getInstance()
+						.getBaseDAO()
+						.executeQuery(getSql(costingtool),
+								new BeanListProcessor(InventoryInfoVO.class));
 				if (list != null && list.size() > 0) {
 					// 按金融资产属性分组
 					String[] hashkey = new String[1];
 					hashkey[0] = "pk_assetsprop";
-					Map<String, List<InventoryInfoVO>> tradedatemap = PubMethod.getInstance().hashlizeObjects(list, hashkey);
+					Map<String, List<InventoryInfoVO>> tradedatemap = PubMethod
+							.getInstance().hashlizeObjects(list, hashkey);
 					// 按库存组织分组
 					hashkey[0] = "pk_stocksort";
 					List<InventoryInfoVO> assetsproplist = null;// 某金融资产属性所有库存
-					Iterator<Entry<String, List<InventoryInfoVO>>> iter = tradedatemap.entrySet().iterator();
+					Iterator<Entry<String, List<InventoryInfoVO>>> iter = tradedatemap
+							.entrySet().iterator();
 					Entry<String, List<InventoryInfoVO>> entry;
 					String key;
 					Map<String, List<InventoryInfoVO>> tradedatemap2 = null;// 某金融资产属性库存按库存组织分组
@@ -163,20 +195,31 @@ public class InventoryInfoCache implements IScostCheckCache {
 					while (iter.hasNext()) {// 遍历金融资产属性
 						entry = iter.next();
 						key = entry.getKey();
-						inventoryInfoCacheMap.get(trade_date).put(key,
-								new ConcurrentHashMap<String, ConcurrentHashMap<String, InventoryInfoVO>>());
+						inventoryInfoCacheMap
+								.get(trade_date)
+								.put(key,
+										new ConcurrentHashMap<String, ConcurrentHashMap<String, InventoryInfoVO>>());
 						assetsproplist = tradedatemap.get(key);
-						tradedatemap2 = PubMethod.getInstance().hashlizeObjects(assetsproplist, hashkey);
+						tradedatemap2 = PubMethod.getInstance()
+								.hashlizeObjects(assetsproplist, hashkey);
 						// keyset2 = tradedatemap2.keySet();
 						iter2 = tradedatemap2.entrySet().iterator();
 
 						while (iter2.hasNext()) {// 遍历库存组织
 							entry2 = iter2.next();
 							key2 = entry2.getKey();
-							tradevomap = (ConcurrentHashMap<String, InventoryInfoVO>) PubMethod.getInstance().hashlizeObject(
-									tradedatemap2.get(key2),
-									PubMethod.getInstance().getCostArrayWithBilltypeGroup(costParaVO.getCostplanvo().getFundCostFieldArray()));// 按分组字段分组
-							inventoryInfoCacheMap.get(trade_date).get(key).put(key2, tradevomap);
+							tradevomap = (ConcurrentHashMap<String, InventoryInfoVO>) PubMethod
+									.getInstance()
+									.hashlizeObject(
+											tradedatemap2.get(key2),
+											PubMethod
+													.getInstance()
+													.getCostArrayWithBilltypeGroup(
+															costParaVO
+																	.getCostplanvo()
+																	.getFundCostFieldArray()));// 按分组字段分组
+							inventoryInfoCacheMap.get(trade_date).get(key)
+									.put(key2, tradevomap);
 						}
 					}
 				}
@@ -185,12 +228,17 @@ public class InventoryInfoCache implements IScostCheckCache {
 			/**
 			 * 若当日有缓存直接拿出来 否则回溯 回溯上一数据日缓存 YangJie 2014-04-04
 			 */
-			if (inventoryInfoCacheMap.get(trade_date) == null || inventoryInfoCacheMap.get(trade_date).size() == 0) {
-				UFDate beforetradedate = new UFDate(trade_date).getDateBefore(1);
-				UFDate lastdate = costingtool.getCurrbilltypegroupvo().getLastapprovedate() == null ? new UFDate(0L) : costingtool
-						.getCurrbilltypegroupvo().getLastapprovedate();
+			if (inventoryInfoCacheMap.get(trade_date) == null
+					|| inventoryInfoCacheMap.get(trade_date).size() == 0) {
+				UFDate beforetradedate = new UFDate(trade_date)
+						.getDateBefore(1);
+				UFDate lastdate = costingtool.getCurrbilltypegroupvo()
+						.getLastapprovedate() == null ? new UFDate(0L)
+						: costingtool.getCurrbilltypegroupvo()
+								.getLastapprovedate();
 				while (!(lastdate.compareTo(beforetradedate) > 0)) {
-					if (inventoryInfoCacheMap.get(beforetradedate.toLocalString()) != null) {
+					if (inventoryInfoCacheMap.get(beforetradedate
+							.toLocalString()) != null) {
 						ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, InventoryInfoVO>>> newmap = inventoryInfoCacheMap
 								.get(beforetradedate.toLocalString());
 						Set<String> keys = newmap.keySet();
@@ -204,17 +252,28 @@ public class InventoryInfoCache implements IScostCheckCache {
 									String keya = iz.next();
 									InventoryInfoVO balancevo = map.get(keya);
 									// 限售期增加
-									UFLiteralDate enddate = balancevo.getEnd_date();
-									UFLiteralDate aduitdate = new UFLiteralDate(trade_date);
-									if (enddate != null && aduitdate.after(enddate)) {
+									UFLiteralDate enddate = balancevo
+											.getEnd_date();
+									UFLiteralDate aduitdate = new UFLiteralDate(
+											trade_date);
+									if (enddate != null
+											&& aduitdate.after(enddate)) {
 										balancevo.setBegin_date(null);
 										balancevo.setEnd_date(null);
-										String key11 = VOUtil.getCombinesKey(balancevo, PubMethod.getInstance()
-												.getCostArrayWithBilltypeGroup(costParaVO.getCostplanvo().getFundCostFieldArray()));
+										String key11 = VOUtil
+												.getCombinesKey(
+														balancevo,
+														PubMethod
+																.getInstance()
+																.getCostArrayWithBilltypeGroup(
+																		costParaVO
+																				.getCostplanvo()
+																				.getFundCostFieldArray()));
 										map.put(key11, balancevo);
 										map.remove(keya);
 									}
-									balancevo.setTrade_date(new UFDate(trade_date));
+									balancevo.setTrade_date(new UFDate(
+											trade_date));
 								}
 							}
 						}
@@ -237,11 +296,15 @@ public class InventoryInfoCache implements IScostCheckCache {
 		StringBuffer manItemSb = new StringBuffer();
 		StringBuffer manjoinSb = new StringBuffer();
 		StringBuffer sqlsb = new StringBuffer();
-		String[] costItemCodes = costParaVO.getCostplanvo().getFundCostFieldArray();// 管理项目设置的字段
-		String[] manItemCodes = PubMethod.getInstance().getCostArrayWithBilltypeGroup(costItemCodes);
+		String[] costItemCodes = costParaVO.getCostplanvo()
+				.getFundCostFieldArray();// 管理项目设置的字段
+		String[] manItemCodes = PubMethod.getInstance()
+				.getCostArrayWithBilltypeGroup(costItemCodes);
 		for (int i = 0; i < manItemCodes.length; i++) {
-			manjoinSb.append(" and isnull(x.").append(manItemCodes[i]).append(",'").append(manItemCodes[i]).append("') = isnull(y.")
-					.append(manItemCodes[i]).append(",'").append(manItemCodes[i]).append("')");
+			manjoinSb.append(" and isnull(x.").append(manItemCodes[i])
+					.append(",'").append(manItemCodes[i])
+					.append("') = isnull(y.").append(manItemCodes[i])
+					.append(",'").append(manItemCodes[i]).append("')");
 		}
 		for (int i = 0; i < manItemCodes.length; i++) {
 			manItemSb.append("a." + manItemCodes[i]);
@@ -251,9 +314,10 @@ public class InventoryInfoCache implements IScostCheckCache {
 		sqlsb.append(manItemSb.toString());
 		sqlsb.append("a.pk_costplan");
 		sqlsb.append(" from fund_inventoryinfo a ");
-//		sqlsb.append(" from fund_inventoryinfo a inner join ");
-//		sqlsb.append("sec_securities b on a.pk_securities=b.pk_securities ");
-		sqlsb.append("where a.trade_date < '" + trade_date + "' and isnull(a.dr,0)=0 ");
+		// sqlsb.append(" from fund_inventoryinfo a inner join ");
+		// sqlsb.append("sec_securities b on a.pk_securities=b.pk_securities ");
+		sqlsb.append("where a.trade_date < '" + trade_date
+				+ "' and isnull(a.dr,0)=0 ");
 		sqlsb.append(" and a.pk_costplan='");
 		sqlsb.append(costParaVO.getCostplanvo().getPk_costplan()).append("' ");
 

@@ -13,27 +13,33 @@ import nc.vo.hxzq.fpxx.FpxxBillVO;
  */
 public class AceHxzq_fpxxUpdateBP {
 
-  public FpxxBillVO[] update(FpxxBillVO[] bills, FpxxBillVO[] originBills) {
+	public FpxxBillVO[] update(FpxxBillVO[] bills, FpxxBillVO[] originBills) {
 
-    		    // 调用修改模板
-        UpdateBPTemplate<FpxxBillVO> bp = new UpdateBPTemplate<FpxxBillVO>(Hxzq_fpxxPluginPoint.UPDATE);
+		// 调用修改模板
+		UpdateBPTemplate<FpxxBillVO> bp = new UpdateBPTemplate<FpxxBillVO>(
+				Hxzq_fpxxPluginPoint.UPDATE);
 
-        // 执行前规则
-        this.addBeforeRule(bp.getAroundProcesser());
-        return bp.update(bills, originBills);
-  }
-  private void addBeforeRule(CompareAroundProcesser<FpxxBillVO> processer) {
-   IRule<FpxxBillVO> rule=null;
-					  				  				   				     rule = new nc.bs.pubapp.pub.rule.FillUpdateDataRule();
-				    				   				    				     				    				   				   				   				    				     processer.addBeforeRule(rule);
-				    				     				  				   				     ICompareRule<FpxxBillVO> ruleCom = new nc.bs.pubapp.pub.rule.UpdateBillCodeRule();
-				    				   				    				     ((nc.bs.pubapp.pub.rule.UpdateBillCodeRule)ruleCom).setCbilltype("2011");
-				    				   				    				     ((nc.bs.pubapp.pub.rule.UpdateBillCodeRule)ruleCom).setCodeItem("vbillcode");
-				    				   				    				     ((nc.bs.pubapp.pub.rule.UpdateBillCodeRule)ruleCom).setGroupItem("pk_group");
-				    				   				    				     ((nc.bs.pubapp.pub.rule.UpdateBillCodeRule)ruleCom).setOrgItem("pk_org");
-				    				   				   				   				    				     processer.addBeforeRule(ruleCom);
-				    				     				  				   				     rule = new nc.bs.pubapp.pub.rule.FieldLengthCheckRule();
-				    				   				    				     				    				   				   				   				    				     processer.addBeforeRule(rule);
-				    				       }
+		// 执行前规则
+		this.addBeforeRule(bp.getAroundProcesser());
+		return bp.update(bills, originBills);
+	}
+
+	private void addBeforeRule(CompareAroundProcesser<FpxxBillVO> processer) {
+		IRule<FpxxBillVO> rule = null;
+		rule = new nc.bs.pubapp.pub.rule.FillUpdateDataRule();
+		processer.addBeforeRule(rule);
+		ICompareRule<FpxxBillVO> ruleCom = new nc.bs.pubapp.pub.rule.UpdateBillCodeRule();
+		((nc.bs.pubapp.pub.rule.UpdateBillCodeRule) ruleCom)
+				.setCbilltype("2011");
+		((nc.bs.pubapp.pub.rule.UpdateBillCodeRule) ruleCom)
+				.setCodeItem("vbillcode");
+		((nc.bs.pubapp.pub.rule.UpdateBillCodeRule) ruleCom)
+				.setGroupItem("pk_group");
+		((nc.bs.pubapp.pub.rule.UpdateBillCodeRule) ruleCom)
+				.setOrgItem("pk_org");
+		processer.addBeforeRule(ruleCom);
+		rule = new nc.bs.pubapp.pub.rule.FieldLengthCheckRule();
+		processer.addBeforeRule(rule);
+	}
 
 }

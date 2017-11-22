@@ -1,12 +1,7 @@
 package nc.impl.fba_scost.cost.billcheckimpl;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
 
 import nc.bs.fba_scost.cost.fairvaluedistill.bp.FairValueCheck;
@@ -47,8 +42,10 @@ import nc.vo.pub.lang.UFDate;
  */
 public class BillCheckImpl implements IBillCheckService {
 
+	
 	@Override
-	public void tallyAllCheckedData(CheckParaVO checkParaVO) throws BusinessException {
+	public void tallyAllCheckedData(CheckParaVO checkParaVO)
+			throws BusinessException {
 		if (null == checkParaVO) {
 			// 错误提示信息
 			throw new BusinessException("前台环境参数信息为空！请核查!");
@@ -67,24 +64,35 @@ public class BillCheckImpl implements IBillCheckService {
 				BilltypeGroupVO vo = groupVOs[i];
 
 				// 1.获取需要审核的数据 state=2 已审核单据
-				List<PendingBillVO> plist = getNeedVOs(vo, checkParaVO, " state = " + SystemConst.statecode[3], SystemConst.checkstate[1]);
+				List<PendingBillVO> plist = getNeedVOs(vo, checkParaVO,
+						" state = " + SystemConst.statecode[3],
+						SystemConst.checkstate[1]);
 				String errormsg = null;
 				try {
-					SecSysInitCache.getInstance().setused(checkParaVO.getPk_group(), checkParaVO.getPk_org(), checkParaVO.getPk_glorgbook());
+					SecSysInitCache.getInstance().setused(
+							checkParaVO.getPk_group(), checkParaVO.getPk_org(),
+							checkParaVO.getPk_glorgbook());
 					// 2.获取待运行的插件类
-					Map<String, List<PendingBillVO>> dataMap = getBillTypeClass(checkParaVO, plist, groupVOs, checkclasstool);
+					Map<String, List<PendingBillVO>> dataMap = getBillTypeClass(
+							checkParaVO, plist, groupVOs, checkclasstool);
 					// 3.判断需要审核的天数
 					Set<UFDate> set = getCheckdays(plist, 0);
-					NCLocator.getInstance().lookup(IBillCheckByGroup.class)
-							.tallyOneGroup_RequiresNew(vo, set, dataMap, checkParaVO, tradedatatool, checkclasstool);
+					NCLocator
+							.getInstance()
+							.lookup(IBillCheckByGroup.class)
+							.tallyOneGroup_RequiresNew(vo, set, dataMap,
+									checkParaVO, tradedatatool, checkclasstool);
 				} catch (BusinessException e) {
 					errormsg = e.getMessage();
 					Logger.error(e.getMessage());
 				} finally {
 					clearCache(checkParaVO);
 
-					NCLocator.getInstance().lookup(IBillCheckByGroup.class)
-							.updateApporveUI_RequiresNew(vo, checkParaVO, errormsg, SystemConst.checkstate[1]);
+					NCLocator
+							.getInstance()
+							.lookup(IBillCheckByGroup.class)
+							.updateApporveUI_RequiresNew(vo, checkParaVO,
+									errormsg, SystemConst.checkstate[1]);
 				}
 			}
 
@@ -96,6 +104,7 @@ public class BillCheckImpl implements IBillCheckService {
 
 	}
 
+	
 	@Override
 	public String unCheckBill(CheckParaVO checkParaVO) throws BusinessException {
 		String isSuccess = "fail";
@@ -106,66 +115,79 @@ public class BillCheckImpl implements IBillCheckService {
 		Lock(checkParaVO);
 		try {
 
-			IPubQuery ipubquery = NCLocator.getInstance().lookup(IPubQuery.class);
-			String tallydate = ipubquery.queryTallyVO(checkParaVO.getPk_group(), checkParaVO.getPk_org(), checkParaVO.getPk_glorgbook());
-			if (tallydate.compareTo(checkParaVO.getTrade_date().toLocalString()) > 0) {
+			IPubQuery ipubquery = NCLocator.getInstance().lookup(
+					IPubQuery.class);
+			String tallydate = ipubquery.queryTallyVO(
+					checkParaVO.getPk_group(), checkParaVO.getPk_org(),
+					checkParaVO.getPk_glorgbook());
+			if (tallydate
+					.compareTo(checkParaVO.getTrade_date().toLocalString()) > 0) {
 				throw new BusinessException("弃审到日期不能早于期初记账日期，请更改弃审到日期！");
 			}
 			BilltypeGroupVO[] groupVOs = checkParaVO.getGroupvos();// 业务组
-			
+
 			/**
 			 * 审核业务组VO再次前后台ts校验
+			 * 
 			 * @author cjh
 			 * @date 2015-12-28
 			 */
-			ApproveVO[] approvevos=new ApproveVO[groupVOs.length];
-			for(int i=0;i<groupVOs.length;i++){
-				approvevos[i]=groupVOs[i].getApproveVO();
+			ApproveVO[] approvevos = new ApproveVO[groupVOs.length];
+			for (int i = 0; i < groupVOs.length; i++) {
+				approvevos[i] = groupVOs[i].getApproveVO();
 			}
 			if (!PubMethod.getInstance().checkIsAppoveUI(approvevos)) {
 				throw new BusinessException("并发异常，前后台数据不一致，请刷新数据!");
 			}
-			//end_cjh
-			
+			// end_cjh
+
 			boolean ischeck = false;
 			for (int i = 0; i < groupVOs.length; i++) {
 				BilltypeGroupVO billtypeGroupVO = groupVOs[i];
-				if (billtypeGroupVO.getLastapprovedate().toLocalString().compareTo(checkParaVO.getTrade_date().toLocalString()) < 0) {
+				if (billtypeGroupVO.getLastapprovedate().toLocalString()
+						.compareTo(checkParaVO.getTrade_date().toLocalString()) < 0) {
 					throw new BusinessException("弃审到日期不能大于选中业务组的审核日期，请更改弃审到日期！");
 				}
-				if(CostConstant.COSTGROUP.equals(billtypeGroupVO.getPk_billtypegroup())){
+				if (CostConstant.COSTGROUP.equals(billtypeGroupVO
+						.getPk_billtypegroup())) {
 					ischeck = true;
 				}
-				
-				//校验回购利息计提
-				if(CostConstant.HGGROUP.equals(billtypeGroupVO.getPk_billtypegroup())){//成本审核做公允价值、应收利息的校验
+
+				// 校验回购利息计提
+				if (CostConstant.HGGROUP.equals(billtypeGroupVO
+						.getPk_billtypegroup())) {// 成本审核做公允价值、应收利息的校验
 					String pk_glorgbook = checkParaVO.getPk_glorgbook();
 					String pk_group = checkParaVO.getPk_group();
 					String pk_org = checkParaVO.getPk_org();
 					UFDate trade_date = checkParaVO.getTrade_date();
 					// 校验回购计提
 					HgDistillCheck incheck = new HgDistillCheck();
-					incheck.uncheckBill(pk_group, pk_org, pk_glorgbook, trade_date);
+					incheck.uncheckBill(pk_group, pk_org, pk_glorgbook,
+							trade_date);
 				}
-				
-				//是否启用实际利率，校验
-				if(CostConstant.COSTGROUP.equals(billtypeGroupVO.getPk_billtypegroup())){
-					//是否启用参数SEC32
+
+				// 是否启用实际利率，校验
+				if (CostConstant.COSTGROUP.equals(billtypeGroupVO
+						.getPk_billtypegroup())) {
+					// 是否启用参数SEC32
 					String pk_glorgbook = checkParaVO.getPk_glorgbook();
 					String pk_group = checkParaVO.getPk_group();
 					String pk_org = checkParaVO.getPk_org();
 					UFDate trade_date = checkParaVO.getTrade_date();
-					String result = SysInitCache.getInstance().getSysInitValue(pk_glorgbook, SystemConst.SYSINIT_ISREALRATE);
-					if("Y".equals(result)){
-						ICalcPluginMaintain main = (ICalcPluginMaintain)NCLocator.getInstance().lookup(ICalcPluginMaintain.class);
-						main.unAuditcheck(pk_group, pk_org, trade_date.toUFLiteralDate(ICalendar.BASE_TIMEZONE));
+					String result = SysInitCache.getInstance().getSysInitValue(
+							pk_glorgbook, SystemConst.SYSINIT_ISREALRATE);
+					if ("Y".equals(result)) {
+						ICalcPluginMaintain main = NCLocator.getInstance()
+								.lookup(ICalcPluginMaintain.class);
+						main.unAuditcheck(pk_group, pk_org, trade_date
+								.toUFLiteralDate(ICalendar.BASE_TIMEZONE));
 					}
 				}
 			}
 			/**
 			 * 1.校验后续业务 2.弃审日期大于记账日期的 只需要弃审 3.弃审日期小于记账日期的 先取消记账 后 弃审
 			 */
-			if(ischeck){//成本审核做公允价值、应收利息的校验
+			if (ischeck) {// 成本审核做公允价值、应收利息的校验
 				String pk_glorgbook = checkParaVO.getPk_glorgbook();
 				String pk_group = checkParaVO.getPk_group();
 				String pk_org = checkParaVO.getPk_org();
@@ -218,22 +240,35 @@ public class BillCheckImpl implements IBillCheckService {
 				 */
 				BilltypeGroupVO vo = groupVOs[i];
 				// 1.获取需要 取消的数据 state=3 已记账单据
-				List<PendingBillVO> plist = getNeedVOs(vo, checkParaVO, " state = " + SystemConst.statecode[4], SystemConst.checkstate[2]);
+				List<PendingBillVO> plist = getNeedVOs(vo, checkParaVO,
+						" state = " + SystemConst.statecode[4],
+						SystemConst.checkstate[2]);
 				// 获取需要 弃审的数据 state=2 or 3
-				List<PendingBillVO> needuncheckplist = getNeedVOs(vo, checkParaVO, " (state = " + SystemConst.statecode[3] + " or state="
-						+ SystemConst.statecode[4] + ") ", SystemConst.checkstate[2]);
+				List<PendingBillVO> needuncheckplist = getNeedVOs(vo,
+						checkParaVO, " (state = " + SystemConst.statecode[3]
+								+ " or state=" + SystemConst.statecode[4]
+								+ ") ", SystemConst.checkstate[2]);
 				String errormsg = null;
 				try {
-					SecSysInitCache.getInstance().setused(checkParaVO.getPk_group(), checkParaVO.getPk_org(), checkParaVO.getPk_glorgbook());
+					SecSysInitCache.getInstance().setused(
+							checkParaVO.getPk_group(), checkParaVO.getPk_org(),
+							checkParaVO.getPk_glorgbook());
 					// 2.获取待运行的插件类
-					Map<String, List<PendingBillVO>> dataMap = getBillTypeClass(checkParaVO, plist, groupVOs, checkclasstool);
-					Map<String, List<PendingBillVO>> needuncheckdataMap = getBillTypeClass(checkParaVO, needuncheckplist, groupVOs, checkclasstool);
+					Map<String, List<PendingBillVO>> dataMap = getBillTypeClass(
+							checkParaVO, plist, groupVOs, checkclasstool);
+					Map<String, List<PendingBillVO>> needuncheckdataMap = getBillTypeClass(
+							checkParaVO, needuncheckplist, groupVOs,
+							checkclasstool);
 
 					// 3.判断需要审核的天数
 					Set<UFDate> set = getCheckdays(needuncheckplist, 1);
 
-					NCLocator.getInstance().lookup(IBillCheckByGroup.class)
-							.uncheckOneGroup_RequiresNew(vo, set, dataMap, needuncheckdataMap, checkParaVO, tradedatatool, checkclasstool);
+					NCLocator
+							.getInstance()
+							.lookup(IBillCheckByGroup.class)
+							.uncheckOneGroup_RequiresNew(vo, set, dataMap,
+									needuncheckdataMap, checkParaVO,
+									tradedatatool, checkclasstool);
 					isSuccess = "success";
 				} catch (BusinessException e) {
 					errormsg = e.getMessage();
@@ -241,8 +276,11 @@ public class BillCheckImpl implements IBillCheckService {
 				} finally {
 					clearCache(checkParaVO);
 
-					NCLocator.getInstance().lookup(IBillCheckByGroup.class)
-							.updateApporveUI_RequiresNew(vo, checkParaVO, errormsg, SystemConst.checkstate[2]);
+					NCLocator
+							.getInstance()
+							.lookup(IBillCheckByGroup.class)
+							.updateApporveUI_RequiresNew(vo, checkParaVO,
+									errormsg, SystemConst.checkstate[2]);
 				}
 			}
 
@@ -255,6 +293,7 @@ public class BillCheckImpl implements IBillCheckService {
 	}
 
 	@Override
+	
 	public String checkBill(CheckParaVO checkParaVO) throws BusinessException {
 		String isSuccess = "fail";
 		if (null == checkParaVO) {
@@ -266,36 +305,43 @@ public class BillCheckImpl implements IBillCheckService {
 			BilltypeGroupVO[] uncheckgroupVOs = checkParaVO.getGroupvos();// 业务组
 			/**
 			 * 审核业务组VO再次前后台ts校验
+			 * 
 			 * @author cjh
 			 * @date 2015-12-28
 			 */
-			ApproveVO[] approvevos=new ApproveVO[uncheckgroupVOs.length];
-			for(int i=0;i<uncheckgroupVOs.length;i++){
-				approvevos[i]=uncheckgroupVOs[i].getApproveVO();
+			ApproveVO[] approvevos = new ApproveVO[uncheckgroupVOs.length];
+			for (int i = 0; i < uncheckgroupVOs.length; i++) {
+				approvevos[i] = uncheckgroupVOs[i].getApproveVO();
 			}
 			if (!PubMethod.getInstance().checkIsAppoveUI(approvevos)) {
 				throw new BusinessException("并发异常，前后台数据不一致，请刷新数据!");
 			}
-			//end_cjh
+			// end_cjh
 			List<BilltypeGroupVO> grouplist = new ArrayList<BilltypeGroupVO>();
 			for (int i = 0; i < uncheckgroupVOs.length; i++) {
 				BilltypeGroupVO billtypeGroupVO = uncheckgroupVOs[i];
-//				if (billtypeGroupVO.getLastapprovedate() == null
-//						|| billtypeGroupVO.getLastapprovedate().toLocalString().compareTo(checkParaVO.getTrade_date().toLocalString()) < 0) {
+				// if (billtypeGroupVO.getLastapprovedate() == null
+				// ||
+				// billtypeGroupVO.getLastapprovedate().toLocalString().compareTo(checkParaVO.getTrade_date().toLocalString())
+				// < 0) {
 				if (billtypeGroupVO.getLastapprovedate() == null
-						|| billtypeGroupVO.getLastapprovedate().asBegin().before(checkParaVO.getTrade_date().asBegin())) {
-				
+						|| billtypeGroupVO.getLastapprovedate().asBegin()
+								.before(checkParaVO.getTrade_date().asBegin())) {
+
 					grouplist.add(billtypeGroupVO);
 				}
 			}
 			if (grouplist.size() == 0) {
 				throw new BusinessException("审核日期小于业务组的审核日期，请更改审核日期！");
 			}
-			BilltypeGroupVO[] groupVOs = grouplist.toArray(new BilltypeGroupVO[] {});
+			BilltypeGroupVO[] groupVOs = grouplist
+					.toArray(new BilltypeGroupVO[] {});
 
-			boolean isFirstPrice = SysInitCache.getInstance().getSysInitValue(SystemConst.SYSINIT_NumCalculateMay)
+			boolean isFirstPrice = SysInitCache.getInstance()
+					.getSysInitValue(SystemConst.SYSINIT_NumCalculateMay)
 					.equals(SystemConst.SYSINIT_NumCalculateMay_value[0]);// 先算单价后乘数量
-			boolean iscalfund = SysInitCache.getInstance().getIscalFund(checkParaVO.getPk_group(), checkParaVO.getPk_org(),
+			boolean iscalfund = SysInitCache.getInstance().getIscalFund(
+					checkParaVO.getPk_group(), checkParaVO.getPk_org(),
 					checkParaVO.getPk_glorgbook());
 			// 5.按业务组-天-成本计算方案进行审核处理
 			for (int i = 0; i < groupVOs.length; i++) {
@@ -308,27 +354,37 @@ public class BillCheckImpl implements IBillCheckService {
 				/**
 				 * 2. 插入中间表数据
 				 * 
-				 * 3.再新增两个插件类 插入业务数据 更新tradetool
-				 * 起独立事务处理此问题
+				 * 3.再新增两个插件类 插入业务数据 更新tradetool 起独立事务处理此问题
 				 */
-				NCLocator.getInstance().lookup(IBillCheckByGroup.class).Before_RequiresNew(vo, checkParaVO, tradedatatool);
+				NCLocator.getInstance().lookup(IBillCheckByGroup.class)
+						.Before_RequiresNew(vo, checkParaVO, tradedatatool);
 				//
 				// 1.获取需要审核的数据 state=0未审核单据
-				List<PendingBillVO> plist = getNeedVOs(vo, checkParaVO, " state = " + SystemConst.statecode[1], SystemConst.checkstate[0]);
+				List<PendingBillVO> plist = getNeedVOs(vo, checkParaVO,
+						" state = " + SystemConst.statecode[1],
+						SystemConst.checkstate[0]);
 				String errormsg = null;
 				try {
-					SecSysInitCache.getInstance().setused(checkParaVO.getPk_group(), checkParaVO.getPk_org(), checkParaVO.getPk_glorgbook());
+					SecSysInitCache.getInstance().setused(
+							checkParaVO.getPk_group(), checkParaVO.getPk_org(),
+							checkParaVO.getPk_glorgbook());
 					// 2.获取待运行的插件类
-					Map<String, List<PendingBillVO>> dataMap = getBillTypeClass(checkParaVO, plist, groupVOs, checkclasstool);
+					Map<String, List<PendingBillVO>> dataMap = getBillTypeClass(
+							checkParaVO, plist, groupVOs, checkclasstool);
 					// 3.判断需要审核的天数
 					Set<UFDate> set = getCheckdays(plist, 0);
 					// 4.获取成本计算方案
 					List<CostPlanVO> clist = getCostPlanVOs(checkParaVO);
 					if (clist == null || clist.size() == 0) {
-						throw new BusinessException("本组织下成本计算方案没有设置，请去成本计算方案节点设置！");
+						throw new BusinessException(
+								"本组织下成本计算方案没有设置，请去成本计算方案节点设置！");
 					}
-					NCLocator.getInstance().lookup(IBillCheckByGroup.class)
-							.checkOneGroup_RequiresNew(vo, set, dataMap, checkParaVO, tradedatatool, checkclasstool, clist, isFirstPrice, iscalfund);
+					NCLocator
+							.getInstance()
+							.lookup(IBillCheckByGroup.class)
+							.checkOneGroup_RequiresNew(vo, set, dataMap,
+									checkParaVO, tradedatatool, checkclasstool,
+									clist, isFirstPrice, iscalfund);
 					isSuccess = "success";
 				} catch (BusinessException e) {
 					errormsg = e.getMessage();
@@ -339,8 +395,11 @@ public class BillCheckImpl implements IBillCheckService {
 					 */
 					clearCache(checkParaVO);
 
-					NCLocator.getInstance().lookup(IBillCheckByGroup.class)
-							.updateApporveUI_RequiresNew(vo, checkParaVO, errormsg, SystemConst.checkstate[0]);
+					NCLocator
+							.getInstance()
+							.lookup(IBillCheckByGroup.class)
+							.updateApporveUI_RequiresNew(vo, checkParaVO,
+									errormsg, SystemConst.checkstate[0]);
 				}
 			}
 
@@ -358,7 +417,9 @@ public class BillCheckImpl implements IBillCheckService {
 	 * @param CheckParaVO
 	 * @return List<CostPlanVO>
 	 */
-	private List<PendingBillVO> getNeedVOs(BilltypeGroupVO vo, CheckParaVO checkParaVO, String addcondition, int state) throws BusinessException {
+	private List<PendingBillVO> getNeedVOs(BilltypeGroupVO vo,
+			CheckParaVO checkParaVO, String addcondition, int state)
+			throws BusinessException {
 		StringBuffer sb = new StringBuffer();
 		sb.append(" ( (");
 		sb.append(addcondition);
@@ -375,29 +436,37 @@ public class BillCheckImpl implements IBillCheckService {
 		if (state == SystemConst.checkstate[0]) {// 审核
 			if (vo.getLastapprovedate() != null) {
 				sb.append(" and trade_date>='");
-				sb.append(vo.getLastapprovedate().getDateAfter(1).toLocalString() + " 00:00:00' ");
+				sb.append(vo.getLastapprovedate().getDateAfter(1)
+						.toLocalString()
+						+ " 00:00:00' ");
 			}
 			sb.append(" and trade_date<='");
-			sb.append(checkParaVO.getTrade_date().toLocalString() + " 23:59:59' ");
+			sb.append(checkParaVO.getTrade_date().toLocalString()
+					+ " 23:59:59' ");
 		} else if (state == SystemConst.checkstate[2]) {// 弃审
 			if (vo.getLastapprovedate() != null) {
 				sb.append(" and trade_date<='");
-				sb.append(vo.getLastapprovedate().toLocalString() + " 23:59:59' ");
+				sb.append(vo.getLastapprovedate().toLocalString()
+						+ " 23:59:59' ");
 			}
 			sb.append(" and trade_date>='");
-			sb.append(checkParaVO.getTrade_date().toLocalString() + " 00:00:00' ");
+			sb.append(checkParaVO.getTrade_date().toLocalString()
+					+ " 00:00:00' ");
 		} else {// 记账
 			if (vo.getLastapprovedate() != null) {
 				sb.append(" and trade_date<='");
-				sb.append(vo.getLastapprovedate().toLocalString() + " 23:59:59' ");
+				sb.append(vo.getLastapprovedate().toLocalString()
+						+ " 23:59:59' ");
 			}
 			if (vo.getLasttallydate() != null) {
 				sb.append(" and trade_date>='");
-				sb.append(vo.getLasttallydate().getDateAfter(1).toLocalString() + " 00:00:00' ");
+				sb.append(vo.getLasttallydate().getDateAfter(1).toLocalString()
+						+ " 00:00:00' ");
 			}
 		}
 
-		List<PendingBillVO> plist = PubMethod.getInstance().queryAllByCond(new PendingBillVO(), sb.toString());
+		List<PendingBillVO> plist = PubMethod.getInstance().queryAllByCond(
+				new PendingBillVO(), sb.toString());
 		return plist;
 	}
 
@@ -407,10 +476,14 @@ public class BillCheckImpl implements IBillCheckService {
 	 * @param CheckParaVO
 	 * @return List<CostPlanVO>
 	 */
-	private List<CostPlanVO> getCostPlanVOs(CheckParaVO checkParaVO) throws BusinessException {
-		String costplansql = " pk_group='" + checkParaVO.getPk_group() + "' and pk_org='" + checkParaVO.getPk_org() + "' and pk_glorgbook='"
-				+ checkParaVO.getPk_glorgbook() + "' and isnull(dr,0)=0";
-		List<CostPlanVO> clist = PubMethod.getInstance().queryAllByCond(new CostPlanVO(), costplansql);
+	private List<CostPlanVO> getCostPlanVOs(CheckParaVO checkParaVO)
+			throws BusinessException {
+		String costplansql = " pk_group='" + checkParaVO.getPk_group()
+				+ "' and pk_org='" + checkParaVO.getPk_org()
+				+ "' and pk_glorgbook='" + checkParaVO.getPk_glorgbook()
+				+ "' and isnull(dr,0)=0";
+		List<CostPlanVO> clist = PubMethod.getInstance().queryAllByCond(
+				new CostPlanVO(), costplansql);
 		return clist;
 	}
 
@@ -421,20 +494,26 @@ public class BillCheckImpl implements IBillCheckService {
 	 * @param groupVO
 	 * @return
 	 */
-	private Map<String, List<PendingBillVO>> getBillTypeClass(CheckParaVO checkParaVO, List<PendingBillVO> list, BilltypeGroupVO[] groupVOs,
-			CheckClassTool checkclasstool) throws BusinessException {
+	private Map<String, List<PendingBillVO>> getBillTypeClass(
+			CheckParaVO checkParaVO, List<PendingBillVO> list,
+			BilltypeGroupVO[] groupVOs, CheckClassTool checkclasstool)
+			throws BusinessException {
 		if (list == null || list.size() <= 0) {
 			return null;
 		}
 		try {
 			Map<String, HashMap<String, BilltypeDetailsVO>> map = new HashMap();
-			map = SecSysInitCache.getInstance()
-					.getCheckPlanDetails(checkParaVO.getPk_group(), checkParaVO.getPk_org(), checkParaVO.getPk_glorgbook());
+			map = SecSysInitCache.getInstance().getCheckPlanDetails(
+					checkParaVO.getPk_group(), checkParaVO.getPk_org(),
+					checkParaVO.getPk_glorgbook());
 			List<Integer> removenum = new ArrayList();
 			for (int i = 0; i < list.size(); i++) {
 				PendingBillVO pbvo = list.get(i);
-				BilltypeDetailsVO bdvo = (BilltypeDetailsVO) ((map.get(checkParaVO.getPk_group() + checkParaVO.getPk_org()
-						+ checkParaVO.getPk_glorgbook())).get(pbvo.getPk_billtype()));
+				BilltypeDetailsVO bdvo = (BilltypeDetailsVO) ((map
+						.get(checkParaVO.getPk_group()
+								+ checkParaVO.getPk_org()
+								+ checkParaVO.getPk_glorgbook())).get(pbvo
+						.getPk_billtype()));
 				if (bdvo != null) {
 					pbvo.setPk_billtypegroup(bdvo.getPk_billtypegroup());
 					pbvo.setCheckclass(bdvo.getClassname());
@@ -455,9 +534,12 @@ public class BillCheckImpl implements IBillCheckService {
 			Collections.sort(list, new Comparator<PendingBillVO>() {
 				@Override
 				public int compare(PendingBillVO pbo1, PendingBillVO pbo2) {
-					int index = pbo1.getPk_billtypegroup().compareTo(pbo2.getPk_billtypegroup());
-					index = index == 0 ? pbo1.getTrade_date().compareTo(pbo2.getTrade_date()) : index;
-					index = index == 0 ? pbo1.getCheckorder().compareTo(pbo2.getCheckorder()) : index;
+					int index = pbo1.getPk_billtypegroup().compareTo(
+							pbo2.getPk_billtypegroup());
+					index = index == 0 ? pbo1.getTrade_date().compareTo(
+							pbo2.getTrade_date()) : index;
+					index = index == 0 ? pbo1.getCheckorder().compareTo(
+							pbo2.getCheckorder()) : index;
 					return index;
 				}
 
@@ -468,7 +550,8 @@ public class BillCheckImpl implements IBillCheckService {
 			Map<String, List<PendingBillVO>> returnmap = new HashMap<String, List<PendingBillVO>>();
 			for (int i = 0; i < list.size(); i++) {
 				PendingBillVO pbvo = list.get(i);
-				String key = pbvo.getTrade_date().toLocalString() + pbvo.getPk_billtypegroup();
+				String key = pbvo.getTrade_date().toLocalString()
+						+ pbvo.getPk_billtypegroup();
 				/**
 				 * 此处构建ClassList YangJie 2014-03-28
 				 */
@@ -477,14 +560,17 @@ public class BillCheckImpl implements IBillCheckService {
 				IBillCheckPlugin isimcheck;
 				try {
 					String[] temp = classname.split("\\.");
-					isimcheck = (IBillCheckPlugin) NewObjectService.newInstance(temp[2], classname);
+					isimcheck = (IBillCheckPlugin) NewObjectService
+							.newInstance(temp[2], classname);
 				} catch (Exception e) {
-					throw new BusinessException(pbvo.getCheckclass() + "实例化失败！" + e.getMessage());
+					throw new BusinessException(pbvo.getCheckclass() + "实例化失败！"
+							+ e.getMessage());
 				}
 				/***
 				 * 初始化审核类
 				 */
-				checkclasstool.setCheckClassMap(transtypecode + "##" + classname, isimcheck);
+				checkclasstool.setCheckClassMap(transtypecode + "##"
+						+ classname, isimcheck);
 				if (!returnmap.containsKey(key)) {
 					List innerlist = new ArrayList();
 					innerlist.add(pbvo);
@@ -496,7 +582,8 @@ public class BillCheckImpl implements IBillCheckService {
 			}
 			return returnmap;
 		} catch (Exception e) {
-			throw new BusinessException("根据待处理数据、业务组返回<日期+业务组，单据类型以及插件类>报错：" + e.toString() + e.getMessage());
+			throw new BusinessException("根据待处理数据、业务组返回<日期+业务组，单据类型以及插件类>报错："
+					+ e.toString() + e.getMessage());
 		}
 	}
 
@@ -520,7 +607,8 @@ public class BillCheckImpl implements IBillCheckService {
 			}
 		});
 		for (int i = 0; i < size; i++) {
-			UFDate trade_date = new UFDate(list.get(i).getTrade_date().toLocalString());
+			UFDate trade_date = new UFDate(list.get(i).getTrade_date()
+					.toLocalString());
 			set.add(trade_date);
 		}
 		return set;
@@ -532,7 +620,8 @@ public class BillCheckImpl implements IBillCheckService {
 	 * @throws BusinessException
 	 */
 	private void clearCache(CheckParaVO checkParaVO) throws BusinessException {
-		SecSysInitCache.getInstance().clearused(checkParaVO.getPk_group(), checkParaVO.getPk_org(), checkParaVO.getPk_glorgbook());
+		SecSysInitCache.getInstance().clearused(checkParaVO.getPk_group(),
+				checkParaVO.getPk_org(), checkParaVO.getPk_glorgbook());
 	}
 
 	/**
@@ -540,9 +629,12 @@ public class BillCheckImpl implements IBillCheckService {
 	 * 
 	 * @throws BusinessException
 	 */
-	private synchronized void Lock(CheckParaVO checkParaVO) throws BusinessException {
-		if (SecSysInitCache.getInstance().canLock(checkParaVO.getPk_group(), checkParaVO.getPk_org(), checkParaVO.getPk_glorgbook()))
-			SecSysInitCache.getInstance().setLock(checkParaVO.getPk_group(), checkParaVO.getPk_org(), checkParaVO.getPk_glorgbook());
+	private synchronized void Lock(CheckParaVO checkParaVO)
+			throws BusinessException {
+		if (SecSysInitCache.getInstance().canLock(checkParaVO.getPk_group(),
+				checkParaVO.getPk_org(), checkParaVO.getPk_glorgbook()))
+			SecSysInitCache.getInstance().setLock(checkParaVO.getPk_group(),
+					checkParaVO.getPk_org(), checkParaVO.getPk_glorgbook());
 		else
 			throw new BusinessException("无法加锁，当前集团组织账簿下在处理业务，请稍后再试！");
 	}
@@ -552,7 +644,9 @@ public class BillCheckImpl implements IBillCheckService {
 	 * 
 	 * @throws BusinessException
 	 */
-	private synchronized void UnLock(CheckParaVO checkParaVO) throws BusinessException {
-		SecSysInitCache.getInstance().clearLock(checkParaVO.getPk_group(), checkParaVO.getPk_org(), checkParaVO.getPk_glorgbook());
+	private synchronized void UnLock(CheckParaVO checkParaVO)
+			throws BusinessException {
+		SecSysInitCache.getInstance().clearLock(checkParaVO.getPk_group(),
+				checkParaVO.getPk_org(), checkParaVO.getPk_glorgbook());
 	}
 }

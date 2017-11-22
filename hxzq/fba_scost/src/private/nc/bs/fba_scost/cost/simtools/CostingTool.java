@@ -2,10 +2,7 @@ package nc.bs.fba_scost.cost.simtools;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import nc.bs.dao.BaseDAO;
 import nc.bs.dao.DAOException;
@@ -57,6 +54,7 @@ public class CostingTool implements ICostingTool {
 	// 公允价值结转
 	private Map<String, ForwardVO> fairvaluejz = new HashMap<String, ForwardVO>();
 
+	@Override
 	public Map<String, ForwardVO> getFairvaluejz() {
 		return fairvaluejz;
 	}
@@ -68,10 +66,12 @@ public class CostingTool implements ICostingTool {
 	private boolean isCheckFund;
 	private Integer direction;
 
+	@Override
 	public Integer getDirection() {
 		return direction;
 	}
 
+	@Override
 	public void setDirection(Integer direction) {
 		this.direction = direction;
 	}
@@ -87,34 +87,42 @@ public class CostingTool implements ICostingTool {
 
 	PubMethod pm = PubMethod.getInstance();
 
+	@Override
 	public String[] getPk_stocksort() {
 		return pk_stocksort;
 	}
 
+	@Override
 	public void setPk_stocksort(String[] pk_stocksort) {
 		this.pk_stocksort = pk_stocksort;
 	}
 
+	@Override
 	public String getCurrbilltype() {
 		return currbilltype;
 	}
 
+	@Override
 	public void setCurrbilltype(String currbilltype) {
 		this.currbilltype = currbilltype;
 	}
 
+	@Override
 	public String getCurrdate() {
 		return currdate;
 	}
 
+	@Override
 	public void setCurrdate(String currdate) {
 		this.currdate = currdate;
 	}
 
+	@Override
 	public BilltypeGroupVO getCurrbilltypegroupvo() {
 		return currbilltypegroupvo;
 	}
 
+	@Override
 	public void setCurrbilltypegroupvo(BilltypeGroupVO currbilltypegroupvo) {
 		this.currbilltypegroupvo = currbilltypegroupvo;
 	}
@@ -124,6 +132,7 @@ public class CostingTool implements ICostingTool {
 	 */
 	private List<PendingBillVO> billtypeclass;
 
+	@Override
 	public List<PendingBillVO> getBilltypeclass() {
 		return billtypeclass;
 	}
@@ -132,16 +141,19 @@ public class CostingTool implements ICostingTool {
 		this.billtypeclass = billtypeclass;
 	}
 
+	@Override
 	public void setCostParaVO(CostParaVO costParaVO) {
 		this.costParaVO = costParaVO;
 		this.balancetool = new CostBalanceTool(costParaVO);
 	}
 
+	@Override
 	public CostParaVO getCostParaVO() {
 		return costParaVO;
 
 	}
 
+	@Override
 	public ICostBalanceTool getBalancetool() {
 		if (balancetool == null) {
 			balancetool = new CostBalanceTool(costParaVO);
@@ -158,6 +170,7 @@ public class CostingTool implements ICostingTool {
 	 * @author libin
 	 * @date 2012-10-16 下午8:06:33
 	 */
+	@Override
 	public void updateFunds(SuperVO tradevo) throws Exception {
 		if (!isCheckFund
 				|| getDirection() == null// 不审核资金
@@ -210,10 +223,12 @@ public class CostingTool implements ICostingTool {
 
 	}
 
+	@Override
 	public void addTotalwinVO(IVTradedPubVO tradevo) {
 		totalwinvos.add(getNewTotalwinVO(tradevo));
 	}
 
+	@Override
 	public TotalwinVO getNewTotalwinVO(IVTradedPubVO tradevo) {
 		TotalwinVO totalwinvo = new TotalwinVO();
 		// totalwinvo.setPk_corp(getPk_corp());
@@ -231,6 +246,7 @@ public class CostingTool implements ICostingTool {
 		return totalwinvo;
 	}
 
+	@Override
 	public boolean isCheckStock() {
 		return isCheckStock;
 	}
@@ -243,6 +259,7 @@ public class CostingTool implements ICostingTool {
 	 * @param error
 	 * @throws BusinessException
 	 */
+	@Override
 	public void handleException(SuperVO vo, SuperVO bvo, String error)
 			throws BusinessException {
 		String pk_securities = null;
@@ -281,18 +298,22 @@ public class CostingTool implements ICostingTool {
 
 	}
 
+	@Override
 	public boolean getIsinit() {
 		return isinit;
 	}
 
+	@Override
 	public void setIsinit(boolean isinit) {
 		this.isinit = isinit;
 	}
 
+	@Override
 	public boolean getIstally() {
 		return istally;
 	}
 
+	@Override
 	public void setIstally(boolean istally) {
 		this.istally = istally;
 	}
@@ -304,6 +325,7 @@ public class CostingTool implements ICostingTool {
 	 * @param costFieldArray
 	 * @author liangwei
 	 */
+	@Override
 	public void addCostChangeBalanceVO(StockBalanceVO stockbalancevo,
 			String[] costFieldArray) {
 		// 去除库存维度
@@ -323,6 +345,7 @@ public class CostingTool implements ICostingTool {
 		costchangevomap.put(key, stockbalancevo);
 	}
 
+	@Override
 	public void saveCostChangeVOs() throws Exception {
 		List<CostAdjustmentVO> listvos = getCostChangeVOs();
 		int size = listvos.size();
@@ -361,6 +384,7 @@ public class CostingTool implements ICostingTool {
 	 * @return
 	 * @throws Exception
 	 */
+	@Override
 	public List<CostAdjustmentVO> getCostChangeVOs() throws Exception {
 
 		List<CostAdjustmentVO> vos = new ArrayList<CostAdjustmentVO>();
@@ -380,6 +404,7 @@ public class CostingTool implements ICostingTool {
 	 * @throws Exception
 	 *             List<CostAdjustmentVO> TODO（参数说明）
 	 */
+	@Override
 	public List<CostAdjustmentVO> calculateCost(StockBalanceVO balancevo)
 			throws Exception {
 		String trade_date = getCurrdate();
@@ -490,6 +515,7 @@ public class CostingTool implements ICostingTool {
 	 * @return
 	 * @throws Exception
 	 */
+	@Override
 	public CostAdjustmentVO getCostchangeVO(StockBalanceVO balancevo,
 			String[] costFieldArray) throws Exception {
 		CostAdjustmentVO costchangevo = new CostAdjustmentVO();
@@ -520,6 +546,7 @@ public class CostingTool implements ICostingTool {
 	 * @throws Exception
 	 *             UFDouble TODO（参数说明）
 	 */
+	@Override
 	public UFDouble getSellcost(BanlanceQueryKeyVO queryvo,
 			ICostingTool costingtool, UFDouble bargain_num, boolean ishaszj)
 			throws Exception {
@@ -609,6 +636,7 @@ public class CostingTool implements ICostingTool {
 	 * @return 销售成本
 	 * @author JINGQT
 	 */
+	@Override
 	public UFDouble getSellcostForOptionsTrade(UFDouble bargain_num,
 			StockBalanceVO vo) throws Exception {
 		if (bargain_num == null || bargain_num.doubleValue() == 0) {
@@ -643,6 +671,7 @@ public class CostingTool implements ICostingTool {
 	 * @throws Exception
 	 *             UFDouble TODO（参数说明）
 	 */
+	@Override
 	public UFDouble getTaxOutcost(BanlanceQueryKeyVO queryvo,
 			ICostingTool costingtool, UFDouble bargain_num) throws Exception {
 		String pk_glorg = costingtool.getCostParaVO().getCheckParavo()
@@ -701,14 +730,17 @@ public class CostingTool implements ICostingTool {
 		return pm.setScale(taxoutcost, true, true);
 	}
 
+	@Override
 	public boolean isCheckFund() {
 		return isCheckFund;
 	}
 
+	@Override
 	public void setCheckFund(boolean isCheckFund) {
 		this.isCheckFund = isCheckFund;
 	}
 
+	@Override
 	public Map<String, ForwardVO> getInterestjz() {
 		return interestjz;
 	}

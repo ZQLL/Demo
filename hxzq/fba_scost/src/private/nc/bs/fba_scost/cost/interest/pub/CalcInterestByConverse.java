@@ -2,15 +2,12 @@ package nc.bs.fba_scost.cost.interest.pub;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 import nc.bs.dao.BaseDAO;
 import nc.bs.dao.DAOException;
 import nc.bs.fba_scost.cost.pub.QueryBasePubInfo;
 import nc.itf.fba_scost.cost.pub.ITrade_Data;
 import nc.jdbc.framework.processor.BeanListProcessor;
-import nc.jdbc.framework.processor.VectorProcessor;
 import nc.tool.fba_zqjd.pub.AssetsPropTool;
 import nc.vo.fba_scost.cost.costplan.CostPlanVO;
 import nc.vo.fba_scost.cost.interestdistill.InterestdistillVO;
@@ -24,8 +21,6 @@ import nc.vo.pub.lang.UFDate;
 import nc.vo.pub.lang.UFDouble;
 import nc.vo.trade.voutils.SafeCompute;
 import nc.vo.uif2.LoginContext;
-
-import org.olap4j.impl.ArrayMap;
 
 /**
  * 应收利息计提
@@ -86,32 +81,34 @@ public class CalcInterestByConverse {
 			if ("0001SE00000000000004".equals(stvo.getPk_assetsprop())) {
 				order++;
 				continue;
- 			
-//				UFDouble lastnum = new UFDouble(0);
-//				UFDouble lastJE = new UFDouble(0);
-//				UFDouble MRMC = new UFDouble(SearchZQJY(stvo, trade_date)
-//						.get("MRMC").toString()); // 计算出债券的买入卖出量；
-//				UFDouble ZRZC = new UFDouble(SearchZQZH(stvo, trade_date)
-//						.get("ZRZC").toString()); // 计算出债券的转入转出量；
-//				UFDouble ZRZCTG = new UFDouble(SearchZQZHTG(stvo, trade_date)
-//						.get("ZRZC").toString()); // 计算出债券的转入转出托管量；
-//				UFDouble MRMCJE = new UFDouble(SearchZQJY(stvo, trade_date)
-//						.get("MRMCJE").toString()); // 计算出债券的买入卖出金额；
-//				UFDouble ZRZCJE = new UFDouble(SearchZQZH(stvo, trade_date)
-//						.get("ZRZCJE").toString()); // 计算出债券的转入转出金额；
-//				UFDouble ZRZCJETG = new UFDouble(SearchZQZHTG(stvo, trade_date)
-//						.get("ZRZCJE").toString()); // 计算出债券的转入转出金额；
-//				// 存在买入卖出或者债券转换，进行余量计算
-//				if (!MRMC.equals(UFDouble.ZERO_DBL)
-//						|| !ZRZC.equals(UFDouble.ZERO_DBL) || !ZRZCTG.equals(UFDouble.ZERO_DBL)) {
-//					lastnum = MRMC.add(ZRZC).add(ZRZCTG);
-//					lastJE = MRMCJE.add(ZRZCJE).add(ZRZCJETG);
-//					stvo.setStocks_num(lastnum);
-//					stvo.setStocks_sum(lastJE);
-//				} else{
-//					order++;
-//					continue;
-//				}
+
+				// UFDouble lastnum = new UFDouble(0);
+				// UFDouble lastJE = new UFDouble(0);
+				// UFDouble MRMC = new UFDouble(SearchZQJY(stvo, trade_date)
+				// .get("MRMC").toString()); // 计算出债券的买入卖出量；
+				// UFDouble ZRZC = new UFDouble(SearchZQZH(stvo, trade_date)
+				// .get("ZRZC").toString()); // 计算出债券的转入转出量；
+				// UFDouble ZRZCTG = new UFDouble(SearchZQZHTG(stvo, trade_date)
+				// .get("ZRZC").toString()); // 计算出债券的转入转出托管量；
+				// UFDouble MRMCJE = new UFDouble(SearchZQJY(stvo, trade_date)
+				// .get("MRMCJE").toString()); // 计算出债券的买入卖出金额；
+				// UFDouble ZRZCJE = new UFDouble(SearchZQZH(stvo, trade_date)
+				// .get("ZRZCJE").toString()); // 计算出债券的转入转出金额；
+				// UFDouble ZRZCJETG = new UFDouble(SearchZQZHTG(stvo,
+				// trade_date)
+				// .get("ZRZCJE").toString()); // 计算出债券的转入转出金额；
+				// // 存在买入卖出或者债券转换，进行余量计算
+				// if (!MRMC.equals(UFDouble.ZERO_DBL)
+				// || !ZRZC.equals(UFDouble.ZERO_DBL) ||
+				// !ZRZCTG.equals(UFDouble.ZERO_DBL)) {
+				// lastnum = MRMC.add(ZRZC).add(ZRZCTG);
+				// lastJE = MRMCJE.add(ZRZCJE).add(ZRZCJETG);
+				// stvo.setStocks_num(lastnum);
+				// stvo.setStocks_sum(lastJE);
+				// } else{
+				// order++;
+				// continue;
+				// }
 			}
 
 			UFDouble qm = calcQmInterest(stvo, vo, trade_date, way);
@@ -133,29 +130,32 @@ public class CalcInterestByConverse {
 		 */
 		for (StockBalanceVO stblvo : fzlist) {
 			if ("0001SE00000000000004".equals(stblvo.getPk_assetsprop())) {
-//				UFDouble lastnum = new UFDouble(0);
-//				UFDouble lastJE = new UFDouble(0);
-//				UFDouble MRMC = new UFDouble(SearchZQJY(stblvo, trade_date)
-//						.get("MRMC").toString()); // 计算出债券的买入卖出量；
-//				UFDouble ZRZC = new UFDouble(SearchZQZH(stblvo, trade_date)
-//						.get("ZRZC").toString()); // 计算出债券的转入转出量；
-//				UFDouble ZRZCTG = new UFDouble(SearchZQZHTG(stblvo, trade_date)
-//						.get("ZRZC").toString()); // 计算出债券的转入转出托管量；
-//				UFDouble MRMCJE = new UFDouble(SearchZQJY(stblvo, trade_date)
-//						.get("MRMCJE").toString()); // 计算出债券的买入卖出金额；
-//				UFDouble ZRZCJE = new UFDouble(SearchZQZH(stblvo, trade_date)
-//						.get("ZRZCJE").toString()); // 计算出债券的转入转出金额；
-//				UFDouble ZRZCJETG = new UFDouble(SearchZQZHTG(stblvo, trade_date)
-//						.get("ZRZCJE").toString()); // 计算出债券的转入转出金额；
-//				// 存在买入卖出或者债券转换，进行余量计算
-//				if (!MRMC.equals(UFDouble.ZERO_DBL)
-//						|| !ZRZC.equals(UFDouble.ZERO_DBL) || !ZRZCTG.equals(UFDouble.ZERO_DBL)) {
-//					lastnum = MRMC.add(ZRZC).add(ZRZCTG);
-//					lastJE = MRMCJE.add(ZRZCJE).add(ZRZCJETG);
-					stblvo.setStocks_num(new UFDouble(stblvo.getVdef1()));
-					stblvo.setStocks_sum(new UFDouble(stblvo.getVdef2()));
-//				} else
-//					continue;
+				// UFDouble lastnum = new UFDouble(0);
+				// UFDouble lastJE = new UFDouble(0);
+				// UFDouble MRMC = new UFDouble(SearchZQJY(stblvo, trade_date)
+				// .get("MRMC").toString()); // 计算出债券的买入卖出量；
+				// UFDouble ZRZC = new UFDouble(SearchZQZH(stblvo, trade_date)
+				// .get("ZRZC").toString()); // 计算出债券的转入转出量；
+				// UFDouble ZRZCTG = new UFDouble(SearchZQZHTG(stblvo,
+				// trade_date)
+				// .get("ZRZC").toString()); // 计算出债券的转入转出托管量；
+				// UFDouble MRMCJE = new UFDouble(SearchZQJY(stblvo, trade_date)
+				// .get("MRMCJE").toString()); // 计算出债券的买入卖出金额；
+				// UFDouble ZRZCJE = new UFDouble(SearchZQZH(stblvo, trade_date)
+				// .get("ZRZCJE").toString()); // 计算出债券的转入转出金额；
+				// UFDouble ZRZCJETG = new UFDouble(SearchZQZHTG(stblvo,
+				// trade_date)
+				// .get("ZRZCJE").toString()); // 计算出债券的转入转出金额；
+				// // 存在买入卖出或者债券转换，进行余量计算
+				// if (!MRMC.equals(UFDouble.ZERO_DBL)
+				// || !ZRZC.equals(UFDouble.ZERO_DBL) ||
+				// !ZRZCTG.equals(UFDouble.ZERO_DBL)) {
+				// lastnum = MRMC.add(ZRZC).add(ZRZCTG);
+				// lastJE = MRMCJE.add(ZRZCJE).add(ZRZCJETG);
+				stblvo.setStocks_num(new UFDouble(stblvo.getVdef1()));
+				stblvo.setStocks_sum(new UFDouble(stblvo.getVdef2()));
+				// } else
+				// continue;
 			}
 			TradeMarketVO vo = qi.queryLastMarket(stblvo.getPk_securities(),
 					trade_date);
@@ -258,215 +258,180 @@ public class CalcInterestByConverse {
 	 * 
 	 * @param StockBalanceVO 证券交易记录证券的买入卖出
 	 */
-//	@SuppressWarnings({ "unchecked", "rawtypes" })
-//	public Map SearchZQJY(StockBalanceVO stvo, UFDate trade_date) {
-//		UFDouble MRMC = new UFDouble(0);
-//		UFDouble MRMCJE = new UFDouble(0);
-//		Map map = new ArrayMap();
-//		String pkcapa = stvo.getPk_capaccount();
-//		String pkglo = stvo.getPk_glorgbook();
-//		String pksec = stvo.getPk_securities();
-//		String pkorg = stvo.getPk_org();
-//		String pkgro = stvo.getPk_group();
-//		String pksto = stvo.getPk_stocksort();
-//		Vector vecmc = new Vector();
-//		Vector vecmr = new Vector();
-//		BaseDAO dao = new BaseDAO();
-//		// 查找计提日期之前的所有证券交易记录里面该券的交易数量 买入和卖出 -zq
-//		String sql1 = "select sum(bargain_num),sum(bargain_sum) from sim_stocktrade where pk_securities ='"
-//				+ pksec
-//				+ "' and pk_stocksort ='"
-//				+ pksto
-//				+ "' and pk_org ='"
-//				+ pkorg
-//				+ "' and pk_group ='"
-//				+ pkgro
-//				+ "' and pk_glorgbook ='"
-//				+ pkglo
-//				+ "' and pk_assetsprop ='"
-//				+ "0001SE00000000000004"
-//				+ "' and pk_capaccount ='"
-//				+ pkcapa
-//				+ "' and transtypecode = 'HV3A-0xx-22"
-//				+ "' and nvl(dr,0)=0 and trade_date <= '"
-//				+ trade_date.toString().substring(0, 10) + " 23:59:59" + "'";
-//
-//		String sql2 = "select sum(bargain_num),sum(sellcost) from sim_stocktrade where pk_securities ='"
-//				+ pksec
-//				+ "' and pk_stocksort ='"
-//				+ pksto
-//				+ "' and pk_org ='"
-//				+ pkorg
-//				+ "' and pk_group ='"
-//				+ pkgro
-//				+ "' and pk_glorgbook ='"
-//				+ pkglo
-//				+ "' and pk_assetsprop ='"
-//				+ "0001SE00000000000004"
-//				+ "' and pk_capaccount ='"
-//				+ pkcapa
-//				+ "' and transtypecode = 'HV3A-0xx-21"
-//				+ "' and nvl(dr,0)=0 and trade_date <= '"
-//				+ trade_date.toString().substring(0, 10) + " 23:59:59" + "'";
-//
-//		try {
-//			vecmc = (Vector) dao.executeQuery(sql1, new VectorProcessor());
-//
-//			vecmr = (Vector) dao.executeQuery(sql2, new VectorProcessor());
-//		} catch (DAOException e) {
-//			// TODO 自动生成的 catch 块
-//			e.printStackTrace();
-//		}
-//		if (((Vector) vecmc.get(0)).get(0) != null) {
-//			MRMC = new UFDouble(((Vector) vecmc.get(0)).get(0).toString());
-//			MRMCJE = new UFDouble(((Vector) vecmc.get(0)).get(1).toString());
-//		}
-//		if (((Vector) vecmr.get(0)).get(0) != null) {
-//			MRMC = MRMC.sub(new UFDouble(((Vector) vecmr.get(0)).get(0)
-//					.toString()));
-//			MRMCJE = MRMCJE.sub(new UFDouble(((Vector) vecmr.get(0)).get(1)
-//					.toString()));
-//		}
-//		map.put("MRMC", MRMC);
-//		map.put("MRMCJE", MRMCJE);
-//		return map;
-//
-//	}
+	// @SuppressWarnings({ "unchecked", "rawtypes" })
+	// public Map SearchZQJY(StockBalanceVO stvo, UFDate trade_date) {
+	// UFDouble MRMC = new UFDouble(0);
+	// UFDouble MRMCJE = new UFDouble(0);
+	// Map map = new ArrayMap();
+	// String pkcapa = stvo.getPk_capaccount();
+	// String pkglo = stvo.getPk_glorgbook();
+	// String pksec = stvo.getPk_securities();
+	// String pkorg = stvo.getPk_org();
+	// String pkgro = stvo.getPk_group();
+	// String pksto = stvo.getPk_stocksort();
+	// Vector vecmc = new Vector();
+	// Vector vecmr = new Vector();
+	// BaseDAO dao = new BaseDAO();
+	// // 查找计提日期之前的所有证券交易记录里面该券的交易数量 买入和卖出 -zq
+	// String sql1 =
+	// "select sum(bargain_num),sum(bargain_sum) from sim_stocktrade where pk_securities ='"
+	// + pksec
+	// + "' and pk_stocksort ='"
+	// + pksto
+	// + "' and pk_org ='"
+	// + pkorg
+	// + "' and pk_group ='"
+	// + pkgro
+	// + "' and pk_glorgbook ='"
+	// + pkglo
+	// + "' and pk_assetsprop ='"
+	// + "0001SE00000000000004"
+	// + "' and pk_capaccount ='"
+	// + pkcapa
+	// + "' and transtypecode = 'HV3A-0xx-22"
+	// + "' and nvl(dr,0)=0 and trade_date <= '"
+	// + trade_date.toString().substring(0, 10) + " 23:59:59" + "'";
+	//
+	// String sql2 =
+	// "select sum(bargain_num),sum(sellcost) from sim_stocktrade where pk_securities ='"
+	// + pksec
+	// + "' and pk_stocksort ='"
+	// + pksto
+	// + "' and pk_org ='"
+	// + pkorg
+	// + "' and pk_group ='"
+	// + pkgro
+	// + "' and pk_glorgbook ='"
+	// + pkglo
+	// + "' and pk_assetsprop ='"
+	// + "0001SE00000000000004"
+	// + "' and pk_capaccount ='"
+	// + pkcapa
+	// + "' and transtypecode = 'HV3A-0xx-21"
+	// + "' and nvl(dr,0)=0 and trade_date <= '"
+	// + trade_date.toString().substring(0, 10) + " 23:59:59" + "'";
+	//
+	// try {
+	// vecmc = (Vector) dao.executeQuery(sql1, new VectorProcessor());
+	//
+	// vecmr = (Vector) dao.executeQuery(sql2, new VectorProcessor());
+	// } catch (DAOException e) {
+	// // TODO 自动生成的 catch 块
+	// e.printStackTrace();
+	// }
+	// if (((Vector) vecmc.get(0)).get(0) != null) {
+	// MRMC = new UFDouble(((Vector) vecmc.get(0)).get(0).toString());
+	// MRMCJE = new UFDouble(((Vector) vecmc.get(0)).get(1).toString());
+	// }
+	// if (((Vector) vecmr.get(0)).get(0) != null) {
+	// MRMC = MRMC.sub(new UFDouble(((Vector) vecmr.get(0)).get(0)
+	// .toString()));
+	// MRMCJE = MRMCJE.sub(new UFDouble(((Vector) vecmr.get(0)).get(1)
+	// .toString()));
+	// }
+	// map.put("MRMC", MRMC);
+	// map.put("MRMCJE", MRMCJE);
+	// return map;
+	//
+	// }
 
-/*	
+	/*
 	 * @author zq
 	 * 
 	 * @param StockBalanceVO 资产转负债,负债转资产的证券转换记录
-	 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Map SearchZQZH(StockBalanceVO stvo, UFDate trade_date) {
-		UFDouble ZRZC = new UFDouble(0);
-		UFDouble ZRZCJE = new UFDouble(0);
-		Map map = new ArrayMap();
-		String pkcapa = stvo.getPk_capaccount();
-		String pkglo = stvo.getPk_glorgbook();
-		String pksec = stvo.getPk_securities();
-		String pkorg = stvo.getPk_org();
-		String pkgro = stvo.getPk_group();
-		String pksto = stvo.getPk_stocksort();
-		Vector veczc = new Vector();
-		Vector veczr = new Vector();
-		BaseDAO dao = new BaseDAO();
-		// 资产转负债，库存数量-转入量;转出证券类型是当前类型，转入是资产属性，转出为负债属性;
-		String sql1 = "select sum(bargain_num2),sum(bargain_sum2) "
-				+ "from sim_transformtrade "
-				+ "where transtypecode = 'HV3F-0xx-01'"
-				+ " and nvl(dr,0)=0"
-				+ " and state >= 2"
-				+ " and hr_pk_assetsprop = '0001SE00000000000004'"
-				+ " and hr_pk_capaccount = '"
-				+ pkcapa
-				+ "' and pk_glorgbook='"
-				+ pkglo
-				+ "' and hc_pk_assetsprop in ('0001SE00000000000001','0001SE00000000000002','0001SE00000000000003')"
-				+ " and pk_securities2 ='" + pksec + "' and pk_org ='" + pkorg
-				+ "' and pk_group ='" + pkgro + "' and hr_pk_stocksort = '"
-				+ pksto + "' and trade_date <='"
-				+ trade_date.toString().substring(0, 10) + " 23:59:59" + "'";
-
-		String sql2 = "select sum(bargain_num),sum(bargain_sum) "
-				+ "from sim_transformtrade "
-				+ "where transtypecode = 'HV3F-0xx-01'"
-				+ " and nvl(dr,0)=0"
-				+ " and state >= 2"
-				+ " and hr_pk_assetsprop in ('0001SE00000000000001','0001SE00000000000002','0001SE00000000000003')"
-				+ " and hc_pk_capaccount = '" + pkcapa + "' and pk_glorgbook='"
-				+ pkglo + "' and hc_pk_assetsprop = '0001SE00000000000004'"
-				+ " and pk_securities ='" + pksec + "' and pk_org ='" + pkorg
-				+ "' and pk_group ='" + pkgro + "' and hr_pk_stocksort = '"
-				+ pksto + "' and trade_date <='"
-				+ trade_date.toString().substring(0, 10) + " 23:59:59" + "'";
-
-		try {
-			veczr = (Vector) dao.executeQuery(sql1, new VectorProcessor());
-
-			veczc = (Vector) dao.executeQuery(sql2, new VectorProcessor());
-		} catch (DAOException e) {
-			// TODO 自动生成的 catch 块
-			e.printStackTrace();
-		}
-		if (((Vector) veczc.get(0)).get(0) != null) {
-			ZRZC = new UFDouble(((Vector) veczc.get(0)).get(0).toString());
-			ZRZCJE = new UFDouble(((Vector) veczc.get(0)).get(1).toString());
-		}
-		if (((Vector) veczr.get(0)).get(0) != null) {
-			ZRZC = ZRZC.sub(new UFDouble(((Vector) veczr.get(0)).get(0)
-					.toString()));
-			ZRZCJE = ZRZCJE.sub(new UFDouble(((Vector) veczr.get(0)).get(1)
-					.toString()));
-		}
-
-		map.put("ZRZC", ZRZC);
-		map.put("ZRZCJE", ZRZCJE);
-		return map;
-
-	}*/
+	 * 
+	 * @SuppressWarnings({ "unchecked", "rawtypes" }) public Map
+	 * SearchZQZH(StockBalanceVO stvo, UFDate trade_date) { UFDouble ZRZC = new
+	 * UFDouble(0); UFDouble ZRZCJE = new UFDouble(0); Map map = new ArrayMap();
+	 * String pkcapa = stvo.getPk_capaccount(); String pkglo =
+	 * stvo.getPk_glorgbook(); String pksec = stvo.getPk_securities(); String
+	 * pkorg = stvo.getPk_org(); String pkgro = stvo.getPk_group(); String pksto
+	 * = stvo.getPk_stocksort(); Vector veczc = new Vector(); Vector veczr = new
+	 * Vector(); BaseDAO dao = new BaseDAO(); //
+	 * 资产转负债，库存数量-转入量;转出证券类型是当前类型，转入是资产属性，转出为负债属性; String sql1 =
+	 * "select sum(bargain_num2),sum(bargain_sum2) " +
+	 * "from sim_transformtrade " + "where transtypecode = 'HV3F-0xx-01'" +
+	 * " and nvl(dr,0)=0" + " and state >= 2" +
+	 * " and hr_pk_assetsprop = '0001SE00000000000004'" +
+	 * " and hr_pk_capaccount = '" + pkcapa + "' and pk_glorgbook='" + pkglo +
+	 * "' and hc_pk_assetsprop in ('0001SE00000000000001','0001SE00000000000002','0001SE00000000000003')"
+	 * + " and pk_securities2 ='" + pksec + "' and pk_org ='" + pkorg +
+	 * "' and pk_group ='" + pkgro + "' and hr_pk_stocksort = '" + pksto +
+	 * "' and trade_date <='" + trade_date.toString().substring(0, 10) +
+	 * " 23:59:59" + "'";
+	 * 
+	 * String sql2 = "select sum(bargain_num),sum(bargain_sum) " +
+	 * "from sim_transformtrade " + "where transtypecode = 'HV3F-0xx-01'" +
+	 * " and nvl(dr,0)=0" + " and state >= 2" +
+	 * " and hr_pk_assetsprop in ('0001SE00000000000001','0001SE00000000000002','0001SE00000000000003')"
+	 * + " and hc_pk_capaccount = '" + pkcapa + "' and pk_glorgbook='" + pkglo +
+	 * "' and hc_pk_assetsprop = '0001SE00000000000004'" +
+	 * " and pk_securities ='" + pksec + "' and pk_org ='" + pkorg +
+	 * "' and pk_group ='" + pkgro + "' and hr_pk_stocksort = '" + pksto +
+	 * "' and trade_date <='" + trade_date.toString().substring(0, 10) +
+	 * " 23:59:59" + "'";
+	 * 
+	 * try { veczr = (Vector) dao.executeQuery(sql1, new VectorProcessor());
+	 * 
+	 * veczc = (Vector) dao.executeQuery(sql2, new VectorProcessor()); } catch
+	 * (DAOException e) { // TODO 自动生成的 catch 块 e.printStackTrace(); } if
+	 * (((Vector) veczc.get(0)).get(0) != null) { ZRZC = new UFDouble(((Vector)
+	 * veczc.get(0)).get(0).toString()); ZRZCJE = new UFDouble(((Vector)
+	 * veczc.get(0)).get(1).toString()); } if (((Vector) veczr.get(0)).get(0) !=
+	 * null) { ZRZC = ZRZC.sub(new UFDouble(((Vector) veczr.get(0)).get(0)
+	 * .toString())); ZRZCJE = ZRZCJE.sub(new UFDouble(((Vector)
+	 * veczr.get(0)).get(1) .toString())); }
+	 * 
+	 * map.put("ZRZC", ZRZC); map.put("ZRZCJE", ZRZCJE); return map;
+	 * 
+	 * }
+	 */
 
 	/*
 	 * @author zq
 	 * 
 	 * @param StockBalanceVO 负债转托管,托管转负债的证券转换记录
 	 */
-	/*@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Map SearchZQZHTG(StockBalanceVO stvo, UFDate trade_date) {
-		UFDouble ZRZC = new UFDouble(0);
-		UFDouble ZRZCJE = new UFDouble(0);
-		Map map = new ArrayMap();
-		String pkass = stvo.getPk_assetsprop();
-		String pkcapa = stvo.getPk_capaccount();
-		String pksec = stvo.getPk_securities();
-		String pkorg = stvo.getPk_org();
-		String pkgro = stvo.getPk_group();
-		String pksto = stvo.getPk_stocksort();
-		Vector vec1 = new Vector();
-		Vector vec2 = new Vector();
-		BaseDAO dao = new BaseDAO();
-		// 负债转托管，库存数量+转入量;
-		String sql = "select sum(bargain_num2),sum(bargain_sum2) " + "from sim_transformtrade "
-				+ "where nvl(dr,0)=0 " + "and pk_busitype = '1001A21000000014ZPP7' "
-				+ "and transtypecode ='HV3F-Cxx-04'" + " and pk_securities2 ='"
-				+ pksec + "' and pk_org ='" + pkorg + "' and pk_group ='"
-				+ pkgro + "' and hr_pk_assetsprop ='" + pkass
-				+ "' and hr_pk_capaccount ='" + pkcapa + "' and hr_pk_stocksort ='"
-				+ pksto + "' and trade_date <= '"
-				+ trade_date.toString().substring(0, 10) + " 23:59:59"
-				 + "'";
-		// 负债转托管，库存数量-转出量;
-		String sql2 = "select sum(bargain_num),sum(bargain_sum) " + "from sim_transformtrade "
-				+ "where nvl(dr,0)=0 " + "and pk_busitype = '1001A21000000014ZPP7' "
-				+ "and transtypecode ='HV3F-Cxx-04'" + " and pk_securities2 ='"
-				+ pksec + "' and pk_org ='" + pkorg + "' and pk_group ='"
-				+ pkgro + "' and hc_pk_assetsprop ='" + pkass
-				+ "' and hc_pk_capaccount ='" + pkcapa + "' and hc_pk_stocksort ='"
-				+ pksto + "' and trade_date <= '"
-				+ trade_date.toString().substring(0, 10) + " 23:59:59"
-				 + "'";
-		try {
-			vec1 = (Vector) dao.executeQuery(sql, new VectorProcessor());
-			vec2 = (Vector) dao.executeQuery(sql2, new VectorProcessor());
-		} catch (DAOException e) {
-			// TODO 自动生成的 catch 块
-			e.printStackTrace();
-		}
-		if (((Vector) vec1.get(0)).get(0) != null&&((Vector) vec1.get(0)).get(1) != null) {
-			ZRZC = new UFDouble(((Vector) vec1.get(0)).get(0).toString());
-			ZRZCJE = new UFDouble(((Vector) vec1.get(0)).get(1).toString());
-		}
-		if (((Vector) vec2.get(0)).get(0) != null&&((Vector) vec2.get(0)).get(1) != null) {
-			ZRZC = ZRZC.sub(new UFDouble(((Vector) vec2.get(0)).get(0).toString()));
-			ZRZCJE = ZRZCJE.sub(new UFDouble(((Vector) vec2.get(0)).get(1).toString()));
-		}
-
-		map.put("ZRZC", ZRZC);
-		map.put("ZRZCJE", ZRZCJE);
-		return map;
-
-	}*/
+	/*
+	 * @SuppressWarnings({ "unchecked", "rawtypes" }) public Map
+	 * SearchZQZHTG(StockBalanceVO stvo, UFDate trade_date) { UFDouble ZRZC =
+	 * new UFDouble(0); UFDouble ZRZCJE = new UFDouble(0); Map map = new
+	 * ArrayMap(); String pkass = stvo.getPk_assetsprop(); String pkcapa =
+	 * stvo.getPk_capaccount(); String pksec = stvo.getPk_securities(); String
+	 * pkorg = stvo.getPk_org(); String pkgro = stvo.getPk_group(); String pksto
+	 * = stvo.getPk_stocksort(); Vector vec1 = new Vector(); Vector vec2 = new
+	 * Vector(); BaseDAO dao = new BaseDAO(); // 负债转托管，库存数量+转入量; String sql =
+	 * "select sum(bargain_num2),sum(bargain_sum2) " +
+	 * "from sim_transformtrade " + "where nvl(dr,0)=0 " +
+	 * "and pk_busitype = '1001A21000000014ZPP7' " +
+	 * "and transtypecode ='HV3F-Cxx-04'" + " and pk_securities2 ='" + pksec +
+	 * "' and pk_org ='" + pkorg + "' and pk_group ='" + pkgro +
+	 * "' and hr_pk_assetsprop ='" + pkass + "' and hr_pk_capaccount ='" +
+	 * pkcapa + "' and hr_pk_stocksort ='" + pksto + "' and trade_date <= '" +
+	 * trade_date.toString().substring(0, 10) + " 23:59:59" + "'"; //
+	 * 负债转托管，库存数量-转出量; String sql2 = "select sum(bargain_num),sum(bargain_sum) "
+	 * + "from sim_transformtrade " + "where nvl(dr,0)=0 " +
+	 * "and pk_busitype = '1001A21000000014ZPP7' " +
+	 * "and transtypecode ='HV3F-Cxx-04'" + " and pk_securities2 ='" + pksec +
+	 * "' and pk_org ='" + pkorg + "' and pk_group ='" + pkgro +
+	 * "' and hc_pk_assetsprop ='" + pkass + "' and hc_pk_capaccount ='" +
+	 * pkcapa + "' and hc_pk_stocksort ='" + pksto + "' and trade_date <= '" +
+	 * trade_date.toString().substring(0, 10) + " 23:59:59" + "'"; try { vec1 =
+	 * (Vector) dao.executeQuery(sql, new VectorProcessor()); vec2 = (Vector)
+	 * dao.executeQuery(sql2, new VectorProcessor()); } catch (DAOException e) {
+	 * // TODO 自动生成的 catch 块 e.printStackTrace(); } if (((Vector)
+	 * vec1.get(0)).get(0) != null&&((Vector) vec1.get(0)).get(1) != null) {
+	 * ZRZC = new UFDouble(((Vector) vec1.get(0)).get(0).toString()); ZRZCJE =
+	 * new UFDouble(((Vector) vec1.get(0)).get(1).toString()); } if (((Vector)
+	 * vec2.get(0)).get(0) != null&&((Vector) vec2.get(0)).get(1) != null) {
+	 * ZRZC = ZRZC.sub(new UFDouble(((Vector) vec2.get(0)).get(0).toString()));
+	 * ZRZCJE = ZRZCJE.sub(new UFDouble(((Vector)
+	 * vec2.get(0)).get(1).toString())); }
+	 * 
+	 * map.put("ZRZC", ZRZC); map.put("ZRZCJE", ZRZCJE); return map;
+	 * 
+	 * }
+	 */
 	//
 	// public UFDouble getaccrual_sum(StockBalanceVO stvo) {
 	// UFDouble accrual_sum = null;
@@ -541,36 +506,36 @@ public class CalcInterestByConverse {
 		 */
 		if ("0001SE00000000000004".equals(stvo.getPk_assetsprop())) {
 			UFDouble lastnum = new UFDouble(0);
-//			UFDouble MRMC = new UFDouble(SearchZQJY(stvo, trade_date).get(
-//					"MRMC").toString()); // 计算出债券的买入卖出量；
-//			UFDouble ZRZC = new UFDouble(SearchZQZH(stvo, trade_date).get(
-//					"ZRZC").toString()); // 计算出债券的转入转出量；
-//			UFDouble ZRZCTG = new UFDouble(SearchZQZHTG(stvo, trade_date)
-//					.get("ZRZC").toString()); // 计算出债券的转入转出托管量；
+			// UFDouble MRMC = new UFDouble(SearchZQJY(stvo, trade_date).get(
+			// "MRMC").toString()); // 计算出债券的买入卖出量；
+			// UFDouble ZRZC = new UFDouble(SearchZQZH(stvo, trade_date).get(
+			// "ZRZC").toString()); // 计算出债券的转入转出量；
+			// UFDouble ZRZCTG = new UFDouble(SearchZQZHTG(stvo, trade_date)
+			// .get("ZRZC").toString()); // 计算出债券的转入转出托管量；
 			// 存在买入卖出或者债券转换，进行余量计算
-			
-				lastnum =new UFDouble(stvo.getVdef1());
-				if (CostConstant.CALC_INTEREST_WAY1.equals(calcway)) {// 牌价倒扎
-					if (vo == null || vo.getYjlx() == null) {
-						QueryBasePubInfo info = new QueryBasePubInfo();
-						String name = info.querySecuritesName(stvo
-								.getPk_securities());
-						throw new BusinessException("证券:[" + name + "]，日期:["
-								+ trade_date.toLocalString()
-								+ "]行情应收利息没有录入，按牌价倒扎无法计提应收利息！");
-					}
-					UFDouble lxprice = vo.getYjlx();
-					qmlx = SafeCompute.multiply(lastnum, lxprice);
-				} else {// 票面利率正算
-					CalcBuySellInterest buysell = new CalcBuySellInterest();
-					qmlx = buysell.calcInterestTradedate(lastnum,
-							stvo.getPk_securities(), trade_date,
-							stvo.getPk_glorgbook());
+
+			lastnum = new UFDouble(stvo.getVdef1());
+			if (CostConstant.CALC_INTEREST_WAY1.equals(calcway)) {// 牌价倒扎
+				if (vo == null || vo.getYjlx() == null) {
+					QueryBasePubInfo info = new QueryBasePubInfo();
+					String name = info.querySecuritesName(stvo
+							.getPk_securities());
+					throw new BusinessException("证券:[" + name + "]，日期:["
+							+ trade_date.toLocalString()
+							+ "]行情应收利息没有录入，按牌价倒扎无法计提应收利息！");
 				}
-				if (qmlx != null) {
-					qmlx = qmlx.setScale(2, UFDouble.ROUND_HALF_UP);
-				}
-			
+				UFDouble lxprice = vo.getYjlx();
+				qmlx = SafeCompute.multiply(lastnum, lxprice);
+			} else {// 票面利率正算
+				CalcBuySellInterest buysell = new CalcBuySellInterest();
+				qmlx = buysell.calcInterestTradedate(lastnum,
+						stvo.getPk_securities(), trade_date,
+						stvo.getPk_glorgbook());
+			}
+			if (qmlx != null) {
+				qmlx = qmlx.setScale(2, UFDouble.ROUND_HALF_UP);
+			}
+
 		} else {
 			if (CostConstant.CALC_INTEREST_WAY1.equals(calcway)) {// 牌价倒扎
 				if (vo == null || vo.getYjlx() == null) {

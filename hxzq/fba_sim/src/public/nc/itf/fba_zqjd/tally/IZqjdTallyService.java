@@ -19,10 +19,12 @@ public interface IZqjdTallyService {
 	void deleteSellTally(ITrade_Data tradeVO) throws BusinessException;
 
 	// ¬Ú»ÎÃ®’À
-	void saveBuyTally(ITrade_Data tradeVO, UFDouble sellscost) throws BusinessException;
+	void saveBuyTally(ITrade_Data tradeVO, UFDouble sellscost)
+			throws BusinessException;
 
 	void deleteBuyTally(ITrade_Data tradeVO) throws BusinessException;
 
-	ZqjdTallyVO gatherSellBuyBalance(ITrade_Data tradeVO) throws BusinessException;
+	ZqjdTallyVO gatherSellBuyBalance(ITrade_Data tradeVO)
+			throws BusinessException;
 
 }

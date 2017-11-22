@@ -42,7 +42,8 @@ public class CalInterestAction extends NCAction {
 		if (trade_date == null) {
 			throw new BusinessException("请选择应付利息计提日期!  ");
 		}
-		BannerDialog dialog = new BannerDialog(getModel().getContext().getEntranceUI());
+		BannerDialog dialog = new BannerDialog(getModel().getContext()
+				.getEntranceUI());
 		dialog.setName("InterestCal");
 		dialog.setTitle("应付利息计提");
 		dialog.setEndText("应付利息计提，耗时操作中，请稍候...");
@@ -59,17 +60,21 @@ public class CalInterestAction extends NCAction {
 
 		private UFDate trade_date;
 
-		public SimulateThread(BannerDialog dialog, LoginContext context, UFDate trade_date) {
+		public SimulateThread(BannerDialog dialog, LoginContext context,
+				UFDate trade_date) {
 			this.dialog = dialog;
 			this.context = context;
 			this.trade_date = trade_date;
 		}
 
+		@Override
 		public void run() {
 			try {
-				IPayableinterestcalMaintain interest = NCLocator.getInstance().lookup(IPayableinterestcalMaintain.class);
+				IPayableinterestcalMaintain interest = NCLocator.getInstance()
+						.lookup(IPayableinterestcalMaintain.class);
 				// 利息计算
-				PayableInterestCalVO[] distillvos = interest.calInterest(context, trade_date);
+				PayableInterestCalVO[] distillvos = interest.calInterest(
+						context, trade_date);
 				if (distillvos != null && distillvos.length > 0) {
 					getModel().initModel(null);// 清空界面
 					getModel().addLines(distillvos);// 增行
@@ -78,7 +83,8 @@ public class CalInterestAction extends NCAction {
 				}
 			} catch (Exception e) {
 				Logger.info(e);
-				MessageDialog.showErrorDlg(getModel().getContext().getEntranceUI(), "错误", e.getMessage());
+				MessageDialog.showErrorDlg(getModel().getContext()
+						.getEntranceUI(), "错误", e.getMessage());
 			} finally {
 				if (dialog != null)
 					this.dialog.end();

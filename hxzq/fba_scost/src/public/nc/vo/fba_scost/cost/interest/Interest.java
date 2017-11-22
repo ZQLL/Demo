@@ -769,7 +769,8 @@ public class Interest extends SuperVO {
 	 *            基准利率类型
 	 */
 	public void setPk_criterionratetype(String pk_criterionratetype) {
-		this.setAttributeValue(Interest.PK_CRITERIONRATETYPE, pk_criterionratetype);
+		this.setAttributeValue(Interest.PK_CRITERIONRATETYPE,
+				pk_criterionratetype);
 	}
 
 	/**
@@ -1062,6 +1063,7 @@ public class Interest extends SuperVO {
 	}
 
 	@Override
+	
 	public IVOMeta getMetaData() {
 		return VOMetaFactory.getInstance().getVOMeta("fba_sim.sim_interest");
 	}

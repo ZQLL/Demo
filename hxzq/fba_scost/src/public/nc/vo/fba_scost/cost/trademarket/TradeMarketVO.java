@@ -99,10 +99,10 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 合约单位
 	 * 
-	 * 为了个期权计算时乘合约单位，新增字段con_unit QS add 
+	 * 为了个期权计算时乘合约单位，新增字段con_unit QS add
 	 * 
 	 */
-	
+
 	public static final String CON_UNIT = "con_unit";
 	/**
 	 * 时间戳
@@ -132,7 +132,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置应计利息
 	 * 
-	 * @param accrual 应计利息
+	 * @param accrual
+	 *            应计利息
 	 */
 	public void setAccrual(UFDouble accrual) {
 		this.setAttributeValue(TradeMarketVO.ACCRUAL, accrual);
@@ -150,7 +151,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置日均价
 	 * 
-	 * @param average_price 日均价
+	 * @param average_price
+	 *            日均价
 	 */
 	public void setAverage_price(UFDouble average_price) {
 		this.setAttributeValue(TradeMarketVO.AVERAGE_PRICE, average_price);
@@ -168,7 +170,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置收盘价格
 	 * 
-	 * @param close_price 收盘价格
+	 * @param close_price
+	 *            收盘价格
 	 */
 	public void setClose_price(UFDouble close_price) {
 		this.setAttributeValue(TradeMarketVO.CLOSE_PRICE, close_price);
@@ -186,7 +189,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置创建时间
 	 * 
-	 * @param creationtime 创建时间
+	 * @param creationtime
+	 *            创建时间
 	 */
 	public void setCreationtime(UFDateTime creationtime) {
 		this.setAttributeValue(TradeMarketVO.CREATIONTIME, creationtime);
@@ -204,7 +208,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置创建人
 	 * 
-	 * @param creator 创建人
+	 * @param creator
+	 *            创建人
 	 */
 	public void setCreator(String creator) {
 		this.setAttributeValue(TradeMarketVO.CREATOR, creator);
@@ -222,7 +227,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置净价
 	 * 
-	 * @param j_price 净价
+	 * @param j_price
+	 *            净价
 	 */
 	public void setJ_price(UFDouble j_price) {
 		this.setAttributeValue(TradeMarketVO.J_PRICE, j_price);
@@ -240,7 +246,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置最高价格
 	 * 
-	 * @param max_price 最高价格
+	 * @param max_price
+	 *            最高价格
 	 */
 	public void setMax_price(UFDouble max_price) {
 		this.setAttributeValue(TradeMarketVO.MAX_PRICE, max_price);
@@ -258,7 +265,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置最低价格
 	 * 
-	 * @param min_price 最低价格
+	 * @param min_price
+	 *            最低价格
 	 */
 	public void setMin_price(UFDouble min_price) {
 		this.setAttributeValue(TradeMarketVO.MIN_PRICE, min_price);
@@ -276,7 +284,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置修改时间
 	 * 
-	 * @param modifiedtime 修改时间
+	 * @param modifiedtime
+	 *            修改时间
 	 */
 	public void setModifiedtime(UFDateTime modifiedtime) {
 		this.setAttributeValue(TradeMarketVO.MODIFIEDTIME, modifiedtime);
@@ -294,7 +303,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置修改人
 	 * 
-	 * @param modifier 修改人
+	 * @param modifier
+	 *            修改人
 	 */
 	public void setModifier(String modifier) {
 		this.setAttributeValue(TradeMarketVO.MODIFIER, modifier);
@@ -312,7 +322,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置ngzjj
 	 * 
-	 * @param ngzjj ngzjj
+	 * @param ngzjj
+	 *            ngzjj
 	 */
 	public void setNgzjj(UFDouble ngzjj) {
 		this.setAttributeValue(TradeMarketVO.NGZJJ, ngzjj);
@@ -330,7 +341,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置ngzqj
 	 * 
-	 * @param ngzqj ngzqj
+	 * @param ngzqj
+	 *            ngzqj
 	 */
 	public void setNgzqj(UFDouble ngzqj) {
 		this.setAttributeValue(TradeMarketVO.NGZQJ, ngzqj);
@@ -348,7 +360,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置nyear
 	 * 
-	 * @param nyear nyear
+	 * @param nyear
+	 *            nyear
 	 */
 	public void setNyear(Integer nyear) {
 		this.setAttributeValue(TradeMarketVO.NYEAR, nyear);
@@ -366,7 +379,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置开盘价格
 	 * 
-	 * @param open_price 开盘价格
+	 * @param open_price
+	 *            开盘价格
 	 */
 	public void setOpen_price(UFDouble open_price) {
 		this.setAttributeValue(TradeMarketVO.OPEN_PRICE, open_price);
@@ -384,7 +398,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置集团
 	 * 
-	 * @param pk_group 集团
+	 * @param pk_group
+	 *            集团
 	 */
 	public void setPk_group(String pk_group) {
 		this.setAttributeValue(TradeMarketVO.PK_GROUP, pk_group);
@@ -402,7 +417,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置组织
 	 * 
-	 * @param pk_org 组织
+	 * @param pk_org
+	 *            组织
 	 */
 	public void setPk_org(String pk_org) {
 		this.setAttributeValue(TradeMarketVO.PK_ORG, pk_org);
@@ -420,7 +436,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置组织版本
 	 * 
-	 * @param pk_org_v 组织版本
+	 * @param pk_org_v
+	 *            组织版本
 	 */
 	public void setPk_org_v(String pk_org_v) {
 		this.setAttributeValue(TradeMarketVO.PK_ORG_V, pk_org_v);
@@ -438,7 +455,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置交易证券
 	 * 
-	 * @param pk_securities 交易证券
+	 * @param pk_securities
+	 *            交易证券
 	 */
 	public void setPk_securities(String pk_securities) {
 		this.setAttributeValue(TradeMarketVO.PK_SECURITIES, pk_securities);
@@ -456,7 +474,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置主键
 	 * 
-	 * @param pk_trademarket 主键
+	 * @param pk_trademarket
+	 *            主键
 	 */
 	public void setPk_trademarket(String pk_trademarket) {
 		this.setAttributeValue(TradeMarketVO.PK_TRADEMARKET, pk_trademarket);
@@ -474,7 +493,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置全价
 	 * 
-	 * @param q_price 全价
+	 * @param q_price
+	 *            全价
 	 */
 	public void setQ_price(UFDouble q_price) {
 		this.setAttributeValue(TradeMarketVO.Q_PRICE, q_price);
@@ -492,7 +512,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置交易日期
 	 * 
-	 * @param trade_date 交易日期
+	 * @param trade_date
+	 *            交易日期
 	 */
 	public void setTrade_date(UFDate trade_date) {
 		this.setAttributeValue(TradeMarketVO.TRADE_DATE, trade_date);
@@ -510,7 +531,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置时间戳
 	 * 
-	 * @param ts 时间戳
+	 * @param ts
+	 *            时间戳
 	 */
 	public void setTs(UFDateTime ts) {
 		this.setAttributeValue(TradeMarketVO.TS, ts);
@@ -528,7 +550,8 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置利息单价
 	 * 
-	 * @param yjlx 利息单价
+	 * @param yjlx
+	 *            利息单价
 	 */
 	public void setYjlx(UFDouble yjlx) {
 		this.setAttributeValue(TradeMarketVO.YJLX, yjlx);
@@ -546,12 +569,13 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置挂牌类型
 	 * 
-	 * @param listing_category 挂牌类型
+	 * @param listing_category
+	 *            挂牌类型
 	 */
 	public void setListing_category(Integer listing_category) {
 		this.setAttributeValue(TradeMarketVO.LISTING_CATEGORY, listing_category);
 	}
-	
+
 	/**
 	 * 获取合约单元
 	 * 
@@ -564,12 +588,14 @@ public class TradeMarketVO extends SuperVO {
 	/**
 	 * 设置合约单元
 	 * 
-	 * @param con_unit 合约单元
+	 * @param con_unit
+	 *            合约单元
 	 */
 	public void setCon_unit(UFDouble con_unit) {
 		this.setAttributeValue(TradeMarketVO.CON_UNIT, con_unit);
 	}
 
+	
 	@Override
 	public IVOMeta getMetaData() {
 		return VOMetaFactory.getInstance().getVOMeta("fba_sim.trademarket");

@@ -8,8 +8,6 @@ import nc.cmp.utils.CmpUtils;
 import nc.itf.cmp.settlement.ISettlementService;
 import nc.ui.cmp.settlement.view.SettlementCard;
 import nc.ui.cmp.settlement.view.SettlementList;
-import nc.ui.pub.beans.MessageDialog;
-import nc.ui.pub.bill.BillModel;
 import nc.ui.trade.business.HYPubBO_Client;
 import nc.ui.uif2.NCAction;
 import nc.ui.uif2.model.AbstractAppModel;
@@ -40,23 +38,25 @@ public class SettleDefaultAction extends NCAction {
 		if (isListSelected()) {
 			SettlementAggVO[] aggvos = null;
 			// Object[] object = listView.getModel().getSelectedOperaDatas();
-			//update by lihaibo
+			// update by lihaibo
 			Object[] object = listView.getBillListPanel().getMultiSelectedVOs(
 					SettlementAggVO.class.getName(),
 					SettlementHeadVO.class.getName(),
 					SettlementBodyVO.class.getName());
-//			if (object != null && object.length > 0) {
-//				SettlementBodyVO[] bodyVOs = null;
-//				String headPk = null;
-//				for (SettlementAggVO aggVO : (SettlementAggVO[])object) {
-//					bodyVOs = (SettlementBodyVO[]) aggVO.getChildrenVO();
-//					if(bodyVOs == null) {
-////						MessageDialog.showErrorDlg(getModel().getContext().getEntranceUI(), "错误",
-////								"请选择表体数据！");
-//						return null;
-//					}
-//				}
-//			}
+			// if (object != null && object.length > 0) {
+			// SettlementBodyVO[] bodyVOs = null;
+			// String headPk = null;
+			// for (SettlementAggVO aggVO : (SettlementAggVO[])object) {
+			// bodyVOs = (SettlementBodyVO[]) aggVO.getChildrenVO();
+			// if(bodyVOs == null) {
+			// //
+			// MessageDialog.showErrorDlg(getModel().getContext().getEntranceUI(),
+			// "错误",
+			// // "请选择表体数据！");
+			// return null;
+			// }
+			// }
+			// }
 			if (object instanceof BillAggVO[]) {
 				aggvos = (SettlementAggVO[]) object;
 				if (aggvos != null && aggvos.length > 0) {
@@ -67,7 +67,7 @@ public class SettleDefaultAction extends NCAction {
 							headPk = aggVO.getParentVO().getPrimaryKey();
 							bodyVOs = (SettlementBodyVO[]) HYPubBO_Client
 									.queryByCondition(SettlementBodyVO.class,
-											"pk_settlement = '"+headPk+"'");
+											"pk_settlement = '" + headPk + "'");
 							aggVO.setChildrenVO(bodyVOs);
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -77,9 +77,9 @@ public class SettleDefaultAction extends NCAction {
 			} else if ((null != object && object.length > 0 ? object[0] instanceof SettlementAggVO
 					: false)) {
 				aggvos = new SettlementAggVO[object.length];
-				
+
 				System.arraycopy(object, 0, aggvos, 0, object.length);
-				//update by lihaibo
+				// update by lihaibo
 				if (aggvos != null && aggvos.length > 0) {
 					SettlementBodyVO[] bodyVOs = null;
 					String headPk = null;
@@ -88,7 +88,7 @@ public class SettleDefaultAction extends NCAction {
 							headPk = aggVO.getParentVO().getPrimaryKey();
 							bodyVOs = (SettlementBodyVO[]) HYPubBO_Client
 									.queryByCondition(SettlementBodyVO.class,
-											"pk_settlement = '"+headPk+"'");
+											"pk_settlement = '" + headPk + "'");
 							aggVO.setChildrenVO(bodyVOs);
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -183,22 +183,22 @@ public class SettleDefaultAction extends NCAction {
 	public SettlementAggVO[] getSelectedAggVOs() {
 		Object[] value = null;
 		if (isListSelected()) {
-			//update by lihaibo
+			// update by lihaibo
 			value = (getListView()).getBillListPanel().getMultiSelectedVOs(
 					SettlementAggVO.class.getName(),
 					SettlementHeadVO.class.getName(),
 					SettlementBodyVO.class.getName());
-			
-//			if (value != null && value.length > 0) {
-//				SettlementBodyVO[] bodyVOs = null;
-//				String headPk = null;
-//				for (SettlementAggVO aggVO : (SettlementAggVO[])value) {
-//					bodyVOs = (SettlementBodyVO[]) aggVO.getChildrenVO();
-//					if(bodyVOs == null) {
-//						return null;
-//					}
-//				}
-//			}
+
+			// if (value != null && value.length > 0) {
+			// SettlementBodyVO[] bodyVOs = null;
+			// String headPk = null;
+			// for (SettlementAggVO aggVO : (SettlementAggVO[])value) {
+			// bodyVOs = (SettlementBodyVO[]) aggVO.getChildrenVO();
+			// if(bodyVOs == null) {
+			// return null;
+			// }
+			// }
+			// }
 			// value = (getListView()).getModel().getSelectedOperaDatas();
 		} else {
 			value = new Object[1];
@@ -211,7 +211,7 @@ public class SettleDefaultAction extends NCAction {
 		SettlementAggVO[] aggs = new SettlementAggVO[value.length];
 		System.arraycopy(value, 0, aggs, 0, aggs.length);
 		if (!CmpUtils.isListNull(aggs)) {
-			//update by lihaibo
+			// update by lihaibo
 			SettlementBodyVO[] bodyVOs = null;
 			String headPk = null;
 			for (SettlementAggVO aggVO : aggs) {
@@ -219,7 +219,7 @@ public class SettleDefaultAction extends NCAction {
 					headPk = aggVO.getParentVO().getPrimaryKey();
 					bodyVOs = (SettlementBodyVO[]) HYPubBO_Client
 							.queryByCondition(SettlementBodyVO.class,
-									"pk_settlement = '"+ headPk +"'");
+									"pk_settlement = '" + headPk + "'");
 					aggVO.setChildrenVO(bodyVOs);
 				} catch (Exception e) {
 					e.printStackTrace();

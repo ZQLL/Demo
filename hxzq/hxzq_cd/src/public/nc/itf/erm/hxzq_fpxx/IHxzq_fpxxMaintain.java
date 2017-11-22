@@ -6,14 +6,13 @@ import nc.vo.pub.BusinessException;
 
 public interface IHxzq_fpxxMaintain {
 
-    public void delete(FpxxBillVO[] vos) throws BusinessException ;
+	public void delete(FpxxBillVO[] vos) throws BusinessException;
 
-    public FpxxBillVO[] insert(FpxxBillVO[] vos) throws BusinessException ;
-  
-    public FpxxBillVO[] update(FpxxBillVO[] vos) throws BusinessException ;
+	public FpxxBillVO[] insert(FpxxBillVO[] vos) throws BusinessException;
 
+	public FpxxBillVO[] update(FpxxBillVO[] vos) throws BusinessException;
 
-    public FpxxBillVO[] query(IQueryScheme queryScheme)
-      throws BusinessException;
+	public FpxxBillVO[] query(IQueryScheme queryScheme)
+			throws BusinessException;
 
 }
