@@ -812,12 +812,9 @@ public class DataImportDBHdl {
 						UFDate endd = new UFDate(ed);
 						String sql1 = "select pk_interest,enddate from sim_interest where nvl(dr,0)=0 and pk_securities = '"
 								+ code
-								+ "' and issuedate like '"
-								+ Begdate.toString().substring(0, 10) + "%'";
+								+"'";
 						Vector vec1 = (Vector) dao.executeQuery(sql1,
 								new VectorProcessor());
-						// Date sdate = null;
-						// Date edate = null;
 						int daysnum = 0;
 						// 取出利率设置表的pk
 						if (vec1 != null && vec1.size() == 1) {
@@ -909,7 +906,7 @@ public class DataImportDBHdl {
 											.get(0);
 
 									// 删除多余的信息
-									String sqlout = "update sim_rateperiod set dr=1 "
+									String sqlout = "delete from sim_rateperiod "
 											+ "where nvl(dr,0)=0 "
 											+ "and pk_interest ='"
 											+ pk_interest
