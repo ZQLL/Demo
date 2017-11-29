@@ -22,6 +22,7 @@ import nc.vo.pubapp.report.ReportQueryResult;
 
 import com.ufida.dataset.IContext;
 import java.util.*;
+
 /**
  * 证券交易库存变动报表
  * 
@@ -65,7 +66,6 @@ public class StockChangeImpl implements IStockChange {
 	// 期间转付兑付利息
 	private ArrayList<ZqjdVO> nowTurnResult = null;
 
-	
 	@Override
 	public ReportQueryResult queryDetailData(IContext context)
 			throws BusinessException {

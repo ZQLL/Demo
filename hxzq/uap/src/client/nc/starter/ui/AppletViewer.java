@@ -18,7 +18,6 @@ import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 
-
 public class AppletViewer extends JFrame {
 	private static final long serialVersionUID = 6195829231526672595L;
 	private String protocol = "http";

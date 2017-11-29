@@ -658,7 +658,6 @@ public class DataImportBVO1 extends SuperVO {
 		this.setAttributeValue(DataImportBVO1.TS, ts);
 	}
 
-	
 	@Override
 	public IVOMeta getMetaData() {
 		return VOMetaFactory.getInstance().getVOMeta("fba_secd.DataImportBVO1");

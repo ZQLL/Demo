@@ -31,7 +31,6 @@ public class FlowStateAction extends AbstractSingleApproveAction {
 		dlg.showModal();
 	}
 
-	
 	@Override
 	String getName() {
 		// update by lihaibo

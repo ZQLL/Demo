@@ -65,7 +65,6 @@ public class ACCSecInvestDailyQueryImpl implements IACCSecInvestDailyQuery {
 	private static String newestts = "";
 
 	@Override
-	
 	public ReportQueryResult queryDetailData(IContext context)
 			throws BusinessException {
 		ReportQueryConUtil qryconutil = new ReportQueryConUtil(context);

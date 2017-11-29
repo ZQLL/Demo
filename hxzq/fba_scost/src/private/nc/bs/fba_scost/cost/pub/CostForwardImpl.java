@@ -19,7 +19,6 @@ public class CostForwardImpl implements ICostForward {
 
 	private QueryInterestBaseInfo queryInfo = null;
 
-	
 	@Override
 	public UFDouble calcInterest(ICostingTool costingtool, ITrade_Data tradevo)
 			throws BusinessException {
@@ -58,7 +57,6 @@ public class CostForwardImpl implements ICostForward {
 		return lx;
 	}
 
-	
 	@Override
 	public UFDouble forwardInterestDistill(ICostingTool costingtool,
 			StockBalanceVO stockbalancevo, ITrade_Data vo)
@@ -77,7 +75,6 @@ public class CostForwardImpl implements ICostForward {
 	}
 
 	@Override
-	
 	public void saveInterestDistill(ICostingTool costingtool, ITrade_Data vo)
 			throws BusinessException {
 		String pk_glorg = costingtool.getCostParaVO().getCheckParavo()
@@ -91,14 +88,12 @@ public class CostForwardImpl implements ICostForward {
 	}
 
 	@Override
-	
 	public void clearDistillInterest(ICostingTool costingtool)
 			throws BusinessException {
 		InterestSaveClear save = new InterestSaveClear();
 		save.clearDistillInterest(costingtool);
 	}
 
-	
 	@Override
 	public UFDouble forwardFairValueDistill(ICostingTool costingtool,
 			StockBalanceVO stockbalancevo, ITrade_Data vo)
@@ -115,7 +110,6 @@ public class CostForwardImpl implements ICostForward {
 		return fx;
 	}
 
-	
 	@Override
 	public void saveFairValueDistill(ICostingTool costingtool, ITrade_Data vo)
 			throws BusinessException {
@@ -129,7 +123,6 @@ public class CostForwardImpl implements ICostForward {
 		}
 	}
 
-	
 	@Override
 	public void clearDistillFv(ICostingTool costingtool)
 			throws BusinessException {
@@ -145,7 +138,6 @@ public class CostForwardImpl implements ICostForward {
 	}
 
 	@Override
-	
 	public UFDouble forwardFairValueDistill_debt(ICostingTool costingtool,
 			ZqjdTallyVO zqjdtallyvo, ITrade_Data vo) throws BusinessException {
 		// TODO 自动生成的方法存根

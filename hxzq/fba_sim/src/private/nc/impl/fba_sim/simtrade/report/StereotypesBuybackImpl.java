@@ -41,6 +41,7 @@ import nc.vo.trade.voutils.VOUtil;
 import com.ufida.dataset.IContext;
 import com.ufida.report.anareport.FreeReportContextKey;
 import java.util.*;
+
 /**
  * 约定式回购报表实现
  * 
@@ -48,7 +49,6 @@ import java.util.*;
  * 
  */
 public class StereotypesBuybackImpl implements IStereotypesBuyback {
-
 
 	@Override
 	public ReportQueryResult queryDetailData(IContext context)

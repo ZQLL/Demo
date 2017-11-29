@@ -33,6 +33,7 @@ import nc.vo.pubapp.AppContext;
 import nc.vo.pubapp.pattern.model.entity.bill.AbstractBill;
 import nc.vo.pubapp.pattern.tool.performance.DeepCloneTool;
 import java.util.*;
+
 public class DataImportDBHdl {
 
 	private Map<String, String> orgInfoMap = new HashMap<String, String>();
@@ -750,6 +751,7 @@ public class DataImportDBHdl {
 	 * @param dataLst
 	 * @param unNormalMetaDataCache
 	 * @throws BusinessException
+	 * @throws Exception
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked", "unused" })
 	public String importToDB(List dataLst, Map unNormalMetaDataCache)
@@ -811,8 +813,7 @@ public class DataImportDBHdl {
 						UFDate startd = new UFDate(sd);
 						UFDate endd = new UFDate(ed);
 						String sql1 = "select pk_interest,enddate from sim_interest where nvl(dr,0)=0 and pk_securities = '"
-								+ code
-								+"'";
+								+ code + "'";
 						Vector vec1 = (Vector) dao.executeQuery(sql1,
 								new VectorProcessor());
 						int daysnum = 0;
@@ -866,12 +867,68 @@ public class DataImportDBHdl {
 											"periodsum").toString();// 计息总周期数
 									String ratetype = pvo.getAttributeValue(
 											"ratetype").toString();// 利率种类
+									if (ratetype.equals("固定利率")) {
+										ratetype = "01";
+									} else if (ratetype.equals("浮动利率")) {
+										ratetype = "02";
+									} else if (ratetype.equals("累进利率")) {
+										ratetype = "03";
+									} else
+										throw new BusinessException(pvo
+												.getAttributeValue(
+														"pk_securities")
+												.toString()
+												+ " 证券利率种类有问题！");
+
 									String periodtype = pvo.getAttributeValue(
 											"periodtype").toString();// 付息周期
+									if (periodtype.equals("按年付息")) {
+										periodtype = "01";
+									} else if (periodtype.equals("半年付息")) {
+										periodtype = "02";
+									} else if (periodtype.equals("按季付息")) {
+										periodtype = "03";
+									} else if (periodtype.equals("按月付息")) {
+										periodtype = "04";
+									} else if (periodtype.equals("超短融")) {
+										periodtype = "05";
+									} else if (periodtype.equals("自定义")) {
+										periodtype = "06";
+									} else
+										throw new BusinessException(pvo
+												.getAttributeValue(
+														"pk_securities")
+												.toString()
+												+ " 证券付息周期有问题！");
+
 									String paytype = pvo.getAttributeValue(
 											"paytype").toString();// 付息方式
+									if (paytype.equals("逐期付息")) {
+										paytype = "01";
+									} else if (paytype.equals("到期一次还本付息")) {
+										paytype = "02";
+									} else if (paytype.equals("贴现")) {
+										paytype = "03";
+									} else
+										throw new BusinessException(pvo
+												.getAttributeValue(
+														"pk_securities")
+												.toString()
+												+ " 证券付息方式有问题！");
+
 									String profittype = pvo.getAttributeValue(
 											"profittype").toString();// 收益方式
+									if (profittype.equals("全价交易")) {
+										profittype = "01";
+									} else if (profittype.equals("净价交易")) {
+										profittype = "02";
+									} else
+										throw new BusinessException(pvo
+												.getAttributeValue(
+														"pk_securities")
+												.toString()
+												+ " 证券收益方式有问题！");
+
 									String sqlin = "update sim_interest set yearrate = '"
 											+ yearrate
 											+ "' , enddate ='"
@@ -993,6 +1050,73 @@ public class DataImportDBHdl {
 										"days_num", daysnum);
 							}
 							vos1[0] = vos[i];
+							String ratetype = pvo.getAttributeValue("ratetype")
+									.toString();// 利率种类
+							if (ratetype.equals("固定利率")) {
+								ratetype = "01";
+							} else if (ratetype.equals("浮动利率")) {
+								ratetype = "02";
+							} else if (ratetype.equals("累进利率")) {
+								ratetype = "03";
+							} else
+								throw new BusinessException(pvo
+										.getAttributeValue("pk_securities")
+										.toString()
+										+ " 证券利率种类有问题！");
+
+							String periodtype = pvo.getAttributeValue(
+									"periodtype").toString();// 付息周期
+							if (periodtype.equals("按年付息")) {
+								periodtype = "01";
+							} else if (periodtype.equals("半年付息")) {
+								periodtype = "02";
+							} else if (periodtype.equals("按季付息")) {
+								periodtype = "03";
+							} else if (periodtype.equals("按月付息")) {
+								periodtype = "04";
+							} else if (periodtype.equals("超短融")) {
+								periodtype = "05";
+							} else if (periodtype.equals("自定义")) {
+								periodtype = "06";
+							} else
+								throw new BusinessException(pvo
+										.getAttributeValue("pk_securities")
+										.toString()
+										+ " 证券付息周期有问题！");
+
+							String paytype = pvo.getAttributeValue("paytype")
+									.toString();// 付息方式
+							if (paytype.equals("逐期付息")) {
+								paytype = "01";
+							} else if (paytype.equals("到期一次还本付息")) {
+								paytype = "02";
+							} else if (paytype.equals("贴现")) {
+								paytype = "03";
+							} else
+								throw new BusinessException(pvo
+										.getAttributeValue("pk_securities")
+										.toString()
+										+ " 证券付息方式有问题！");
+
+							String profittype = pvo.getAttributeValue(
+									"profittype").toString();// 收益方式
+							if (profittype.equals("全价交易")) {
+								profittype = "01";
+							} else if (profittype.equals("净价交易")) {
+								profittype = "02";
+							} else
+								throw new BusinessException(pvo
+										.getAttributeValue("pk_securities")
+										.toString()
+										+ " 证券收益方式有问题！");
+							vos[i].getParentVO().setAttributeValue("ratetype",
+									ratetype);
+							vos[i].getParentVO().setAttributeValue(
+									"periodtype", periodtype);
+							vos[i].getParentVO().setAttributeValue("paytype",
+									paytype);
+							vos[i].getParentVO().setAttributeValue(
+									"profittype", profittype);
 							new BillInsert().insert(vos1);
 							successNum++;
 						}

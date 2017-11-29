@@ -19,14 +19,12 @@ public class PayableinterestcalMaintainImpl extends
 		AcePayableinterestcalPubServiceImpl implements
 		IPayableinterestcalMaintain {
 
-	
 	@Override
 	public PayableInterestCalVO[] query(IQueryScheme queryScheme)
 			throws BusinessException {
 		return super.pubquerybasedoc(queryScheme);
 	}
 
-	
 	@Override
 	public BatchOperateVO batchSave(BatchOperateVO batchVO)
 			throws BusinessException {
@@ -41,7 +39,6 @@ public class PayableinterestcalMaintainImpl extends
 		return retData;
 	}
 
-	
 	@Override
 	public PayableInterestCalVO[] calInterest(LoginContext context,
 			UFDate trade_date) throws BusinessException {
@@ -49,7 +46,6 @@ public class PayableinterestcalMaintainImpl extends
 		return bp.calInterest(context, trade_date);
 	}
 
-	
 	@Override
 	public void cancelCal(LoginContext context, UFDate trade_date)
 			throws BusinessException {
@@ -57,7 +53,6 @@ public class PayableinterestcalMaintainImpl extends
 		bp.cancelCal(context, trade_date);
 	}
 
-	
 	@Override
 	public void tally(LoginContext context) throws BusinessException {
 		AcePayableinterestcalBP bp = new AcePayableinterestcalBP();
@@ -70,5 +65,4 @@ public class PayableinterestcalMaintainImpl extends
 		basedao.insertVOList(tallyList);
 	}
 
-	
 }

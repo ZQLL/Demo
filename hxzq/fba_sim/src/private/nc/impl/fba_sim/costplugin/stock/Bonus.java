@@ -60,7 +60,6 @@ public class Bonus extends AbstractStock {
 		}
 	}
 
-	
 	@Override
 	protected void calculateWhenUnCheck(ICostingTool costingtool,
 			StocktradeVO tradevo) throws Exception {

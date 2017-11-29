@@ -20,11 +20,7 @@
 	<classpathentry kind="src" path="fba_scost/src/private"/>
 	<classpathentry kind="src" path="fba_zqjd/src/private"/>
 	<classpathentry kind="src" output="out/resources" path="resources"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/Runtime">
-		<accessrules>
-			<accessrule kind="accessible" pattern="*/**"/>
-		</accessrules>
-	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="nc.uap.mde.library.container/Ant_Library"/>
 	<classpathentry kind="con" path="nc.uap.mde.library.container/Product_Common_Library"/>
 	<classpathentry kind="con" path="nc.uap.mde.library.container/Middleware_Library"/>

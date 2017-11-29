@@ -11,7 +11,7 @@ import nc.ui.pubapp.uif2app.event.OrgChangedEvent;
  * @author duy
  */
 public class OrgChangedHandler implements IAppEventHandler<OrgChangedEvent> {
-	
+
 	@Override
 	public void handleAppEvent(OrgChangedEvent e) {
 		// TODO Auto-generated method stub

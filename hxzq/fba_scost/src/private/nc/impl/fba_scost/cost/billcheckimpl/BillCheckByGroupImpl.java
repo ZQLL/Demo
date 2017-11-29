@@ -12,6 +12,8 @@ import nc.bs.logging.Logger;
 import nc.bs.pf.pub.PfDataCache;
 import nc.impl.fba_scost.cost.pub.PrivateMethod;
 import nc.itf.fba_scost.cost.billcheck.IBillCheckByGroup;
+import nc.itf.fba_scost.cost.billcheck.IBillMakeJTD;
+import nc.itf.fba_scost.cost.billcheck.IBillMakeJTDZZ;
 import nc.itf.fba_scost.cost.billcheck.ISpecialBusiness;
 import nc.itf.fba_scost.cost.pub.IBillCheckPlugin;
 import nc.itf.fba_scost.cost.pub.TradeDataTool;
@@ -88,6 +90,13 @@ public class BillCheckByGroupImpl implements IBillCheckByGroup {
 			CheckClassTool checkclasstool) throws BusinessException {
 		String pk_billtypegroup = vo.getPk_billtypegroup();
 		String msg = null;
+//		// 通过前台参数来判断是否调用后台方法使已审核的借入单产生的计提单进行删除--zq
+//		IBillMakeJTDZZ bmj = NCLocator.getInstance().lookup(
+//				IBillMakeJTDZZ.class);
+//		if (bmj.getBooleanFromInitcode(checkParaVO.getPk_glorgbook(),
+//				"Zqjd02")) {
+//			bmj.DeleteJTD(checkParaVO);
+//		}
 		try {
 			for (UFDate date : set) {
 				CostParaVO costParaVO = new CostParaVO();
@@ -255,9 +264,17 @@ public class BillCheckByGroupImpl implements IBillCheckByGroup {
 					 */
 					afterCheck(costingtool, tradedatatool, checkclasstool);
 					stockflag++;
-
+					
 				}
 			}
+			// 通过前台参数来判断是否调用后台方法使已审核的借入单产生计提单--zq
+			IBillMakeJTDZZ bmj = NCLocator.getInstance().lookup(
+					IBillMakeJTDZZ.class);
+			if (bmj.getBooleanFromInitcode(checkParaVO.getPk_glorgbook(),
+					"Zqjd02")) {
+				bmj.MakeJTD(checkParaVO);
+			}
+
 		} catch (Exception e) {
 			Logger.error(e.getMessage());
 			if (e.getMessage() == null) {
@@ -314,6 +331,7 @@ public class BillCheckByGroupImpl implements IBillCheckByGroup {
 	 * 
 	 * @throws Exception
 	 */
+	@SuppressWarnings("rawtypes")
 	private void initTradeData(CostingTool costingtool,
 			TradeDataTool tradedatatool, CheckClassTool checkclasstool)
 			throws Exception {
@@ -532,6 +550,7 @@ public class BillCheckByGroupImpl implements IBillCheckByGroup {
 	 * @param checkClass
 	 * @throws Exception
 	 */
+	@SuppressWarnings("rawtypes")
 	private void runCheckClass(CostingTool costingtool,
 			TradeDataTool tradedatatool, CheckClassTool checkclasstool)
 			throws Exception {

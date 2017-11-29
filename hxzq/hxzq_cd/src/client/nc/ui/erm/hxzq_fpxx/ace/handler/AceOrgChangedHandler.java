@@ -21,7 +21,6 @@ public class AceOrgChangedHandler implements IAppEventHandler<OrgChangedEvent> {
 		this.billfrom = bill;
 	}
 
-	
 	@Override
 	public void handleAppEvent(OrgChangedEvent e) {
 		if (this.billfrom.isEditable()) {

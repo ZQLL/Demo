@@ -2,6 +2,7 @@ package nc.itf.erm.hxzq_fpxx;
 
 import nc.impl.fba_zqjd.trade.report.StockChangeVO;
 import java.util.*;
+
 public interface Izqjd_stockchange {
 	/*
 	 * @author zq

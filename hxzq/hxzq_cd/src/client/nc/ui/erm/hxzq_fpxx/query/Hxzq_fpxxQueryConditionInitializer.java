@@ -6,10 +6,10 @@ import nc.ui.pubapp.uif2app.query2.IQueryConditionDLGInitializer;
 import nc.ui.pubapp.uif2app.query2.QueryConditionDLGDelegator;
 import nc.ui.pubapp.uif2app.query2.refregion.QueryDefaultOrgFilter;
 import java.util.*;
+
 public class Hxzq_fpxxQueryConditionInitializer implements
 		IQueryConditionDLGInitializer {
 
-	
 	@Override
 	public void initQueryConditionDLG(
 			QueryConditionDLGDelegator condDLGDelegator) {

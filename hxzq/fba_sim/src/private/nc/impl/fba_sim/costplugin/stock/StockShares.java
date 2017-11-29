@@ -79,7 +79,7 @@ public class StockShares extends AbstractStock {
 	 * 
 	 * @author lihbj
 	 */
-	
+
 	@Override
 	protected void calculateWhenUnCheck(ICostingTool costingtool,
 			StocktradeVO tradevo) throws Exception {

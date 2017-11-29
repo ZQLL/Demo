@@ -16,6 +16,7 @@ import nc.vo.cmp.settlement.SettlementBodyVO;
 import nc.vo.pub.BusinessException;
 import nc.vo.pubapp.pattern.exception.ExceptionUtils;
 import java.util.*;
+
 /**
  * ÐèÒª×¢Èënc.ui.cmp.settlement.model.SettleBillListPanelValueSetter
  * 
@@ -42,7 +43,6 @@ public class SettlementList extends MutilTransBillListView {
 		return settleaggMap;
 	}
 
-	
 	@Override
 	public void showMeUp() {
 		super.showMeUp();
@@ -51,7 +51,6 @@ public class SettlementList extends MutilTransBillListView {
 	}
 
 	@Override
-	
 	public boolean canBeHidden() {
 		boolean canBeHidden = super.canBeHidden();
 		if (canBeHidden) {
@@ -77,7 +76,6 @@ public class SettlementList extends MutilTransBillListView {
 		return list.toArray(new SettlementAggVO[0]);
 	}
 
-	
 	@Override
 	public void initUI() {
 
@@ -90,7 +88,6 @@ public class SettlementList extends MutilTransBillListView {
 	}
 
 	@Override
-	
 	public void handleEvent(AppEvent event) {
 		try {
 			if (event.getType().equals(TabAddEventType.BROW_BILL)) {
@@ -186,7 +183,6 @@ public class SettlementList extends MutilTransBillListView {
 	 * @see nc.ui.uif2.editor.BillListView#handleSelectionChanged()
 	 */
 	@Override
-	
 	protected void handleSelectionChanged() {
 		super.handleSelectionChanged();
 

@@ -581,7 +581,6 @@ public class StockTransform extends AbstractTransform {
 	}
 
 	@Override
-	
 	protected void calculateWhenUnCheck(ICostingTool costingtool,
 			TransformtradeVO tradevo) throws Exception {
 		String pk_group = costingtool.getCostParaVO().getCheckParavo()

@@ -1773,7 +1773,6 @@ public class GoFinancingVO extends SuperVO {
 		this.setAttributeValue(GoFinancingVO.YEARCALDAYS, yearcaldays);
 	}
 
-	
 	@Override
 	public IVOMeta getMetaData() {
 		return VOMetaFactory.getInstance().getVOMeta("fba_fund.GoFinancingVO");

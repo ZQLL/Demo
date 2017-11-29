@@ -54,19 +54,16 @@ public enum Hxzq_fpxxPluginPoint implements IPluginPoint {
 	 */
 	SCRIPT_UPDATE;
 
-	
 	@Override
 	public String getComponent() {
 		return "hxzq_cd";
 	}
 
-	
 	@Override
 	public String getModule() {
 		return "erm";
 	}
 
-	
 	@Override
 	public String getPoint() {
 		return this.getClass().getName() + "." + this.name();

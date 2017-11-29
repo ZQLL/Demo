@@ -466,13 +466,11 @@ public class Rateperiod extends SuperVO {
 		this.setAttributeValue(Rateperiod.YEAR_RATE, year_rate);
 	}
 
-	
 	@Override
 	public IVOMeta getMetaData() {
 		return VOMetaFactory.getInstance().getVOMeta("fba_sim.sim_rateperiod");
 	}
 
-	
 	@Override
 	public String getParentPKFieldName() {
 		return "pk_interest";

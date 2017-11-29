@@ -594,7 +594,6 @@ public class CostBalanceTool implements ICostBalanceTool {
 	 * @since 2017-6-5обнГ4:27:18
 	 */
 	@Override
-	
 	public InventoryInfoVO getInventoryInfoVO(BanlanceQueryKeyVO sbqkVO,
 			ICostingTool costingtool) throws BusinessException {
 		Map<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, InventoryInfoVO>>>> stockmap = scostcalcachemanager
@@ -624,7 +623,7 @@ public class CostBalanceTool implements ICostBalanceTool {
 	 * @author qs
 	 * @since 2017-6-5обнГ6:11:56
 	 */
-	
+
 	@Override
 	public void updateInventoryInfoVO(BanlanceQueryKeyVO sbqkVO,
 			InventoryInfoVO vo) throws BusinessException {

@@ -1063,7 +1063,6 @@ public class Interest extends SuperVO {
 	}
 
 	@Override
-	
 	public IVOMeta getMetaData() {
 		return VOMetaFactory.getInstance().getVOMeta("fba_sim.sim_interest");
 	}

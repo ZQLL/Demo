@@ -68,6 +68,7 @@ import nc.vo.tmpub.util.StringUtil;
 import nc.vo.tmpub.util.VOUtil;
 import nc.vo.uif2.LoginContext;
 import java.util.*;
+
 @SuppressWarnings({ "restriction", "deprecation" })
 public class SettlementCard extends MutilTransBillForm {
 
@@ -119,7 +120,6 @@ public class SettlementCard extends MutilTransBillForm {
 		super();
 	}
 
-	
 	@Override
 	public void initUI() {
 
@@ -281,7 +281,6 @@ public class SettlementCard extends MutilTransBillForm {
 	}
 
 	@Override
-	
 	public void afterEdit(BillEditEvent e) {
 		super.afterEdit(e);
 		if (getDefaultRefWherePartHandler() != null) {
@@ -598,7 +597,6 @@ public class SettlementCard extends MutilTransBillForm {
 		}
 	}
 
-	
 	@Override
 	public void handleEvent(AppEvent event) {
 		try {
@@ -849,7 +847,6 @@ public class SettlementCard extends MutilTransBillForm {
 		}
 	}
 
-	
 	@Override
 	protected void execLoadFormula() {
 		super.execLoadFormula();
@@ -1212,7 +1209,6 @@ public class SettlementCard extends MutilTransBillForm {
 		return aim;
 	}
 
-	
 	@Override
 	public boolean canBeHidden() {
 		if (this.getModel().getUiState().equals(UIState.EDIT)) {
@@ -1230,7 +1226,6 @@ public class SettlementCard extends MutilTransBillForm {
 		return super.canBeHidden();
 	}
 
-	
 	@Override
 	public void showMeUp() {
 		super.showMeUp();
@@ -1261,7 +1256,7 @@ public class SettlementCard extends MutilTransBillForm {
 	/**
 	 * 从写的原因 表头的主键不能设置，不知道有什麽样的解决方案
 	 */
-	
+
 	@Override
 	public void setValue(Object object) {
 		super.setValue(object);
@@ -1280,7 +1275,6 @@ public class SettlementCard extends MutilTransBillForm {
 	 * 保存操作拿到界面上的值 其他操作拿到数据库里原始的值
 	 */
 	@Override
-	
 	public Object getValue() {
 		if (isSaveOperate()) {
 			return super.getValue();

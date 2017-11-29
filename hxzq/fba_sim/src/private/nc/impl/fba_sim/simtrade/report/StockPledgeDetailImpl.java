@@ -33,6 +33,7 @@ import nc.vo.pubapp.report.ReportQueryResult;
 import com.ufida.dataset.IContext;
 import com.ufida.report.anareport.FreeReportContextKey;
 import java.util.*;
+
 /**
  * 股票质押明细表实现
  * 
@@ -40,7 +41,6 @@ import java.util.*;
  * 
  */
 public class StockPledgeDetailImpl implements IStockPledgeDetail {
-
 
 	@Override
 	public ReportQueryResult queryDetailData(IContext context)

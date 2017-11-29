@@ -317,7 +317,6 @@ public class QueryBasePubInfo implements IQueryBaseInfo {
 	// return map;
 	// }
 
-	
 	@Override
 	public ApproveVO[] getLastapprovedate(LoginContext context)
 			throws BusinessException {

@@ -1,4 +1,5 @@
 package nc.itf.fba_zqjd.trade.report;
+
 import java.util.*;
 import nc.vo.fba_zqjd.trade.report.NewStockChangeVO;
 import nc.vo.pub.lang.UFDouble;

@@ -14,6 +14,7 @@ import org.apache.commons.collections.CollectionUtils;
 import java.util.*;
 
 import javax.swing.SwingWorker;
+
 public abstract class AbstractMessageBox implements IMessageBox {
 	private String lastcondition = null;
 	private Integer unreadnum = 0;

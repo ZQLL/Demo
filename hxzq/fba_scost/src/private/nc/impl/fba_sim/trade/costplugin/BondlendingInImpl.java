@@ -18,7 +18,6 @@ public class BondlendingInImpl extends AbstractZqjdTrade {
 
 	private ZqjdStockBalanceTool stockBalanceTool = null;
 
-	
 	@Override
 	protected void calculateWhenCheck(ICostingTool costingtool, ZqjdVO tradevo)
 			throws Exception {
@@ -42,7 +41,6 @@ public class BondlendingInImpl extends AbstractZqjdTrade {
 				stockBalanceVO);
 	}
 
-	
 	@Override
 	protected void calculateWhenUnCheck(ICostingTool costingtool, ZqjdVO tradevo)
 			throws Exception {

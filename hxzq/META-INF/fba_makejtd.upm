@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="gbk"?>
+<module name="FBA_SCOST_EJB">
+	<public>
+		    <!-- 接口 -->
+		    <component priority="0" singleton="true" remote="true" tx="CMT" supportAlias="true">
+	      <interface>nc.itf.fba_scost.cost.billcheck.IBillMakeJTD</interface>
+	      <implementation>nc.impl.fba_scost.cost.billcheckimpl.BillMakeJTDimpl</implementation>
+	    </component>
+	    <!-- 接口 -->
+		    <component priority="0" singleton="true" remote="true" tx="CMT" supportAlias="true">
+	      <interface>nc.itf.fba_scost.cost.billcheck.IBillMakeJTDZZ</interface>
+	      <implementation>nc.impl.fba_scost.cost.billcheckimpl.BillMakeJTDZZimpl</implementation>
+	    </component>
+	</public>
+</module>

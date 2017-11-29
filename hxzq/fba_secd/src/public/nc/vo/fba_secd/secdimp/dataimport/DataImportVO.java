@@ -567,7 +567,6 @@ public class DataImportVO extends SuperVO {
 	}
 
 	@Override
-	
 	public IVOMeta getMetaData() {
 		return VOMetaFactory.getInstance().getVOMeta("fba_secd.DataImportVO");
 	}

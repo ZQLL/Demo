@@ -17,7 +17,7 @@ import nc.vo.pubapp.pattern.model.entity.bill.IBill;
  */
 public class AceHxzq_fpxxMaintainProxy implements IDataOperationService,
 		IQueryService {
-	
+
 	@Override
 	public IBill[] insert(IBill[] value) throws BusinessException {
 		nc.itf.erm.hxzq_fpxx.IHxzq_fpxxMaintain operator = NCLocator
@@ -27,7 +27,6 @@ public class AceHxzq_fpxxMaintainProxy implements IDataOperationService,
 		return vos;
 	}
 
-	
 	@Override
 	public IBill[] update(IBill[] value) throws BusinessException {
 		nc.itf.erm.hxzq_fpxx.IHxzq_fpxxMaintain operator = NCLocator
@@ -37,7 +36,6 @@ public class AceHxzq_fpxxMaintainProxy implements IDataOperationService,
 		return vos;
 	}
 
-	
 	@Override
 	public IBill[] delete(IBill[] value) throws BusinessException {
 		// 目前的删除并不是走这个方法，由于pubapp不支持从这个服务中执行删除操作
@@ -49,7 +47,6 @@ public class AceHxzq_fpxxMaintainProxy implements IDataOperationService,
 		return value;
 	}
 
-	
 	@Override
 	public Object[] queryByQueryScheme(IQueryScheme queryScheme)
 			throws Exception {

@@ -1408,7 +1408,6 @@ public class InterestdistillVO extends SuperVO {
 	}
 
 	@Override
-	
 	public IVOMeta getMetaData() {
 		return VOMetaFactory.getInstance().getVOMeta(
 				"fba_scost.sim_interestdistill");

@@ -17,7 +17,6 @@ import nc.vo.uif2.LoginContext;
  */
 public class CopyActionProcessor implements ICopyActionProcessor<FpxxBillVO> {
 
-	
 	@Override
 	public void processVOAfterCopy(FpxxBillVO billVO, LoginContext context) {
 		this.processHeadVO(billVO, context);

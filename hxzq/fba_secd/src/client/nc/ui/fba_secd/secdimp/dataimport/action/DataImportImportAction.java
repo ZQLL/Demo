@@ -111,7 +111,6 @@ public class DataImportImportAction extends AddAction {
 		dsname = WorkbenchEnvironment.getInstance().getDSName();
 	}
 
-	
 	@Override
 	protected boolean isActionEnable() {
 		if (getTreeModel().getSelectedNode() != null

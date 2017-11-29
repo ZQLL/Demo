@@ -44,7 +44,6 @@ public class SendMsgTBModel extends AbstractMsgTBModel {
 		return colNames[column];
 	}
 
-	
 	@Override
 	public Object getValueAt(int row, int column) {
 

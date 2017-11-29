@@ -18,7 +18,6 @@ public class DataImportBusiImpl implements IDataImportBusiService {
 				hm_info);
 	}
 
-	
 	@Override
 	public Map<String, List<Map<String, FieldPropVO>>> getFailRefData()
 			throws BusinessException {
@@ -31,13 +30,11 @@ public class DataImportBusiImpl implements IDataImportBusiService {
 	}
 
 	@Override
-	
 	public Map getOriBusiData() throws BusinessException {
 		// TODO 自动生成的方法存根
 		return DataImportCacheHdl.getInstance().getOriBusiCacheData();
 	}
 
-	
 	@Override
 	public String importToDB() throws BusinessException {
 		DataImportDBHdl dbHdl = new DataImportDBHdl();
@@ -74,20 +71,17 @@ public class DataImportBusiImpl implements IDataImportBusiService {
 		}
 	}
 
-	
 	@Override
 	public Map getImportTitle() throws BusinessException {
 		return DataImportCacheHdl.getInstance().getTitleCacheMap();
 	}
 
-	
 	@Override
 	public void clearBusiCache() throws BusinessException {
 		DataImportCacheHdl.getInstance().clear();
 
 	}
 
-	
 	@Override
 	public Map getSuccessBusiData() throws BusinessException {
 		// TODO 自动生成的方法存根
@@ -103,7 +97,6 @@ public class DataImportBusiImpl implements IDataImportBusiService {
 		new BaseDAO().executeUpdate(sql);
 	}
 
-	
 	public Map queryData(String pk_securities, String trade_date)
 			throws BusinessException {
 		String sql = " select pk_securities,trade_date from sim_trademarket a where  a.pk_securities='"

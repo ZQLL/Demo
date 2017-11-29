@@ -20,7 +20,6 @@ public class ZqjdTallyServiceImpl implements IZqjdTallyService {
 
 	private BaseDAO baseDAO = null;
 
-	
 	@Override
 	public void saveSellTally(ITrade_Data tradeVO) throws BusinessException {
 
@@ -30,7 +29,6 @@ public class ZqjdTallyServiceImpl implements IZqjdTallyService {
 
 	}
 
-	
 	@Override
 	public void saveBuyTally(ITrade_Data tradeVO, UFDouble sellscost)
 			throws BusinessException {
@@ -55,7 +53,6 @@ public class ZqjdTallyServiceImpl implements IZqjdTallyService {
 		quantityValidation.validate(tallyVO);
 	}
 
-	
 	@Override
 	public void deleteSellTally(ITrade_Data tradeVO) throws BusinessException {
 
@@ -63,7 +60,6 @@ public class ZqjdTallyServiceImpl implements IZqjdTallyService {
 
 	}
 
-	
 	@Override
 	public void deleteBuyTally(ITrade_Data tradeVO) throws BusinessException {
 
@@ -124,7 +120,6 @@ public class ZqjdTallyServiceImpl implements IZqjdTallyService {
 	}
 
 	@Override
-	
 	public ZqjdTallyVO gatherSellBuyBalance(ITrade_Data tradeVO)
 			throws BusinessException {
 		// ²éÑ¯²ÎÊý

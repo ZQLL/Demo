@@ -26,13 +26,11 @@ public class Hxzq_fpxxAddAction extends AbstractReferenceAction {
 		this.model.addAppEventListener(this);
 	}
 
-	
 	@Override
 	protected boolean isActionEnable() {
 		return this.model.getUiState() == UIState.NOT_EDIT;
 	}
 
-	
 	@Override
 	protected boolean isManual() {
 		return true;

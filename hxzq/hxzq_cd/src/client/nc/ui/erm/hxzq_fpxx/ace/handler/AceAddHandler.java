@@ -8,7 +8,6 @@ import nc.vo.pubapp.AppContext;
 
 public class AceAddHandler implements IAppEventHandler<AddEvent> {
 
-	
 	@Override
 	public void handleAppEvent(AddEvent e) {
 		String pk_group = e.getContext().getPk_group();

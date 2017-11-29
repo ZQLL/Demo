@@ -656,7 +656,6 @@ public class ImportProjVO extends SuperVO {
 		this.setAttributeValue(ImportProjVO.VDEF9, vdef9);
 	}
 
-	
 	@Override
 	public IVOMeta getMetaData() {
 		return VOMetaFactory.getInstance().getVOMeta("fba_secd.ImportProj");

@@ -22,6 +22,7 @@ import nc.vo.pub.lang.UFLiteralDate;
 import nc.vo.trade.voutils.VOUtil;
 import java.util.*;
 import java.util.Map.Entry;
+
 /**
  * 库存缓存
  * 
@@ -38,7 +39,6 @@ public class StockBalanceCache implements IScostCheckCache {
 	 * 按照规则初始化缓存（1.isinit为true，增量初始化缓存2.isinit为false，用当前日初始化下一日缓存）
 	 */
 	@Override
-	
 	public Map getCache(ICostingTool costingtool) throws BusinessException {
 		if (stockBalCacheMap == null) {
 			this.costParaVO = costingtool.getCostParaVO();
@@ -241,7 +241,6 @@ public class StockBalanceCache implements IScostCheckCache {
 	}
 
 	@Override
-	
 	public void updateCache(BanlanceQueryKeyVO sbqkVO, SuperVO vo)
 			throws BusinessException {
 
@@ -276,7 +275,6 @@ public class StockBalanceCache implements IScostCheckCache {
 
 	}
 
-	
 	@Override
 	public synchronized void clearCache() {
 		if (stockBalCacheMap != null) {

@@ -18,7 +18,6 @@ public class SettleQryCondDLGInitializer implements
 		IQueryConditionDLGInitializer {
 	private AbstractUIAppModel model;
 
-	
 	@Override
 	public void initQueryConditionDLG(
 			QueryConditionDLGDelegator condDLGDelegator) {

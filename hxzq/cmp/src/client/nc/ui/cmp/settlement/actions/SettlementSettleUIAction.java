@@ -30,6 +30,7 @@ import nc.vo.cmp.util.StringUtils;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.lang.UFDouble;
 import java.util.*;
+
 /**
  * «∞Ã®Ω·À„
  * 
@@ -260,7 +261,6 @@ public class SettlementSettleUIAction extends SettleDefaultAction {
 
 	}
 
-	
 	@Override
 	public boolean isActionEnable() {
 		if (UIState.ADD == this.getModel().getUiState()

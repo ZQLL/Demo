@@ -1176,37 +1176,31 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data {
 	}
 
 	@Override
-	
 	public IVOMeta getMetaData() {
 		return VOMetaFactory.getInstance().getVOMeta("fba_sim.StockBalanceVO");
 	}
 
 	@Override
-	
 	public UFDouble getBargain_num() {
 		return getStocks_num();
 	}
 
 	@Override
-
 	public void setBargain_num(UFDouble bargain_num) {
 
 	}
 
-	
 	@Override
 	public UFDouble getBargain_sum() {
 		return getStocks_sum();
 	}
 
 	@Override
-	
 	public void setBargain_sum(UFDouble bargain_sum) {
 		// TODO 自动生成的方法存根
 
 	}
 
-	
 	@Override
 	public String getBillno() {
 		// TODO 自动生成的方法存根
@@ -1219,7 +1213,6 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data {
 
 	}
 
-	
 	@Override
 	public String getBilltypecode() {
 		// TODO 自动生成的方法存根
@@ -1232,7 +1225,6 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data {
 
 	}
 
-	
 	@Override
 	public UFDouble getFact_sum() {
 		// TODO 自动生成的方法存根
@@ -1240,41 +1232,35 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data {
 	}
 
 	@Override
-	
 	public void setFact_sum(UFDouble fact_sum) {
 		// TODO 自动生成的方法存根
 
 	}
 
-	
 	@Override
 	public UFDouble getFairvalue() {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
-	
 	@Override
 	public void setFairvalue(UFDouble fairvalue) {
 		// TODO 自动生成的方法存根
 
 	}
 
-	
 	@Override
 	public UFDouble getInterest() {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
-	
 	@Override
 	public void setInterest(UFDouble interest) {
 		// TODO 自动生成的方法存根
 
 	}
 
-	
 	@Override
 	public String getPk_transtype() {
 		// TODO 自动生成的方法存根
@@ -1288,7 +1274,6 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data {
 	}
 
 	@Override
-	
 	public String getTranstypecode() {
 		// TODO 自动生成的方法存根
 		return null;
@@ -1300,14 +1285,12 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data {
 
 	}
 
-	
 	@Override
 	public UFLiteralDate getHr_begin_date() {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
-	
 	@Override
 	public void setHr_begin_date(UFLiteralDate hr_begin_date) {
 		// TODO 自动生成的方法存根
@@ -1315,13 +1298,11 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data {
 	}
 
 	@Override
-	
 	public UFLiteralDate getHr_end_date() {
 		// TODO 自动生成的方法存根
 		return null;
 	}
 
-	
 	@Override
 	public void setHr_end_date(UFLiteralDate hr_end_date) {
 		// TODO 自动生成的方法存根
@@ -1329,7 +1310,6 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data {
 	}
 
 	@Override
-	
 	public String getHr_pk_assetsprop() {
 		// TODO 自动生成的方法存根
 		return null;
@@ -1341,7 +1321,6 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data {
 
 	}
 
-	
 	@Override
 	public String getHr_pk_capaccount() {
 		// TODO 自动生成的方法存根
@@ -1350,11 +1329,10 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data {
 
 	@Override
 	public void setHr_pk_capaccount(String hr_pk_capaccount) {
-		// 
+		//
 
 	}
 
-	
 	@Override
 	public String getHr_pk_client() {
 		// TODO 自动生成的方法存根
@@ -1368,7 +1346,6 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data {
 	}
 
 	@Override
-	
 	public String getHr_pk_operatesite() {
 		// TODO 自动生成的方法存根
 		return null;
@@ -1380,7 +1357,6 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data {
 
 	}
 
-	
 	@Override
 	public String getHr_pk_partnaccount() {
 		// TODO 自动生成的方法存根
@@ -1394,7 +1370,6 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data {
 	}
 
 	@Override
-	
 	public String getHr_pk_securities() {
 		return getPk_securities();
 	}
@@ -1404,7 +1379,6 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data {
 		setPk_securities(hr_Pk_securities);
 	}
 
-	
 	@Override
 	public String getHr_pk_selfsgroup() {
 		// TODO 自动生成的方法存根
@@ -1417,7 +1391,6 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data {
 
 	}
 
-	
 	@Override
 	public String getHr_pk_stocksort() {
 		// TODO 自动生成的方法存根
@@ -1428,13 +1401,11 @@ public class StockBalanceVO extends SuperVO implements ITrade_Data {
 	public void setHr_pk_stocksort(String hr_pk_stocksort) {
 	}
 
-	
 	@Override
 	public UFDouble getHr_bargain_num() {
 		return getBargain_num();
 	}
 
-	
 	@Override
 	public void setHr_bargain_num(UFDouble bargain_num) {
 		setBargain_num(bargain_num);

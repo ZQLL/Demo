@@ -65,7 +65,7 @@ public class SimPubStockInfoImpl implements ISimPubStockInfoService {
 	/**
 	 * 行情增加联合索引
 	 */
-	
+
 	@Override
 	public UFDouble getStockClosePrice(String distill_date, String pk_securities)
 			throws Exception {

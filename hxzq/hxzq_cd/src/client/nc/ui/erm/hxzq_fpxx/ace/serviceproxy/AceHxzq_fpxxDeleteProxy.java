@@ -13,7 +13,6 @@ import nc.vo.hxzq.fpxx.FpxxBillVO;
  */
 public class AceHxzq_fpxxDeleteProxy implements ISingleBillService<FpxxBillVO> {
 
-	
 	@Override
 	public FpxxBillVO operateBill(FpxxBillVO bill) throws Exception {
 		nc.itf.erm.hxzq_fpxx.IHxzq_fpxxMaintain operator = NCLocator

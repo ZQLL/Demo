@@ -70,7 +70,6 @@ public class StockChangesImpl implements IStockChanges {
 	private ArrayList<ZqjdVO> nowTurnResult = null;
 
 	@Override
-	
 	public ReportQueryResult queryDetailData(IContext context)
 			throws BusinessException {
 

@@ -11,14 +11,12 @@ import nc.vo.fba_zqjd.trade.zqjdtrade.ZqjdVO;
  */
 public class BondlendingFeeImpl extends AbstractZqjdTrade {
 
-	
 	@Override
 	protected void calculateWhenCheck(ICostingTool costingtool, ZqjdVO tradevo)
 			throws Exception {
 		// Nothing to do
 	}
 
-	
 	@Override
 	protected void calculateWhenUnCheck(ICostingTool costingtool, ZqjdVO tradevo)
 			throws Exception {

@@ -31,7 +31,6 @@ public abstract class AbstractTransform extends AbstractPlugin {
 
 	}
 
-	
 	@Override
 	public IBill[] queryData(ICostingTool costingtool) throws BusinessException {
 		IQueryScheme queryscheme = QuerySchemeUtil.createQueryScheme(
@@ -101,7 +100,6 @@ public abstract class AbstractTransform extends AbstractPlugin {
 	}
 
 	@Override
-	
 	public void checkBills(ICostingTool costingtool, TradeDataTool tradedatatool)
 			throws Exception {
 		String pk_user = costingtool.getCostParaVO().getCheckParavo()
@@ -138,7 +136,6 @@ public abstract class AbstractTransform extends AbstractPlugin {
 	}
 
 	@Override
-	
 	public void unCheckBills(ICostingTool costingtool,
 			TradeDataTool tradedatatool) throws Exception {
 		String datakey = costingtool.getCurrbilltypegroupvo()

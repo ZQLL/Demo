@@ -686,7 +686,6 @@ public class NCMessageQueryPanel extends JPanel implements MessageEventListener 
 	}
 
 	@Override
-	
 	public void handleMsgEvent(MessageEvent me) {
 		if (me.getEventcode().equals(MessageEvent.BOXCHANGE)) {
 			Object object = me.getEventObject();

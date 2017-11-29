@@ -13,7 +13,6 @@ import nc.ui.pubapp.uif2app.event.card.CardHeadTailAfterEditEvent;
 public class AceHeadTailAfterEditHandler implements
 		IAppEventHandler<CardHeadTailAfterEditEvent> {
 
-	
 	@Override
 	public void handleAppEvent(CardHeadTailAfterEditEvent e) {
 	}

@@ -36,7 +36,6 @@ public class InventoryInfoCache implements IScostCheckCache {
 	private ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, InventoryInfoVO>>>> inventoryInfoCacheMap = null;
 	private CostParaVO costParaVO = null;
 
-	
 	@Override
 	public Map<String, ConcurrentHashMap<String, ConcurrentHashMap<String, ConcurrentHashMap<String, InventoryInfoVO>>>> getCache(
 			ICostingTool costingtool) throws BusinessException {
@@ -49,7 +48,6 @@ public class InventoryInfoCache implements IScostCheckCache {
 		return inventoryInfoCacheMap;
 	}
 
-	
 	@Override
 	public void updateCache(BanlanceQueryKeyVO sbqkVO, SuperVO vo)
 			throws BusinessException {
@@ -86,7 +84,6 @@ public class InventoryInfoCache implements IScostCheckCache {
 	}
 
 	@Override
-	
 	public void clearCache() {
 		if (inventoryInfoCacheMap != null) {
 			inventoryInfoCacheMap.clear();

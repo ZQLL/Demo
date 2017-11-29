@@ -595,7 +595,6 @@ public class TradeMarketVO extends SuperVO {
 		this.setAttributeValue(TradeMarketVO.CON_UNIT, con_unit);
 	}
 
-	
 	@Override
 	public IVOMeta getMetaData() {
 		return VOMetaFactory.getInstance().getVOMeta("fba_sim.trademarket");

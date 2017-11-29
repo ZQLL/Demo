@@ -42,7 +42,6 @@ import nc.vo.pub.lang.UFDate;
  */
 public class BillCheckImpl implements IBillCheckService {
 
-	
 	@Override
 	public void tallyAllCheckedData(CheckParaVO checkParaVO)
 			throws BusinessException {
@@ -104,7 +103,6 @@ public class BillCheckImpl implements IBillCheckService {
 
 	}
 
-	
 	@Override
 	public String unCheckBill(CheckParaVO checkParaVO) throws BusinessException {
 		String isSuccess = "fail";
@@ -293,7 +291,6 @@ public class BillCheckImpl implements IBillCheckService {
 	}
 
 	@Override
-	
 	public String checkBill(CheckParaVO checkParaVO) throws BusinessException {
 		String isSuccess = "fail";
 		if (null == checkParaVO) {

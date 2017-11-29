@@ -23,7 +23,6 @@ public class TransformOverSellQuantityValidation implements IValidationService {
 
 	private ZqjdTallyVO tallyVO = null;
 
-	
 	@Override
 	public void validate(Object obj) throws ValidationException {
 

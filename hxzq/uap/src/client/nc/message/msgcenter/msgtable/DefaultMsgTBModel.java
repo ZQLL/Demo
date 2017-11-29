@@ -59,7 +59,7 @@ public class DefaultMsgTBModel extends AbstractMsgTBModel {
 	/**
 	 * update by lihaibo
 	 */
-	
+
 	@Override
 	public Object getValueAt(int row, int column) {
 

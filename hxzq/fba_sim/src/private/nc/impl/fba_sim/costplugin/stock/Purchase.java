@@ -194,7 +194,7 @@ public class Purchase extends AbstractStock {
 	 * @author liangwei
 	 * @date 2013-03-15 обнГ4:59:33
 	 */
-	
+
 	@Override
 	protected void calculateWhenUnCheck(ICostingTool costingtool,
 			StocktradeVO tradevo) throws Exception {

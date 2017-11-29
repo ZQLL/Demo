@@ -34,7 +34,6 @@ import nc.vo.uif2.LoginContext;
 
 public class FzmrYjlxUtils implements ZqYjlxUtils {
 	@Override
-	
 	public UFDouble forwardInterestDistill(ICostingTool costingtool,
 			StockBalanceVO stockbalancevo, ITrade_Data vo)
 			throws BusinessException {
@@ -327,7 +326,6 @@ public class FzmrYjlxUtils implements ZqYjlxUtils {
 		return text;
 	}
 
-	
 	@Override
 	public void saveInterestDistill(ICostingTool costingtool,
 			StockBalanceVO stockbalancevo, ITrade_Data vs)

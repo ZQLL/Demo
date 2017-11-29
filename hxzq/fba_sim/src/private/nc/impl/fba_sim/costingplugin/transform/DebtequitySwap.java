@@ -199,7 +199,6 @@ public class DebtequitySwap extends AbstractTransform {
 	}
 
 	@Override
-	
 	protected void calculateWhenUnCheck(ICostingTool costingtool,
 			TransformtradeVO tradevo) throws Exception {
 		// 清空结转应收利息

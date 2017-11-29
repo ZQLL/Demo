@@ -23,7 +23,6 @@ public class CalcPluginMaintainImpl implements ICalcPluginMaintain {
 
 	// 买入插件处理
 	@Override
-	
 	public void buyPlugindeal(SuperVO tradevo1) throws BusinessException {
 		StocktradeVO tradevo = (StocktradeVO) tradevo1;
 		BulidCalcRateTradeInfo real = new BulidCalcRateTradeInfo();
@@ -40,7 +39,7 @@ public class CalcPluginMaintainImpl implements ICalcPluginMaintain {
 	}
 
 	// 取消买入插件处理
-	
+
 	@Override
 	public void unBuyPlugindeal(SuperVO tradevo1, String pk_group,
 			String pk_org, String tradedate) throws BusinessException {
@@ -65,7 +64,6 @@ public class CalcPluginMaintainImpl implements ICalcPluginMaintain {
 
 	// 卖出插件处理
 	@Override
-	
 	public void sellPlugindeal(StockBalanceVO stockbalancevo, SuperVO tradevo1)
 			throws BusinessException {
 		// 实际利率处理单据
@@ -82,7 +80,7 @@ public class CalcPluginMaintainImpl implements ICalcPluginMaintain {
 	}
 
 	// 取消卖出插件处理
-	
+
 	@Override
 	public void unSellPlugindeal(SuperVO tradevo1, String pk_group,
 			String pk_org, String tradedate) throws BusinessException {
@@ -108,7 +106,6 @@ public class CalcPluginMaintainImpl implements ICalcPluginMaintain {
 
 	// 付息
 	@Override
-	
 	public void fxPlugindeal(SuperVO tradevo1) throws BusinessException {
 		// 实际利率处理单据
 		StocktradeVO stocktrade = (StocktradeVO) tradevo1;
@@ -124,7 +121,6 @@ public class CalcPluginMaintainImpl implements ICalcPluginMaintain {
 
 	// 取消付息
 	@Override
-	
 	public void unFxPlugindeal(SuperVO tradevo1, String pk_group,
 			String pk_org, String tradedate) throws BusinessException {
 		if (tradevo1 != null) {
@@ -147,7 +143,7 @@ public class CalcPluginMaintainImpl implements ICalcPluginMaintain {
 	}
 
 	// 转托管
-	
+
 	@Override
 	public void ztgPlugindeal(StockBalanceVO stockbalancevo, SuperVO tradevo1)
 			throws BusinessException {
@@ -171,7 +167,6 @@ public class CalcPluginMaintainImpl implements ICalcPluginMaintain {
 
 	// 取消转托管
 	@Override
-	
 	public void unZtgPlugindeal(SuperVO tradevo1, String pk_group,
 			String pk_org, String tradedate) throws BusinessException {
 		if (tradevo1 != null) {
@@ -206,7 +201,7 @@ public class CalcPluginMaintainImpl implements ICalcPluginMaintain {
 	}
 
 	// 公允摊余成本
-	
+
 	@Override
 	public void setFairvalueByRate(UFLiteralDate tradedate,
 			StockBalanceVO sbvo, String pk_group, String pk_org)

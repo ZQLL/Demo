@@ -149,21 +149,18 @@ public class ReportDataVO extends SuperVO {
 	}
 
 	@Override
-	
 	public String getPKFieldName() {
 
 		return null;
 	}
 
 	@Override
-	
 	public String getParentPKFieldName() {
 
 		return null;
 	}
 
 	@Override
-	
 	public String getTableName() {
 
 		return null;

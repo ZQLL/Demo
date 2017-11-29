@@ -1438,7 +1438,6 @@ public class FpxxHVO extends SuperVO {
 	}
 
 	@Override
-	
 	public IVOMeta getMetaData() {
 		return VOMetaFactory.getInstance().getVOMeta("hxzq.hxzq_FpxxHVO");
 	}
