@@ -27,6 +27,7 @@ import nc.vo.fba_fund.report.NewFundTallyReportVO;
 import nc.vo.pub.BusinessException;
 import nc.vo.pub.lang.UFDate;
 import nc.vo.pub.lang.UFDouble;
+import nc.vo.pub.lang.UFLiteralDate;
 import nc.vo.pub.query.ConditionVO;
 import nc.vo.pubapp.report.ReportQueryConUtil;
 import nc.vo.pubapp.report.ReportQueryResult;
@@ -136,11 +137,16 @@ public class NewFundTallyReportImpl implements NewIFundTallyReport {
 					String endDate = SimReportUtils.getEndDate(conVos[i]
 							.getValue());
 					// sql.append(" and t").append(".").append(conVos[i].getFieldCode());
-					sql.append(" and t.begindistill_date");
-					sql.append(" >= '").append(startDate + "'");
+					sql.append(" and (t.begindate");
+					sql.append(" <= '").append(startDate + "'");
 					// sql.append(" and t").append(".").append(conVos[i].getFieldCode());
-					sql.append(" and t.begindistill_date");
+					sql.append(" and t.enddate");
+					sql.append(" >= '").append(startDate + "')");
+					sql.append(" or (t.begindate");
 					sql.append(" <= '").append(endDate + "'");
+					// sql.append(" and t").append(".").append(conVos[i].getFieldCode());
+					sql.append(" and t.enddate");
+					sql.append(" >= '").append(endDate + "')");
 				}
 				if (conVos[i].getFieldCode().equals("pk_org")) {
 					sql.append(" and t").append(".pk_org ='")
@@ -219,9 +225,8 @@ public class NewFundTallyReportImpl implements NewIFundTallyReport {
 			pk_securities = inbaleVO.getVdef1();
 		String startDate = null;
 		String endDate = null;
-		UFDouble start_interest = new UFDouble(0);
-		UFDouble this_interest = new UFDouble(0);
-		boolean b = false;// 判断单子是否是长期融资类型
+//		UFDouble start_interest = new UFDouble(0);
+//		UFDouble this_interest = new UFDouble(0);
 		if (null != conVos) {
 			// 获取查询条件中查询期间的起始日和结束日（此条件用的台账表中的计提开始日期begindistill_date）
 			for (int i = 0; i < conVos.length; i++) {
@@ -251,107 +256,144 @@ public class NewFundTallyReportImpl implements NewIFundTallyReport {
 			throw new BusinessException("查询出错！");
 		}
 
-		for (FundTallyVO vo : tallylist) {
-			if (null != startDate) {
-				// 将startDate转换成UFDate
-				startdate = new UFDate(startDate);
-			}
-			// 如果查询开始日当天有数据，则期初应付利息余额有值
-			if (vo.getBegindistill_date().equals(startdate)) {
-				// 【期初应付利息余额】=期初的已计提利息
-				start_interest = vo.getHad_interest();
-			}
-			// 【本期应付利息】
-			if (null != vo.getThis_interest()) {
-				// 累加
-				this_interest = pm.add(this_interest, vo.getThis_interest());
-			}
-		}
+//		for (FundTallyVO vo : tallylist) {
+//			if (null != startDate) {
+//				// 将startDate转换成UFDate
+//				startdate = new UFDate(startDate);
+//			}
+//			// 如果查询开始日当天有数据，则期初应付利息余额有值
+//			if (vo.getBegindistill_date().equals(startdate)) {
+//				// 【期初应付利息余额】=期初的已计提利息
+//				start_interest = vo.getHad_interest();
+//			}
+//			// 【本期应付利息】
+//			if (null != vo.getThis_interest()) {
+//				// 累加
+//				this_interest = pm.add(this_interest, vo.getThis_interest());
+//			}
+//		}
 		
-		if (null != startDate) {
-			// 将startDate转换成UFDate
-			startdate = new UFDate(startDate);
-			// 将endDate转换成UFDate
-			enddate = new UFDate(endDate);
-			// 如果计提日期=查询起始日，则期初余额有值，否则为本期发行
-			if (tallylist.get(0).getBegindistill_date().asBegin()
-					.equals(startdate)) {
-				// 【期初余额/摊余成本】
-				reportVO.setStart_balance(tallylist.get(0).getDenomination());
-			} else {
-				// 【本期发行】
-				if (inbaleVO != null)
-					reportVO.setCur_issue(tallylist.get(0).getDenomination()
-							.sub(new UFDouble(inbaleVO.getVdef2())));
-			}
-			// 如果查询条件的查询期间有值，则将begindistill_date设置值，否则最终界面查询结果
-			reportVO.setBegindistill_date(startDate);
-		} else {
-			// 【期初余额/摊余成本】=本期发行-开始日期前所有归还金+所有摊销(即开始日期前所有利息支出-应付利息)
-			reportVO.setStart_balance(tallylist.get(0).getDenomination()
-					.sub(new UFDouble(inbaleVO.getVdef2()))
-					.sub(getpay_balance(fundVO, startDate, null))
-					.add(getcur_expend(fundVO, startDate, null))
-					.sub(getinterest_payable(fundVO, startDate, null)));
-		}
-		// 【期末余额/摊余成本】
-		reportVO.setEnd_balance(tallylist.get(tallylist.size() - 1)
-				.getDenomination());
-		// 起息日
-		reportVO.setBegindate(tallylist.get(0).getBegindate());
-		// 到期日
-		reportVO.setEnddate(tallylist.get(0).getEnddate());
-		// 【兑付本金】
-		reportVO.setPay_balance(getpay_balance(fundVO, startDate, endDate));
-		// 业务分类
-		reportVO.setPk_billtype(tallylist.get(0).getPk_billtype());
-		// 产品或对手方名称
-		reportVO.setProductorcounterparty(tallylist.get(0)
-				.getProductorcounterparty());
-		// 管理部门
-		reportVO.setManagedept(tallylist.get(0).getManagedept());
-		// 结存金额=面额
-		reportVO.setDenomination(tallylist.get(0).getDenomination());
-		// 期限
-		reportVO.setTimelimit(tallylist.get(0).getTimelimit());
 		//如果开始计提才存在利息情况
-		if(tallylist.size()>1){
+		if(!tallylist.get(tallylist.size()-1).getBegindistill_date().beforeDate(new UFDate(startDate))){
 			// 【期初应付利息余额】
-			reportVO.setStart_payableinterest(start_interest);
+			reportVO.setStart_payableinterest(getcur_payableinterest(fundVO, startDate, null).sub(getRedemption_interest(fundVO,startDate, null)));
 			// 【本期应付利息】
-			reportVO.setCur_payableinterest(this_interest);
-			// 【本期利息支出金额】=本期应付利息（没有实际利率情况下）
-			reportVO.setCur_expend(getcur_expend(fundVO, startDate, enddate.toString()));
+			reportVO.setCur_payableinterest(getcur_payableinterest(fundVO, startDate, endDate));
+			// 【本期利息支出金额】
+			reportVO.setCur_expend(getcur_expend(fundVO, startDate, endDate));
 			//本期摊销值 --zq = 本期利息支出-本期应付利息
 			if(reportVO.getCur_expend()!=null && reportVO.getCur_payableinterest()!=null){
 				reportVO.setCur_amortize(pm.sub(reportVO.getCur_expend(), reportVO.getCur_payableinterest()));
 			}
 			// 【本期兑付利息】
 			reportVO.setCur_payinterest(getRedemption_interest(fundVO,startDate, endDate));
-			// 【期初应付利息余额】--zq 期初前所有利息支出-所有兑付利息
-			//reportVO.setStart_payableinterest(getcur_expend(fundVO, startDate, null).sub(getRedemption_interest(fundVO, startDate, null)));
 			// 【期末应付利息余额】=期初应付利息余额+本期应付利息-本期兑付--zq
-			reportVO.setEnd_payableinterest(reportVO.getStart_payableinterest().add(reportVO.getCur_expend()).sub(reportVO.getCur_payableinterest()));
-			// 日均占有--zq
-			reportVO.setDaily_possession(getdaily_possession(reportVO, startDate,
-					endDate));
-			// 资金成本率 --zq
-			if (reportVO.getCur_expend() != null
-					&& reportVO.getDaily_possession() != null) {
-				if (!reportVO.getDaily_possession().equals(new UFDouble(0)))
-					reportVO.setCostrate_capital(reportVO.getCur_expend().div(
-							reportVO.getDaily_possession()));
-			}
+			reportVO.setEnd_payableinterest(reportVO.getStart_payableinterest().sub(reportVO.getCur_payinterest()).add(reportVO.getCur_payableinterest()));
+
+		}						
+		
+		//判断融资类型--zq
+		if (!pk_securities.equals("")) {
+			String pk_interest = getInterestrate(pk_securities).get("pk_interest").toString();
+			Map map = getDatesd(pk_interest, tallylist.get(0).getEnddate().toString());
+			String start_day = map.get("start_day").toString();
+			String end_day = map.get("end_day").toString();
+			String rate = map.get("rate").toString();
+			// 起息日
+			reportVO.setBegindate(new UFDate(start_day));
+			// 到期日
+			reportVO.setEnddate(new UFDate(end_day));
+			reportVO.setExcutefacerate(new UFDouble(rate));
+			// 实际利率=执行票面利率*实际利率比例
+			if (reportVO.getExcutefacerate() != null
+					&& tallylist.get(0).getRealrate() != null)
+				reportVO.setRealrate(reportVO.getExcutefacerate()
+						.multiply(tallylist.get(0).getRealrate()));
+		} else {
+		// 起息日
+		reportVO.setBegindate(tallylist.get(0).getBegindate());
+		// 到期日
+		reportVO.setEnddate(tallylist.get(0).getEnddate());
+				
+		// 执行票面利率
+		reportVO.setExcutefacerate(tallylist.get(0).getExcutefacerate());
+		// 实际利率=执行票面利率*实际利率比例
+		if (tallylist.get(0).getExcutefacerate() != null
+				&& tallylist.get(0).getRealrate() != null)
+			reportVO.setRealrate(tallylist.get(0).getExcutefacerate()
+					.multiply(tallylist.get(0).getRealrate()));
 		}
-		// 如果期初期末面额不等，说明存在兑付或到期
-		if (!(tallylist.get(0).getDenomination().equals(tallylist.get(
-				tallylist.size() - 1).getDenomination()))) {
-			// 【兑付本金】
-			reportVO.setPay_balance(getpay_balance(fundVO, startDate, endDate));
-			//reportVO.setPay_balance(pay_balance);
-			// 【本期兑付利息】
-			reportVO.setCur_payinterest(getRedemption_interest(fundVO,startDate, endDate));
+		
+//		if (null != startDate) {
+//			// 将startDate转换成UFDate
+//			startdate = new UFDate(startDate);
+//			// 将endDate转换成UFDate
+//			enddate = new UFDate(endDate);
+//			// 如果计提日期=查询起始日，则期初余额有值，否则为本期发行
+//			if (!tallylist.get(tallylist.size()-1).getBegindistill_date().beforeDate(new UFDate(startDate))) {
+//				// 【期初余额/摊余成本】
+//				if(!tallylist.get(tallylist.size()-1).getBegindate().beforeDate(new UFDate(startDate))){
+//					reportVO.setStart_balance(tallylist.get(0).getDenomination()
+//							.sub(new UFDouble(inbaleVO.getVdef2()))
+//							.sub(getpay_balance(fundVO, startDate, null))
+//							.add(getcur_expend(fundVO, startDate, null))
+//							.sub(getcur_payableinterest(fundVO, startDate, null)));
+//				}else{
+//					reportVO.setStart_balance(tallylist.get(0).getDenomination()
+//							.sub(new UFDouble(inbaleVO.getVdef2()))
+//							.sub(getpay_balance(fundVO, startDate, null))
+//							.add(getcur_expend(fundVO, startDate, null))
+//							.sub(getcur_payableinterest(fundVO, startDate, null)));
+//					// 【本期发行】
+//					if (inbaleVO != null)
+//						reportVO.setCur_issue(tallylist.get(0).getDenomination()
+//								.sub(new UFDouble(inbaleVO.getVdef2())));
+//				}
+//			} 
+//			else {
+//				reportVO.setStart_balance(new UFDouble(0) 
+//				.sub(getpay_balance(fundVO, startDate, null))
+//				.add(getcur_expend(fundVO, startDate, null))
+//				.sub(getcur_payableinterest(fundVO, startDate, null)));
+//				// 【本期发行】
+//				if (inbaleVO != null)
+//					reportVO.setCur_issue(tallylist.get(0).getDenomination()
+//							.sub(new UFDouble(inbaleVO.getVdef2())));
+//			}
+//			// 如果查询条件的查询期间有值，则将begindistill_date设置值，否则最终界面查询结果
+//			reportVO.setBegindistill_date(startDate);
+//		} else {
+//			// 【期初余额/摊余成本】=本期发行-开始日期前所有归还金+所有摊销(即开始日期前所有利息支出-应付利息)
+//			reportVO.setStart_balance(tallylist.get(0).getDenomination()
+//					.sub(new UFDouble(inbaleVO.getVdef2()))
+//					.sub(getpay_balance(fundVO, startDate, null))
+//					.add(getcur_expend(fundVO, startDate, null))
+//					.sub(getcur_payableinterest(fundVO, startDate, null)));
+//		}
+		
+		//期初余额以及发行情况
+		if(!tallylist.get(0).getBegindate().beforeDate(new UFDate(startDate))){
+			// 【期初余额/摊余成本】查询开始日期<=发行日的时候存在本期发行，没有期初余额
+			reportVO.setStart_balance(new UFDouble(0) 
+			.sub(getpay_balance(fundVO, startDate, null))
+			.add(getcur_expend(fundVO, startDate, null))
+			.sub(getcur_payableinterest(fundVO, startDate, null)));
+			// 【本期发行】
+			if (inbaleVO != null)
+				reportVO.setCur_issue(tallylist.get(0).getDenomination()
+						.sub(new UFDouble(inbaleVO.getVdef2())));
+			reportVO.setBegindistill_date(startDate);
+		}else{
+			//查询日期>发行日的时候没有本期发行，存在期初余额
+			//【期初余额/摊余成本】=本期发行-开始日期前所有归还金+所有摊销(即开始日期前所有利息支出-应付利息)
+			reportVO.setStart_balance(tallylist.get(0).getDenomination()
+					.sub(new UFDouble(inbaleVO.getVdef2()))
+					.sub(getpay_balance(fundVO, startDate, null))
+					.add(getcur_expend(fundVO, startDate, null))
+					.sub(getcur_payableinterest(fundVO, startDate, null)));
+			reportVO.setBegindistill_date(startDate);
 		}
+		
 		if (null != tallylist.get(0).getPaytype()) {
 			// 付息方式
 			int paytype = tallylist.get(0).getPaytype();
@@ -411,33 +453,47 @@ public class NewFundTallyReportImpl implements NewIFundTallyReport {
 						.getName());
 				break;
 			}
-			b = getLongfundtype(reportVO);
-		}
-		//判断融资类型--zq
-		if (b) {
-			// 执行票面利率
-			if (!pk_securities.equals("")) {
-				reportVO.setExcutefacerate(getInterestrate(pk_securities));
-				// 实际利率=执行票面利率*实际利率比例
-				if (reportVO.getExcutefacerate() != null
-						&& tallylist.get(0).getRealrate() != null)
-					reportVO.setRealrate(reportVO.getExcutefacerate().multiply(
-							tallylist.get(0).getRealrate()));
-			}
-		} else {
-			// 执行票面利率
-			reportVO.setExcutefacerate(tallylist.get(0).getExcutefacerate());
-			// 实际利率=执行票面利率*实际利率比例
-			if (tallylist.get(0).getExcutefacerate() != null
-					&& tallylist.get(0).getRealrate() != null)
-				reportVO.setRealrate(tallylist.get(0).getExcutefacerate()
-						.multiply(tallylist.get(0).getRealrate()));
 		}
 
+		// 【期末余额/摊余成本】= 增加-归还本金+摊销 
+		if(reportVO.getCur_amortize()!=null){
+			reportVO.setEnd_balance(tallylist.get(0).getDenomination()
+					.sub(new UFDouble(inbaleVO.getVdef2()))
+					.add(getpay_balance(fundVO, startDate, null))
+					.sub(reportVO.getCur_amortize()));
+		}else
+			reportVO.setEnd_balance(tallylist.get(0).getDenomination()
+					.sub(new UFDouble(inbaleVO.getVdef2()))
+					.add(getpay_balance(fundVO, startDate, null)));
+		// 【兑付本金】
+		reportVO.setPay_balance(getpay_balance(fundVO, startDate, endDate));
+		// 业务分类
+		reportVO.setPk_billtype(tallylist.get(0).getPk_billtype());
+		// 产品或对手方名称
+		reportVO.setProductorcounterparty(tallylist.get(0)
+				.getProductorcounterparty());
+		// 管理部门
+		reportVO.setManagedept(tallylist.get(0).getManagedept());
+		// 结存金额=面额
+		reportVO.setDenomination(tallylist.get(0).getDenomination());
+		// 期限
+		reportVO.setTimelimit(reportVO.getEnddate().getDaysAfter(reportVO.getBegindate())+1);
 		// 交易日期
 		reportVO.setTrade_date(tallylist.get(0).getTrade_date());
 		// 组织
 		reportVO.setPk_org(tallylist.get(0).getPk_org());
+		if(reportVO.getDenomination()!=null&&reportVO.getBegindate()!=null&&reportVO.getEnddate()!=null){
+			// 日均占有--zq
+			reportVO.setDaily_possession(getdaily_possession(reportVO, startDate,
+					endDate));
+			// 资金成本率 --zq
+			if (reportVO.getCur_expend() != null
+					&& reportVO.getDaily_possession() != null) {
+				if (!reportVO.getDaily_possession().equals(new UFDouble(0)))
+					reportVO.setCostrate_capital(reportVO.getCur_expend().div(
+							reportVO.getDaily_possession()));
+			}
+		}
 		return reportVO;
 	}
 
@@ -473,7 +529,7 @@ public class NewFundTallyReportImpl implements NewIFundTallyReport {
 	 * @param fundVO
 	 * @return
 	 */
-	@SuppressWarnings({ "rawtypes", "unused" })
+	@SuppressWarnings({ "rawtypes" })
 	private UFDouble getpay_balance(FundTallyVO fundVO, String begindate,
 			String enddate) {
 		String contractno = fundVO.getContractno();
@@ -506,6 +562,83 @@ public class NewFundTallyReportImpl implements NewIFundTallyReport {
 
 	}
 	
+	/**获取应付利息
+	 * @author ZQ
+	 * @param fundvo
+	 * @param startdate
+	 * @param enddate
+	 * @return
+	 */
+	private UFDouble getcur_payableinterest(FundTallyVO fundVO , String startdate,String enddate){
+		UFDouble cur_pay =new UFDouble(0);
+		String contractno = fundVO.getContractno();
+		BaseDAO dao = new BaseDAO();
+		StringBuffer sb = new StringBuffer();
+		Vector vec = new Vector();
+		sb.append("select sum(this_cal_interest) from fund_payableinterestcal where nvl(dr,0)=0 and contractno = '");
+		sb.append(contractno);
+		sb.append("'");
+		if (enddate == null) {
+			sb.append(" and distill_date <'" + startdate.substring(0, 10)
+					+ " 00:00:00'");
+		} else {
+			sb.append(" and distill_date >='" + startdate.substring(0, 10)
+					+ " 00:00:00'");
+			sb.append(" and distill_date <='" + enddate.substring(0, 10)
+					+ " 23:59:59'");
+		}
+		try {
+			vec = (Vector) dao.executeQuery(sb.toString(),
+					new VectorProcessor());
+		} catch (DAOException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+		if (vec.size() > 0 && vec.get(0) != null&&((Vector) vec.get(0)).get(0)!=null)
+			cur_pay = new UFDouble(((Vector) vec.get(0)).get(0).toString());
+		return cur_pay;
+	}
+	/**
+	 * 获取单子的真实开始日期和结束日期
+	 * @author ZQ
+	 * @param pk_interest
+	 * @param enddate
+	 * @return
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private Map getDatesd(String pk_interest,String enddate){
+		Map map = new HashMap();
+		Vector vec = new Vector();
+		BaseDAO dao = new BaseDAO();
+		String rate = "";
+		String end_day = "";
+		String start_day = "";
+		String sql = "select start_day,end_day,year_rate from sim_rateperiod" +
+				" where nvl(dr,0)=0 and  pk_interest= '"
+				+ pk_interest
+				+ "' and start_day<='"
+				+ enddate
+				+ "' and end_day>='"
+				+ enddate
+				+ "'";
+		try {
+			vec = (Vector) dao.executeQuery(sql, new VectorProcessor());
+		} catch (DAOException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+		if(vec.size()>0&&vec.get(0)!=null){
+			start_day = ((Vector)vec.get(0)).get(0).toString();
+			end_day = ((Vector)vec.get(0)).get(1).toString();
+			rate = ((Vector)vec.get(0)).get(2).toString();
+		}
+		map.put("start_day", start_day);
+		map.put("end_day", end_day);
+		map.put("rate", rate);
+		return map;
+		
+	}
+	
 	/**
 	 * 获取利息支出
 	 * @param fundVO
@@ -513,7 +646,7 @@ public class NewFundTallyReportImpl implements NewIFundTallyReport {
 	 * @param enddate
 	 * @return
 	 */
-	@SuppressWarnings({ "unused", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	private UFDouble getcur_expend(FundTallyVO fundVO, String begindate,
 			String enddate) {
 		String contractno = fundVO.getContractno();
@@ -649,8 +782,7 @@ public class NewFundTallyReportImpl implements NewIFundTallyReport {
 		if ((Start_balance == null || Start_balance.equals(new UFDouble(0)))
 				&& !End_balance.equals(new UFDouble(0))) {
 			days = endate.getDaysAfter(bd) + 1;
-		} else if ((Start_balance == null || Start_balance.equals(new UFDouble(
-				0)))
+		} else if ((Start_balance == null || Start_balance.equals(new UFDouble(0)))
 				&& (End_balance == null || End_balance.equals(new UFDouble(0)))) {
 			days = ed.getDaysAfter(bd) + 1;
 		} else if (!Start_balance.equals(new UFDouble(0))
@@ -698,13 +830,15 @@ public class NewFundTallyReportImpl implements NewIFundTallyReport {
 	 * @param inventVO
 	 * @return
 	 */
-	@SuppressWarnings("rawtypes")
-	private UFDouble getInterestrate(String pk_securities) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private Map getInterestrate(String pk_securities) {
 		UFDouble rate = new UFDouble(0);
+		String pk_interest = "";
 		BaseDAO dao = new BaseDAO();
 		Vector vec = new Vector();
+		Map map = new HashMap();
 		String sql = "";
-		sql = "select yearrate from sim_interest " + "where nvl(dr,0)=0 "
+		sql = "select yearrate,pk_interest from sim_interest " + "where nvl(dr,0)=0 "
 				+ "and pk_securities = '" + pk_securities + "'";
 		try {
 			vec = (Vector) dao.executeQuery(sql, new VectorProcessor());
@@ -712,10 +846,13 @@ public class NewFundTallyReportImpl implements NewIFundTallyReport {
 			// TODO 自动生成的 catch 块
 			e.printStackTrace();
 		}
-		if (vec.get(0) != null)
+		if (vec.get(0) != null){
 			rate = new UFDouble(((Vector) vec.get(0)).get(0).toString());
-
-		return rate;
+			pk_interest = ((Vector) vec.get(0)).get(1).toString();
+		}
+		map.put("pk_interest", pk_interest);
+		map.put("rate", rate);
+		return map;
 
 	}
 
@@ -724,6 +861,7 @@ public class NewFundTallyReportImpl implements NewIFundTallyReport {
 	 * @param reportVO
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private boolean getLongfundtype(NewFundTallyReportVO reportVO) {
 		boolean Longtype = false;
 		String fundtype = reportVO.getFundtype();
